@@ -1,8 +1,7 @@
 import SwiftUI
 
-// App entry point showing the new HomeView
 @main
-struct LightItUpApp: App {
+struct ArcadeApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()

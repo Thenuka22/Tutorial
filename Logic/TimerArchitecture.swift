@@ -78,6 +78,7 @@ struct LightCard: Identifiable, Equatable {
 
 // MARK: - View Model
 
+@MainActor
 final class LightItUpViewModel: ObservableObject {
     // Published game state
     @Published private(set) var cards: [LightCard] = []
@@ -298,65 +299,83 @@ struct LightItUpGameView: View {
     @StateObject private var vm = LightItUpViewModel()
     @Environment(\.scenePhase) private var scenePhase
 
-    private var backgroundLayer: some View {
-        LinearGradient(colors: [Color(red: 0.06, green: 0.07, blue: 0.12), .black], startPoint: .topLeading, endPoint: .bottomTrailing)
-    }
+    private var backgroundLayer: some View { ArcadeScreenBackground() }
 
     var body: some View {
         ZStack {
             backgroundLayer
-                .ignoresSafeArea()
-            VStack(spacing: 20) {
+            VStack(spacing: 18) {
                 header
                 ProgressView(value: Double(vm.elapsed), total: 60)
-                    .tint(.white)
-                    .padding(.vertical, 6)
-                    .background(Color.white.opacity(0.08), in: Capsule())
+                    .tint(levelTint)
+                    .background(Color.white.opacity(0.70), in: Capsule())
                 grid
                 controls
             }
-            .padding()
+            .padding(20)
 
             if vm.didFinishRound {
                 overlay
             }
         }
         .onAppear { vm.start() }
-        .onChange(of: scenePhase) { newPhase in
+        .onChange(of: scenePhase) { _, newPhase in
             if newPhase != .active, vm.isRunning {
                 vm.stop()
             }
         }
-        .preferredColorScheme(.dark)
+        .navigationTitle("Light It Up")
+        .navigationBarTitleDisplayMode(.inline)
     }
 
     private var header: some View {
-        HStack {
-            Text("Score: \(vm.score)")
-            Spacer()
-            Text("Level \(vm.level.label)")
-            Spacer()
-            Text("High: \(vm.highScore)")
-            Spacer()
-            Text("Time: \(vm.remaining)s")
+        VStack(spacing: 12) {
+            HStack(spacing: 10) {
+                metric("Score", value: "\(vm.score)", symbol: "trophy.fill")
+                metric("Level", value: vm.level.label, symbol: "square.grid.3x3.fill")
+            }
+
+            HStack(spacing: 10) {
+                metric("Best", value: "\(vm.highScore)", symbol: "crown.fill")
+                metric("Time", value: "\(vm.remaining)s", symbol: "clock.fill")
+            }
         }
-        .font(.headline)
-        .monospacedDigit()
-        .foregroundStyle(.white.opacity(0.9))
+    }
+
+    private func metric(_ title: String, value: String, symbol: String) -> some View {
+        VStack(spacing: 5) {
+            Label(title, systemImage: symbol)
+                .font(.caption2.bold())
+                .foregroundStyle(ArcadeTheme.mutedInk)
+            Text(value)
+                .font(.headline.monospacedDigit())
+                .foregroundStyle(ArcadeTheme.ink)
+                .lineLimit(1)
+                .minimumScaleFactor(0.72)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 10)
+        .background(Color.white.opacity(0.90), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
     }
 
     private var grid: some View {
         LazyVGrid(columns: vm.columns, spacing: 12) {
             ForEach(vm.cards) { card in
-                RoundedRectangle(cornerRadius: 14)
-                    .fill(card.isLit ? Color.white : Color.white.opacity(0.08))
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .fill(card.isLit ? levelTint : Color.white.opacity(0.72))
                     .frame(height: 90)
+                    .overlay {
+                        if card.isLit {
+                            Image(systemName: "bolt.fill")
+                                .font(.system(size: 30, weight: .black))
+                                .foregroundStyle(.white)
+                        }
+                    }
                     .overlay(
-                        RoundedRectangle(cornerRadius: 14)
-                            .strokeBorder(Color.white.opacity(0.15))
+                        RoundedRectangle(cornerRadius: 8, style: .continuous)
+                            .strokeBorder(Color.black.opacity(0.08))
                     )
-                    .shadow(color: Color.white.opacity(card.isLit ? 0.7 : 0.0), radius: 18, x: 0, y: 0)
-                    .shadow(color: Color.white.opacity(card.isLit ? 0.35 : 0.0), radius: 36, x: 0, y: 0)
+                    .shadow(color: levelTint.opacity(card.isLit ? 0.36 : 0), radius: 16, x: 0, y: 8)
                     .scaleEffect(card.isLit ? 1.03 : 1.0)
                     .onTapGesture { vm.tapCard(card) }
                     .animation(.easeInOut(duration: 0.15), value: card.isLit)
@@ -368,48 +387,67 @@ struct LightItUpGameView: View {
 
     private var controls: some View {
         HStack(spacing: 12) {
-            Button(action: { vm.start() }) { Text(vm.isRunning ? "Restart" : "Start") }
-                .buttonStyle(.borderedProminent)
-            Button(action: { vm.stop() }) { Text("Stop") }
-                .buttonStyle(.bordered)
+            Button(action: { vm.start() }) {
+                Label(vm.isRunning ? "Restart" : "Start", systemImage: vm.isRunning ? "arrow.counterclockwise" : "play.fill")
+            }
+            .buttonStyle(ArcadePrimaryButtonStyle(tint: levelTint))
+
+            Button(action: { vm.stop() }) {
+                Label("Stop", systemImage: "stop.fill")
+            }
+            .buttonStyle(ArcadeSecondaryButtonStyle())
+            .disabled(!vm.isRunning)
         }
-        .tint(.cyan)
     }
 
     private var overlay: some View {
         ZStack {
-            Color.black.opacity(0.55)
+            Color.black.opacity(0.34)
                 .ignoresSafeArea()
             VStack(spacing: 14) {
                 Text("Time's Up!")
                     .font(.largeTitle.bold())
-                    .foregroundStyle(.white)
+                    .foregroundStyle(ArcadeTheme.ink)
                 Text("Final Score: \(vm.score)")
                     .font(.title2)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(ArcadeTheme.ink)
                 Text("High Score: \(vm.highScore)")
                     .font(.title3)
-                    .foregroundStyle(.white.opacity(0.7))
-                Button(action: { vm.start() }) {
-                    Text("Play Again")
-                        .frame(maxWidth: .infinity)
+                    .foregroundStyle(ArcadeTheme.mutedInk)
+
+                HStack(spacing: 12) {
+                    Button {
+                        ArcadeLeaderboardStore.shared.submit(score: vm.score, for: .lightItUp)
+                        vm.start()
+                    } label: {
+                        Label("Save", systemImage: "trophy.fill")
+                    }
+                    .buttonStyle(ArcadeSecondaryButtonStyle())
+
+                    Button(action: { vm.start() }) {
+                        Label("Play Again", systemImage: "play.fill")
+                    }
+                    .buttonStyle(ArcadePrimaryButtonStyle(tint: levelTint))
                 }
-                .buttonStyle(.borderedProminent)
-                .tint(.cyan)
             }
-            .padding()
-            .background(Color.white.opacity(0.08), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-            .overlay(
-                RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .stroke(Color.white.opacity(0.15))
-            )
-            .shadow(color: .black.opacity(0.6), radius: 20, x: 0, y: 10)
+            .padding(22)
+            .background(Color.white, in: RoundedRectangle(cornerRadius: 30, style: .continuous))
+            .shadow(color: Color.black.opacity(0.18), radius: 22, x: 0, y: 14)
             .padding(24)
+        }
+    }
+
+    private var levelTint: Color {
+        switch vm.level {
+        case .l1: return ArcadeTheme.sky
+        case .l2: return ArcadeTheme.mint
+        case .l3: return ArcadeTheme.gold
+        case .l4: return ArcadeTheme.berry
         }
     }
 }
 
-#Preview("Light It Up – Game") {
+#Preview("Light It Up Game") {
     LightItUpGameView()
 }
 

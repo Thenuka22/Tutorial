@@ -5,6 +5,7 @@ import Combine
 public enum ArcadeGameKind: String, CaseIterable, Codable, Identifiable {
     case tapFrenzy
     case lightItUp
+    case quizRush
 
     public var id: String { rawValue }
 
@@ -12,6 +13,23 @@ public enum ArcadeGameKind: String, CaseIterable, Codable, Identifiable {
         switch self {
         case .tapFrenzy: return "Tap Frenzy"
         case .lightItUp: return "Light It Up"
+        case .quizRush: return "Quiz Rush"
+        }
+    }
+
+    public var subtitle: String {
+        switch self {
+        case .tapFrenzy: return "10-second tap sprint"
+        case .lightItUp: return "Reaction grid challenge"
+        case .quizRush: return "Live trivia streaks"
+        }
+    }
+
+    public var symbolName: String {
+        switch self {
+        case .tapFrenzy: return "hand.tap.fill"
+        case .lightItUp: return "bolt.fill"
+        case .quizRush: return "questionmark.bubble.fill"
         }
     }
 }
@@ -104,6 +122,7 @@ public final class ArcadeLeaderboardStore: ObservableObject {
         switch game {
         case .tapFrenzy: return "leaderboard.tapFrenzy"
         case .lightItUp: return "leaderboard.lightItUp"
+        case .quizRush: return "leaderboard.quizRush"
         }
     }
 
