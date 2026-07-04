@@ -13,11 +13,11 @@ enum ArcadeTheme {
     static func gradient(for game: ArcadeGameKind) -> LinearGradient {
         switch game {
         case .tapFrenzy:
-            LinearGradient(colors: [orange, gold], startPoint: .topLeading, endPoint: .bottomTrailing)
+            return LinearGradient(colors: [orange, gold], startPoint: .topLeading, endPoint: .bottomTrailing)
         case .lightItUp:
-            LinearGradient(colors: [sky, mint], startPoint: .topLeading, endPoint: .bottomTrailing)
+            return LinearGradient(colors: [sky, mint], startPoint: .topLeading, endPoint: .bottomTrailing)
         case .quizRush:
-            LinearGradient(colors: [berry, Color(red: 0.38, green: 0.31, blue: 0.86)], startPoint: .topLeading, endPoint: .bottomTrailing)
+            return LinearGradient(colors: [berry, Color(red: 0.38, green: 0.31, blue: 0.86)], startPoint: .topLeading, endPoint: .bottomTrailing)
         }
     }
 }
