@@ -1,6 +1,6 @@
 import SwiftUI
 
-enum ArcadeTheme {
+enum PlayHubTheme {
     static let paper = Color(red: 0.98, green: 0.96, blue: 0.92)
     static let ink = Color(red: 0.10, green: 0.10, blue: 0.13)
     static let mutedInk = Color(red: 0.42, green: 0.42, blue: 0.48)
@@ -10,8 +10,16 @@ enum ArcadeTheme {
     static let berry = Color(red: 0.88, green: 0.20, blue: 0.42)
     static let gold = Color(red: 1.00, green: 0.74, blue: 0.18)
 
-    static func gradient(for game: ArcadeGameKind) -> LinearGradient {
-        switch game {
+    static func tint(for mode: GameMode) -> Color {
+        switch mode {
+        case .tapFrenzy: return orange
+        case .lightItUp: return sky
+        case .quizRush: return berry
+        }
+    }
+
+    static func gradient(for mode: GameMode) -> LinearGradient {
+        switch mode {
         case .tapFrenzy:
             return LinearGradient(colors: [orange, gold], startPoint: .topLeading, endPoint: .bottomTrailing)
         case .lightItUp:
@@ -22,11 +30,11 @@ enum ArcadeTheme {
     }
 }
 
-struct ArcadeScreenBackground: View {
+struct PlayHubScreenBackground: View {
     var body: some View {
         LinearGradient(
             colors: [
-                ArcadeTheme.paper,
+                PlayHubTheme.paper,
                 Color(red: 0.92, green: 0.95, blue: 0.99),
                 Color(red: 0.99, green: 0.95, blue: 0.88)
             ],
@@ -37,8 +45,8 @@ struct ArcadeScreenBackground: View {
     }
 }
 
-struct ArcadePrimaryButtonStyle: ButtonStyle {
-    var tint: Color = ArcadeTheme.orange
+struct PlayHubPrimaryButtonStyle: ButtonStyle {
+    var tint: Color = PlayHubTheme.orange
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
@@ -52,11 +60,11 @@ struct ArcadePrimaryButtonStyle: ButtonStyle {
     }
 }
 
-struct ArcadeSecondaryButtonStyle: ButtonStyle {
+struct PlayHubSecondaryButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(.headline)
-            .foregroundStyle(ArcadeTheme.ink)
+            .foregroundStyle(PlayHubTheme.ink)
             .frame(maxWidth: .infinity)
             .padding(.vertical, 14)
             .background(Color.white.opacity(configuration.isPressed ? 0.72 : 0.96), in: Capsule())

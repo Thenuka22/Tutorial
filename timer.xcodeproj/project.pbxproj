@@ -6,13 +6,8 @@
 	objectVersion = 77;
 	objects = {
 
-/* Begin PBXBuildFile section */
-		C01E706D2FDC2FCE000D0666 /* TimerArchitecture.swift in Sources */ = {isa = PBXBuildFile; fileRef = C01E706B2FDC2E5B000D0666 /* TimerArchitecture.swift */; };
-/* End PBXBuildFile section */
-
 /* Begin PBXFileReference section */
 		C01E705C2FDC2CF3000D0666 /* timer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = timer.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		C01E706B2FDC2E5B000D0666 /* TimerArchitecture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerArchitecture.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -37,7 +32,6 @@
 		C01E70532FDC2CF3000D0666 = {
 			isa = PBXGroup;
 			children = (
-				C01E706A2FDC2E43000D0666 /* Logic */,
 				C01E705E2FDC2CF3000D0666 /* timer */,
 				C01E705D2FDC2CF3000D0666 /* Products */,
 			);
@@ -49,14 +43,6 @@
 				C01E705C2FDC2CF3000D0666 /* timer.app */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		C01E706A2FDC2E43000D0666 /* Logic */ = {
-			isa = PBXGroup;
-			children = (
-				C01E706B2FDC2E5B000D0666 /* TimerArchitecture.swift */,
-			);
-			path = Logic;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -133,7 +119,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C01E706D2FDC2FCE000D0666 /* TimerArchitecture.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -269,7 +254,8 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "Game Arcade";
+				INFOPLIST_KEY_CFBundleDisplayName = PlayHub;
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "PlayHub records your game location to place completed sessions on the map.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -301,7 +287,8 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "Game Arcade";
+				INFOPLIST_KEY_CFBundleDisplayName = PlayHub;
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "PlayHub records your game location to place completed sessions on the map.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";

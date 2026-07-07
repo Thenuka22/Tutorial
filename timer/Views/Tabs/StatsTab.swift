@@ -1,0 +1,152 @@
+import Charts
+import SwiftUI
+
+struct StatsTab: View {
+    @StateObject private var viewModel = StatsVM()
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 20) {
+                summaryGrid
+                chartSection
+                modeBreakdown
+                recentGames
+            }
+            .padding(20)
+        }
+        .background(PlayHubScreenBackground())
+        .navigationTitle("Stats")
+    }
+
+    private var summaryGrid: some View {
+        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
+            ScoreBadge(title: "Games", value: "\(viewModel.totalGames)", symbol: "number.circle.fill", tint: PlayHubTheme.orange)
+            ScoreBadge(title: "Total", value: "\(viewModel.totalScore)", symbol: "sum", tint: PlayHubTheme.sky)
+            ScoreBadge(title: "Average", value: "\(viewModel.averageScore)", symbol: "divide.circle.fill", tint: PlayHubTheme.mint)
+            ScoreBadge(title: "Mapped", value: "\(viewModel.locatedSessions.count)", symbol: "mappin.circle.fill", tint: PlayHubTheme.berry)
+        }
+    }
+
+    private var chartSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Best Scores")
+                .font(.title3.bold())
+                .foregroundStyle(PlayHubTheme.ink)
+
+            if viewModel.totalGames == 0 {
+                emptyState(symbol: "chart.bar", title: "No stats yet", message: "Complete any game to build your chart.")
+            } else {
+                Chart(viewModel.modeStats) { stat in
+                    BarMark(
+                        x: .value("Game", stat.mode.shortName),
+                        y: .value("Best Score", stat.bestScore)
+                    )
+                    .foregroundStyle(PlayHubTheme.tint(for: stat.mode))
+                    .annotation(position: .top) {
+                        Text("\(stat.bestScore)")
+                            .font(.caption.bold())
+                            .foregroundStyle(PlayHubTheme.ink)
+                    }
+                }
+                .frame(height: 220)
+                .padding(16)
+                .background(Color.white.opacity(0.90), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+            }
+        }
+    }
+
+    private var modeBreakdown: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("By Mode")
+                .font(.title3.bold())
+                .foregroundStyle(PlayHubTheme.ink)
+
+            ForEach(viewModel.modeStats) { stat in
+                HStack(spacing: 12) {
+                    Image(systemName: stat.mode.symbolName)
+                        .font(.headline)
+                        .foregroundStyle(.white)
+                        .frame(width: 42, height: 42)
+                        .background(PlayHubTheme.tint(for: stat.mode), in: Circle())
+
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text(stat.mode.displayName)
+                            .font(.headline)
+                            .foregroundStyle(PlayHubTheme.ink)
+                        Text("\(stat.games) games  |  total \(stat.totalScore)")
+                            .font(.caption)
+                            .foregroundStyle(PlayHubTheme.mutedInk)
+                    }
+
+                    Spacer()
+
+                    Text("\(stat.bestScore)")
+                        .font(.title3.bold().monospacedDigit())
+                        .foregroundStyle(PlayHubTheme.ink)
+                }
+                .padding(14)
+                .background(Color.white.opacity(0.92), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+            }
+        }
+    }
+
+    private var recentGames: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Recent Games")
+                .font(.title3.bold())
+                .foregroundStyle(PlayHubTheme.ink)
+
+            if viewModel.recentSessions.isEmpty {
+                emptyState(symbol: "clock", title: "No recent games", message: "Your completed sessions will appear here.")
+            } else {
+                ForEach(viewModel.recentSessions) { session in
+                    HStack(spacing: 12) {
+                        Image(systemName: session.mode.symbolName)
+                            .foregroundStyle(.white)
+                            .frame(width: 40, height: 40)
+                            .background(PlayHubTheme.tint(for: session.mode), in: Circle())
+
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text(session.mode.displayName)
+                                .font(.headline)
+                                .foregroundStyle(PlayHubTheme.ink)
+                            Text(session.timestamp, style: .relative)
+                                .font(.caption)
+                                .foregroundStyle(PlayHubTheme.mutedInk)
+                        }
+
+                        Spacer()
+
+                        Text("\(session.score)")
+                            .font(.title3.bold().monospacedDigit())
+                            .foregroundStyle(PlayHubTheme.ink)
+                    }
+                    .padding(12)
+                    .background(Color.white.opacity(0.92), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+                }
+            }
+        }
+    }
+
+    private func emptyState(symbol: String, title: String, message: String) -> some View {
+        VStack(spacing: 10) {
+            Image(systemName: symbol)
+                .font(.system(size: 38, weight: .bold))
+                .foregroundStyle(PlayHubTheme.orange)
+            Text(title)
+                .font(.headline)
+                .foregroundStyle(PlayHubTheme.ink)
+            Text(message)
+                .font(.subheadline)
+                .multilineTextAlignment(.center)
+                .foregroundStyle(PlayHubTheme.mutedInk)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(24)
+        .background(Color.white.opacity(0.86), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+    }
+}
+
+#Preview {
+    NavigationStack { StatsTab() }
+}
