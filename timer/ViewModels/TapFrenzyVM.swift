@@ -1,6 +1,5 @@
 import Combine
 import SwiftUI
-import UIKit
 
 @MainActor
 final class TapFrenzyVM: ObservableObject {
@@ -13,8 +12,9 @@ final class TapFrenzyVM: ObservableObject {
     @Published private(set) var targetOffset: CGSize = .zero
     @Published private(set) var targetMood: TapTargetMood = .normal
     @Published private(set) var bonusBurstActive = false
+    @Published private(set) var options: TapFrenzyOptions = TapFrenzyPreset.classic.options
 
-    let roundDuration: Double = 10
+    var roundDuration: Double { options.roundDuration }
 
     private var lastTapTime: Date?
     private var lastTick = Date()
@@ -28,11 +28,20 @@ final class TapFrenzyVM: ObservableObject {
     }
 
     var targetSize: CGFloat {
-        let progress = max(0, min(1, timeRemaining / roundDuration))
+        let progress = max(0, min(1, timeRemaining / options.roundDuration))
         return 78 + (70 * progress)
     }
 
-    func start() {
+    func applyOptions(_ options: TapFrenzyOptions) {
+        guard !isRunning else { return }
+        self.options = options
+        reset(clearResults: false)
+    }
+
+    func start(options: TapFrenzyOptions? = nil) {
+        if let options {
+            self.options = options
+        }
         reset(clearResults: true)
         isRunning = true
         lastTick = Date()
@@ -43,7 +52,7 @@ final class TapFrenzyVM: ObservableObject {
 
     func reset(clearResults: Bool) {
         isRunning = false
-        timeRemaining = roundDuration
+        timeRemaining = options.roundDuration
         score = 0
         taps = 0
         comboCount = 0
@@ -71,14 +80,14 @@ final class TapFrenzyVM: ObservableObject {
             return
         }
 
-        if now.timeIntervalSince(lastTargetMove) >= 1.0 {
+        if now.timeIntervalSince(lastTargetMove) >= options.targetMoveInterval {
             lastTargetMove = now
             moveTarget()
         }
 
-        if now.timeIntervalSince(lastMoodChange) >= 1.35 {
+        if now.timeIntervalSince(lastMoodChange) >= options.moodChangeInterval {
             lastMoodChange = now
-            targetMood = TapTargetMood.random()
+            targetMood = TapTargetMood.random(options: options)
         }
 
         if let lastTapTime, now.timeIntervalSince(lastTapTime) > 0.75 {
@@ -94,7 +103,8 @@ final class TapFrenzyVM: ObservableObject {
             score = max(0, score - 2)
             comboCount = 0
             lastTapTime = nil
-            UIImpactFeedbackGenerator(style: .rigid).impactOccurred()
+            AudioService.shared.play(.mistake)
+            AudioService.shared.impact(.rigid)
             return
         }
 
@@ -110,11 +120,12 @@ final class TapFrenzyVM: ObservableObject {
         let burstBonus = bonusBurstActive ? 2 : 1
         score += (1 + moodBonus) * multiplier * burstBonus
 
-        if score >= 20, !bonusBurstUsed {
+        if options.bonusBurstEnabled, score >= 20, !bonusBurstUsed {
             triggerBonusBurst()
         }
 
-        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+        AudioService.shared.play(targetMood == .bonus ? .bonus : .tap)
+        AudioService.shared.impact(.light)
         targetMood = .normal
         moveTarget()
     }
@@ -133,6 +144,8 @@ final class TapFrenzyVM: ObservableObject {
     private func finishRound() {
         isRunning = false
         recordCompletionIfNeeded()
+        AudioService.shared.play(.finish)
+        AudioService.shared.notify(.success)
         showResults = true
     }
 
@@ -142,7 +155,9 @@ final class TapFrenzyVM: ObservableObject {
         GameSessionStore.shared.addSession(
             mode: .tapFrenzy,
             score: score,
-            coordinate: LocationService.shared.currentCoordinate
+            coordinate: LocationService.shared.currentCoordinate,
+            variantID: options.variantID,
+            variantLabel: options.variantLabel
         )
     }
 
@@ -192,10 +207,10 @@ enum TapTargetMood: CaseIterable, Equatable {
         }
     }
 
-    static func random() -> TapTargetMood {
+    static func random(options: TapFrenzyOptions) -> TapTargetMood {
         let roll = Int.random(in: 0..<100)
-        if roll < 18 { return .bonus }
-        if roll < 36 { return .trap }
+        if roll < options.bonusChance { return .bonus }
+        if options.trapsEnabled, roll < options.bonusChance + options.trapChance { return .trap }
         return .normal
     }
 }

@@ -8,6 +8,8 @@ struct GameSession: Identifiable, Codable, Equatable {
     let timestamp: Date
     let latitude: Double?
     let longitude: Double?
+    let variantID: String?
+    let variantLabel: String?
 
     init(
         id: UUID = UUID(),
@@ -15,7 +17,9 @@ struct GameSession: Identifiable, Codable, Equatable {
         score: Int,
         timestamp: Date = Date(),
         latitude: Double? = nil,
-        longitude: Double? = nil
+        longitude: Double? = nil,
+        variantID: String? = nil,
+        variantLabel: String? = nil
     ) {
         self.id = id
         self.mode = mode
@@ -23,10 +27,16 @@ struct GameSession: Identifiable, Codable, Equatable {
         self.timestamp = timestamp
         self.latitude = latitude
         self.longitude = longitude
+        self.variantID = variantID
+        self.variantLabel = variantLabel
     }
 
     var coordinate: CLLocationCoordinate2D? {
         guard let latitude, let longitude else { return nil }
         return CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+    }
+
+    var displayVariantLabel: String {
+        variantLabel ?? "Classic"
     }
 }

@@ -2,8 +2,11 @@ import SwiftUI
 
 struct LightItUpView: View {
     @EnvironmentObject private var store: GameSessionStore
+    @EnvironmentObject private var settings: GameSettingsStore
     @Environment(\.scenePhase) private var scenePhase
     @StateObject private var viewModel = LightItUpVM()
+    @State private var options = LightItUpPreset.classic.options
+    @State private var didLoadDefaults = false
 
     var body: some View {
         ZStack {
@@ -11,9 +14,8 @@ struct LightItUpView: View {
 
             VStack(spacing: 18) {
                 header
-                ProgressView(value: Double(viewModel.elapsed), total: 60)
-                    .tint(levelTint)
-                    .background(Color.white.opacity(0.70), in: Capsule())
+                customizePanel
+                GameArtProgressBar(value: Double(viewModel.elapsed), total: Double(viewModel.roundDuration))
                 grid
                 controls
             }
@@ -26,16 +28,15 @@ struct LightItUpView: View {
                 ResultView(
                     mode: .lightItUp,
                     score: viewModel.score,
-                    bestScore: store.bestScore(for: .lightItUp),
-                    onPlayAgain: viewModel.start
+                    bestScore: store.bestScore(for: .lightItUp, variantID: options.variantID),
+                    variantLabel: options.variantLabel,
+                    onPlayAgain: { viewModel.start(options: options) }
                 )
             }
         }
         .onAppear {
+            loadDefaultsIfNeeded()
             LocationService.shared.refreshLocation()
-            if !viewModel.isRunning && !viewModel.didFinishRound {
-                viewModel.start()
-            }
         }
         .onChange(of: scenePhase) { _, newPhase in
             if newPhase != .active, viewModel.isRunning {
@@ -54,28 +55,73 @@ struct LightItUpView: View {
             }
 
             HStack(spacing: 10) {
-                ScoreBadge(title: "Best", value: "\(store.bestScore(for: .lightItUp))", symbol: "crown.fill", tint: PlayHubTheme.gold)
+                ScoreBadge(title: "Best", value: "\(store.bestScore(for: .lightItUp, variantID: options.variantID))", symbol: "crown.fill", tint: PlayHubTheme.gold)
                 ScoreBadge(title: "Time", value: "\(viewModel.remaining)s", symbol: "clock.fill", tint: PlayHubTheme.sky)
             }
         }
+    }
+
+    private var customizePanel: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Label("Customize", systemImage: "slider.horizontal.3")
+                    .font(.headline.bold())
+                    .foregroundStyle(PlayHubTheme.ink)
+                Spacer()
+                Text(options.variantLabel)
+                    .font(.caption.bold())
+                    .foregroundStyle(PlayHubTheme.mutedInk)
+            }
+
+            Picker("Preset", selection: presetBinding) {
+                ForEach(LightItUpPreset.allCases) { preset in
+                    Text(preset.displayName).tag(preset)
+                }
+            }
+            .pickerStyle(.segmented)
+
+            Stepper("Round \(options.roundDuration)s", value: roundDurationBinding, in: 15...90, step: 15)
+
+            Picker("Starting Level", selection: startingLevelBinding) {
+                ForEach(GameLevel.allCases) { level in
+                    Text(level.displayName).tag(level)
+                }
+            }
+            .pickerStyle(.menu)
+
+            Stepper("Wrong Tap Penalty \(options.wrongTapPenalty)", value: wrongPenaltyBinding, in: 0...5)
+
+            Stepper("Missed Light Penalty \(options.missedLightPenalty)", value: missedPenaltyBinding, in: 0...5)
+
+            Stepper("Extra Lights \(options.extraLightsPerTick)", value: extraLightsBinding, in: 0...2)
+        }
+        .font(.subheadline)
+        .padding(14)
+        .background {
+            Image(GameArt.panelBlank)
+                .resizable(capInsets: EdgeInsets(top: 120, leading: 130, bottom: 130, trailing: 130), resizingMode: .stretch)
+        }
+        .disabled(viewModel.isRunning)
+        .opacity(viewModel.isRunning ? 0.68 : 1)
     }
 
     private var grid: some View {
         LazyVGrid(columns: viewModel.columns, spacing: 12) {
             ForEach(viewModel.cards) { card in
                 RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .fill(card.isLit ? levelTint : Color.white.opacity(0.72))
+                    .fill(card.isLit ? levelTint : Color(red: 0.12, green: 0.18, blue: 0.20).opacity(0.80))
                     .frame(height: 90)
                     .overlay {
                         if card.isLit {
-                            Image(systemName: "bolt.fill")
-                                .font(.system(size: 30, weight: .black))
-                                .foregroundStyle(.white)
+                            Image(GameArt.medal)
+                                .resizable()
+                                .scaledToFit()
+                                .padding(18)
                         }
                     }
                     .overlay(
                         RoundedRectangle(cornerRadius: 8, style: .continuous)
-                            .strokeBorder(Color.black.opacity(0.08))
+                            .strokeBorder(Color.white.opacity(card.isLit ? 0.65 : 0.18), lineWidth: 2)
                     )
                     .shadow(color: levelTint.opacity(card.isLit ? 0.36 : 0), radius: 16, x: 0, y: 8)
                     .scaleEffect(card.isLit ? 1.03 : 1.0)
@@ -89,7 +135,9 @@ struct LightItUpView: View {
 
     private var controls: some View {
         HStack(spacing: 12) {
-            Button(action: viewModel.start) {
+            Button {
+                viewModel.start(options: options)
+            } label: {
                 Label(viewModel.isRunning ? "Restart" : "Start", systemImage: viewModel.isRunning ? "arrow.counterclockwise" : "play.fill")
             }
             .buttonStyle(PlayHubPrimaryButtonStyle(tint: levelTint))
@@ -110,9 +158,66 @@ struct LightItUpView: View {
         case .l4: return PlayHubTheme.berry
         }
     }
+
+    private var presetBinding: Binding<LightItUpPreset> {
+        Binding(
+            get: { options.preset },
+            set: { preset in updateOptions { $0 = preset.options } }
+        )
+    }
+
+    private var roundDurationBinding: Binding<Int> {
+        Binding(
+            get: { options.roundDuration },
+            set: { value in updateOptions { $0.roundDuration = value } }
+        )
+    }
+
+    private var startingLevelBinding: Binding<GameLevel> {
+        Binding(
+            get: { options.startingLevel },
+            set: { value in updateOptions { $0.startingLevel = value } }
+        )
+    }
+
+    private var wrongPenaltyBinding: Binding<Int> {
+        Binding(
+            get: { options.wrongTapPenalty },
+            set: { value in updateOptions { $0.wrongTapPenalty = value } }
+        )
+    }
+
+    private var missedPenaltyBinding: Binding<Int> {
+        Binding(
+            get: { options.missedLightPenalty },
+            set: { value in updateOptions { $0.missedLightPenalty = value } }
+        )
+    }
+
+    private var extraLightsBinding: Binding<Int> {
+        Binding(
+            get: { options.extraLightsPerTick },
+            set: { value in updateOptions { $0.extraLightsPerTick = value } }
+        )
+    }
+
+    private func updateOptions(_ update: (inout LightItUpOptions) -> Void) {
+        var nextOptions = options
+        update(&nextOptions)
+        options = nextOptions
+        viewModel.applyOptions(nextOptions)
+    }
+
+    private func loadDefaultsIfNeeded() {
+        guard !didLoadDefaults else { return }
+        didLoadDefaults = true
+        options = settings.defaultLightOptions
+        viewModel.applyOptions(options)
+    }
 }
 
 #Preview("Light It Up") {
     NavigationStack { LightItUpView() }
         .environmentObject(GameSessionStore.shared)
+        .environmentObject(GameSettingsStore.shared)
 }

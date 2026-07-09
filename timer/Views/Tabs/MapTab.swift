@@ -35,7 +35,7 @@ struct MapTab: View {
                 Map(position: $cameraPosition, selection: $selectedPinID) {
                     ForEach(pins) { pin in
                         Marker(
-                            "\(pin.session.mode.displayName) \(pin.session.score)",
+                            "\(pin.session.mode.displayName) \(pin.session.displayVariantLabel) \(pin.session.score)",
                             systemImage: pin.session.mode.symbolName,
                             coordinate: pin.coordinate
                         )
@@ -116,6 +116,10 @@ struct MapTab: View {
                 Text(pin.session.mode.displayName)
                     .font(.headline)
                     .foregroundStyle(PlayHubTheme.ink)
+                Text(pin.session.displayVariantLabel)
+                    .font(.caption)
+                    .foregroundStyle(PlayHubTheme.mutedInk)
+                    .lineLimit(1)
                 Text(pin.session.timestamp, style: .relative)
                     .font(.caption)
                     .foregroundStyle(PlayHubTheme.mutedInk)
@@ -128,8 +132,11 @@ struct MapTab: View {
                 .foregroundStyle(PlayHubTheme.ink)
         }
         .padding(14)
-        .background(Color.white.opacity(0.96), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
-        .shadow(color: Color.black.opacity(0.12), radius: 14, x: 0, y: 8)
+        .background {
+            Image(GameArt.panelBlank)
+                .resizable(capInsets: EdgeInsets(top: 120, leading: 130, bottom: 130, trailing: 130), resizingMode: .stretch)
+                .shadow(color: Color.black.opacity(0.18), radius: 14, x: 0, y: 8)
+        }
     }
 
     private func focusOnFirstPinIfNeeded() {

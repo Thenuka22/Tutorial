@@ -1,6 +1,6 @@
 import Foundation
 
-enum GameMode: String, CaseIterable, Codable, Identifiable {
+enum GameMode: String, CaseIterable, Codable, Hashable, Identifiable {
     case tapFrenzy
     case lightItUp
     case quizRush

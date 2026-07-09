@@ -3,15 +3,18 @@ import SwiftUI
 @main
 struct PlayHubApp: App {
     @StateObject private var sessionStore = GameSessionStore.shared
+    @StateObject private var settingsStore = GameSettingsStore.shared
     @StateObject private var locationService = LocationService.shared
 
     var body: some Scene {
         WindowGroup {
             PlayHubShellView()
                 .environmentObject(sessionStore)
+                .environmentObject(settingsStore)
                 .environmentObject(locationService)
                 .task {
                     locationService.requestPermission()
+                    AudioService.shared.sync(with: settingsStore)
                 }
         }
     }
@@ -55,5 +58,6 @@ struct PlayHubShellView: View {
 #Preview {
     PlayHubShellView()
         .environmentObject(GameSessionStore.shared)
+        .environmentObject(GameSettingsStore.shared)
         .environmentObject(LocationService.shared)
 }

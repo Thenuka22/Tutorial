@@ -10,6 +10,7 @@ struct StatsTab: View {
                 summaryGrid
                 chartSection
                 modeBreakdown
+                variantLeaderboards
                 recentGames
             }
             .padding(20)
@@ -50,14 +51,14 @@ struct StatsTab: View {
                 }
                 .frame(height: 220)
                 .padding(16)
-                .background(Color.white.opacity(0.90), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+                .background(panelBackground)
             }
         }
     }
 
     private var modeBreakdown: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("By Mode")
+            Text("By Game")
                 .font(.title3.bold())
                 .foregroundStyle(PlayHubTheme.ink)
 
@@ -85,7 +86,47 @@ struct StatsTab: View {
                         .foregroundStyle(PlayHubTheme.ink)
                 }
                 .padding(14)
-                .background(Color.white.opacity(0.92), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+                .background(panelBackground)
+            }
+        }
+    }
+
+    private var variantLeaderboards: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Variant Leaderboards")
+                .font(.title3.bold())
+                .foregroundStyle(PlayHubTheme.ink)
+
+            if viewModel.variantStats.isEmpty {
+                emptyState(symbol: "list.star", title: "No variants yet", message: "Complete a customized game to start a variant leaderboard.")
+            } else {
+                ForEach(viewModel.variantStats) { stat in
+                    HStack(spacing: 12) {
+                        Image(systemName: stat.mode.symbolName)
+                            .font(.headline)
+                            .foregroundStyle(.white)
+                            .frame(width: 42, height: 42)
+                            .background(PlayHubTheme.tint(for: stat.mode), in: Circle())
+
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text(stat.mode.displayName)
+                                .font(.headline)
+                                .foregroundStyle(PlayHubTheme.ink)
+                            Text("\(stat.variantLabel)  |  \(stat.games) games")
+                                .font(.caption)
+                                .foregroundStyle(PlayHubTheme.mutedInk)
+                                .lineLimit(2)
+                        }
+
+                        Spacer()
+
+                        Text("\(stat.bestScore)")
+                            .font(.title3.bold().monospacedDigit())
+                            .foregroundStyle(PlayHubTheme.ink)
+                    }
+                    .padding(14)
+                    .background(panelBackground)
+                }
             }
         }
     }
@@ -110,6 +151,10 @@ struct StatsTab: View {
                             Text(session.mode.displayName)
                                 .font(.headline)
                                 .foregroundStyle(PlayHubTheme.ink)
+                            Text(session.displayVariantLabel)
+                                .font(.caption)
+                                .foregroundStyle(PlayHubTheme.mutedInk)
+                                .lineLimit(2)
                             Text(session.timestamp, style: .relative)
                                 .font(.caption)
                                 .foregroundStyle(PlayHubTheme.mutedInk)
@@ -122,7 +167,7 @@ struct StatsTab: View {
                             .foregroundStyle(PlayHubTheme.ink)
                     }
                     .padding(12)
-                    .background(Color.white.opacity(0.92), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+                    .background(panelBackground)
                 }
             }
         }
@@ -143,7 +188,13 @@ struct StatsTab: View {
         }
         .frame(maxWidth: .infinity)
         .padding(24)
-        .background(Color.white.opacity(0.86), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+        .background(panelBackground)
+    }
+
+    private var panelBackground: some View {
+        Image(GameArt.panelBlank)
+            .resizable(capInsets: EdgeInsets(top: 120, leading: 130, bottom: 130, trailing: 130), resizingMode: .stretch)
+            .shadow(color: Color.black.opacity(0.20), radius: 12, x: 0, y: 8)
     }
 }
 

@@ -1,8 +1,10 @@
 import Combine
 import SwiftUI
 
-enum GameLevel: Int, CaseIterable, Equatable {
+enum GameLevel: Int, CaseIterable, Codable, Equatable, Hashable, Identifiable {
     case l1, l2, l3, l4
+
+    var id: Int { rawValue }
 
     var gridCount: Int {
         switch self {
@@ -47,15 +49,23 @@ enum GameLevel: Int, CaseIterable, Equatable {
         }
     }
 
+    var displayName: String {
+        switch self {
+        case .l1: return "Level 1"
+        case .l2: return "Level 2"
+        case .l3: return "Level 3"
+        case .l4: return "Level 4"
+        }
+    }
+
     var spawnInterval: TimeInterval { timeWindow }
 
-    static func level(forElapsed seconds: Int) -> GameLevel {
-        switch seconds {
-        case 0..<15: return .l1
-        case 15..<30: return .l2
-        case 30..<45: return .l3
-        default: return .l4
-        }
+    static func level(forElapsed seconds: Int, startingLevel: GameLevel, roundDuration: Int) -> GameLevel {
+        let levels = Array(allCases.dropFirst(startingLevel.rawValue))
+        guard !levels.isEmpty else { return startingLevel }
+        let progress = Double(seconds) / Double(max(roundDuration, 1))
+        let offset = min(levels.count - 1, Int(progress * Double(levels.count)))
+        return levels[offset]
     }
 }
 
@@ -74,6 +84,7 @@ final class LightItUpVM: ObservableObject {
     @Published private(set) var score = 0
     @Published private(set) var isRunning = false
     @Published private(set) var didFinishRound = false
+    @Published private(set) var options: LightItUpOptions = LightItUpPreset.classic.options
 
     var columns: [GridItem] {
         Array(repeating: GridItem(.flexible(), spacing: 12), count: level.columnsCount)
@@ -84,22 +95,34 @@ final class LightItUpVM: ObservableObject {
     private var tokenGenerator: UInt64 = 0
     private var hasRecordedCurrentRound = false
 
-    private let roundDuration = 60
-    private let penaltyOnMiss = 1
-    private let penaltyOnWrongTap = 1
+    var roundDuration: Int { options.roundDuration }
 
     init() {
         configureGrid(for: level)
     }
 
-    func start() {
+    func applyOptions(_ options: LightItUpOptions) {
+        guard !isRunning else { return }
+        self.options = options
+        level = options.startingLevel
+        elapsed = 0
+        remaining = options.roundDuration
+        score = 0
+        didFinishRound = false
+        configureGrid(for: level)
+    }
+
+    func start(options: LightItUpOptions? = nil) {
+        if let options {
+            self.options = options
+        }
         isRunning = true
         didFinishRound = false
         hasRecordedCurrentRound = false
         elapsed = 0
-        remaining = roundDuration
+        remaining = self.options.roundDuration
         score = 0
-        level = .l1
+        level = self.options.startingLevel
         tokenGenerator = 0
 
         configureGrid(for: level)
@@ -120,8 +143,12 @@ final class LightItUpVM: ObservableObject {
             cards[index].isLit = false
             cards[index].litToken = nil
             score += 1
+            AudioService.shared.play(.success)
+            AudioService.shared.impact(.light)
         } else {
-            score = max(0, score - penaltyOnWrongTap)
+            score = max(0, score - options.wrongTapPenalty)
+            AudioService.shared.play(.mistake)
+            AudioService.shared.impact(.rigid)
         }
     }
 
@@ -139,6 +166,8 @@ final class LightItUpVM: ObservableObject {
 
         if finished {
             recordCompletionIfNeeded()
+            AudioService.shared.play(.finish)
+            AudioService.shared.notify(.success)
         }
         didFinishRound = finished
     }
@@ -149,7 +178,9 @@ final class LightItUpVM: ObservableObject {
         GameSessionStore.shared.addSession(
             mode: .lightItUp,
             score: score,
-            coordinate: LocationService.shared.currentCoordinate
+            coordinate: LocationService.shared.currentCoordinate,
+            variantID: options.variantID,
+            variantLabel: options.variantLabel
         )
     }
 
@@ -172,27 +203,32 @@ final class LightItUpVM: ObservableObject {
             .sink { [weak self] _ in
                 guard let self, self.isRunning else { return }
                 self.elapsed += 1
-                self.remaining = max(0, self.roundDuration - self.elapsed)
+                self.remaining = max(0, self.options.roundDuration - self.elapsed)
                 self.updateLevelIfNeeded()
 
-                if self.elapsed >= self.roundDuration {
+                if self.elapsed >= self.options.roundDuration {
                     self.endRound(finished: true)
                 }
             }
     }
 
     private func updateLevelIfNeeded() {
-        let newLevel = GameLevel.level(forElapsed: elapsed)
+        let newLevel = GameLevel.level(
+            forElapsed: elapsed,
+            startingLevel: options.startingLevel,
+            roundDuration: options.roundDuration
+        )
         if newLevel != level {
             level = newLevel
             configureGrid(for: newLevel)
             restartSpawnTimer()
+            AudioService.shared.play(.levelUp)
         }
     }
 
     private func restartSpawnTimer() {
         spawnCancellable?.cancel()
-        spawnCancellable = Timer.publish(every: level.spawnInterval, on: .main, in: .common)
+        spawnCancellable = Timer.publish(every: level.spawnInterval * options.spawnSpeedMultiplier, on: .main, in: .common)
             .autoconnect()
             .sink { [weak self] _ in
                 self?.spawnLights()
@@ -201,7 +237,7 @@ final class LightItUpVM: ObservableObject {
 
     private func spawnLights() {
         guard isRunning else { return }
-        let lights = level.lightsPerTick
+        let lights = level.lightsPerTick + options.extraLightsPerTick
         var availableIndices = cards.indices.filter { !cards[$0].isLit }
 
         if availableIndices.count < lights {
@@ -245,7 +281,8 @@ final class LightItUpVM: ObservableObject {
         if cards[index].isLit, cards[index].litToken == token {
             cards[index].isLit = false
             cards[index].litToken = nil
-            score = max(0, score - penaltyOnMiss)
+            score = max(0, score - options.missedLightPenalty)
+            AudioService.shared.play(.mistake)
         }
     }
 

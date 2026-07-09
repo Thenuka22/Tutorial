@@ -2,33 +2,42 @@ import SwiftUI
 
 struct QuizRushView: View {
     @EnvironmentObject private var store: GameSessionStore
+    @EnvironmentObject private var settings: GameSettingsStore
     @StateObject private var viewModel = QuizRushVM()
+    @State private var options = QuizRushOptions()
+    @State private var didLoadDefaults = false
 
     var body: some View {
         ZStack {
             PlayHubScreenBackground()
 
-            VStack(spacing: 18) {
-                header
+            ScrollView {
+                VStack(spacing: 18) {
+                    customizePanel
+                    header
 
-                switch viewModel.phase {
-                case .idle, .loading:
-                    loadingView
-                case .failed(let message):
-                    failureView(message)
-                case .loaded:
-                    quizContent
-                case .finished:
-                    resultView
+                    switch viewModel.phase {
+                    case .idle:
+                        startView
+                    case .loading:
+                        loadingView
+                    case .failed(let message):
+                        failureView(message)
+                    case .loaded:
+                        quizContent
+                    case .finished:
+                        resultView
+                    }
                 }
+                .padding(20)
             }
-            .padding(20)
         }
         .navigationTitle("Quiz Rush")
         .navigationBarTitleDisplayMode(.inline)
         .task {
+            loadDefaultsIfNeeded()
             LocationService.shared.refreshLocation()
-            await viewModel.loadIfNeeded()
+            await viewModel.loadCategories()
         }
     }
 
@@ -40,9 +49,94 @@ struct QuizRushView: View {
             }
 
             HStack(spacing: 10) {
-                ScoreBadge(title: "Best", value: "\(store.bestScore(for: .quizRush))", symbol: "crown.fill", tint: PlayHubTheme.gold)
+                ScoreBadge(title: "Best", value: "\(store.bestScore(for: .quizRush, variantID: currentVariantID))", symbol: "crown.fill", tint: PlayHubTheme.gold)
                 ScoreBadge(title: "Progress", value: viewModel.progressLabel, symbol: "list.number", tint: PlayHubTheme.sky)
             }
+
+            if options.timedQuestions || viewModel.timeRemaining > 0 {
+                ScoreBadge(title: "Timer", value: viewModel.timeRemaining > 0 ? "\(viewModel.timeRemaining)s" : "\(options.secondsPerQuestion)s", symbol: "timer", tint: PlayHubTheme.mint)
+            }
+        }
+    }
+
+    private var customizePanel: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Label("Customize", systemImage: "slider.horizontal.3")
+                    .font(.headline.bold())
+                    .foregroundStyle(PlayHubTheme.ink)
+                Spacer()
+                Text(currentVariantLabel)
+                    .font(.caption.bold())
+                    .foregroundStyle(PlayHubTheme.mutedInk)
+                    .lineLimit(2)
+                    .multilineTextAlignment(.trailing)
+            }
+
+            Picker("Questions", selection: questionCountBinding) {
+                ForEach(GameSettingsStore.allowedQuestionCounts, id: \.self) { count in
+                    Text("\(count)").tag(count)
+                }
+            }
+            .pickerStyle(.segmented)
+
+            Picker("Difficulty", selection: difficultyBinding) {
+                ForEach(QuizDifficulty.allCases) { difficulty in
+                    Text(difficulty.displayName).tag(difficulty)
+                }
+            }
+            .pickerStyle(.segmented)
+
+            Picker("Category", selection: categoryBinding) {
+                ForEach(availableCategories) { category in
+                    Text(category.name).tag(category.id)
+                }
+            }
+            .pickerStyle(.menu)
+
+            Toggle("Timed Questions", isOn: timedQuestionsBinding)
+                .tint(PlayHubTheme.mint)
+
+            if options.timedQuestions {
+                Stepper("Time \(options.secondsPerQuestion)s", value: secondsPerQuestionBinding, in: 5...30, step: 5)
+            }
+
+            Toggle("Streak Bonus", isOn: streakBonusBinding)
+                .tint(PlayHubTheme.orange)
+        }
+        .font(.subheadline)
+        .padding(14)
+        .background {
+            Image(GameArt.panelBlank)
+                .resizable(capInsets: EdgeInsets(top: 120, leading: 130, bottom: 130, trailing: 130), resizingMode: .stretch)
+        }
+        .disabled(isRoundActive)
+        .opacity(isRoundActive ? 0.68 : 1)
+    }
+
+    private var startView: some View {
+        VStack(spacing: 16) {
+            Image(systemName: "questionmark.bubble.fill")
+                .font(.system(size: 54, weight: .black))
+                .foregroundStyle(PlayHubTheme.berry)
+
+            Text("Ready for \(options.variantLabel)")
+                .font(.title2.bold())
+                .foregroundStyle(PlayHubTheme.ink)
+                .multilineTextAlignment(.center)
+
+            Button {
+                Task { await viewModel.load(options: options) }
+            } label: {
+                Label("Start Quiz", systemImage: "play.fill")
+            }
+            .buttonStyle(PlayHubPrimaryButtonStyle(tint: PlayHubTheme.berry))
+        }
+        .frame(maxWidth: .infinity)
+        .padding(24)
+        .background {
+            Image(GameArt.panelBlank)
+                .resizable(capInsets: EdgeInsets(top: 120, leading: 130, bottom: 130, trailing: 130), resizingMode: .stretch)
         }
     }
 
@@ -55,9 +149,12 @@ struct QuizRushView: View {
                 .font(.headline)
                 .foregroundStyle(PlayHubTheme.ink)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .frame(maxWidth: .infinity)
         .padding(30)
-        .background(Color.white.opacity(0.80), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+        .background {
+            Image(GameArt.panelBlank)
+                .resizable(capInsets: EdgeInsets(top: 120, leading: 130, bottom: 130, trailing: 130), resizingMode: .stretch)
+        }
     }
 
     private func failureView(_ message: String) -> some View {
@@ -76,21 +173,24 @@ struct QuizRushView: View {
                 .multilineTextAlignment(.center)
 
             Button {
-                Task { await viewModel.load() }
+                Task { await viewModel.load(options: options) }
             } label: {
                 Label("Retry", systemImage: "arrow.clockwise")
             }
             .buttonStyle(PlayHubPrimaryButtonStyle(tint: PlayHubTheme.berry))
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .frame(maxWidth: .infinity)
         .padding(24)
-        .background(Color.white.opacity(0.86), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+        .background {
+            Image(GameArt.panelBlank)
+                .resizable(capInsets: EdgeInsets(top: 120, leading: 130, bottom: 130, trailing: 130), resizingMode: .stretch)
+        }
     }
 
     private var quizContent: some View {
         VStack(spacing: 16) {
-            if viewModel.usingFallbackQuestions {
-                Label("Offline question set", systemImage: "wifi.slash")
+            if let sourceNote = viewModel.sourceNote {
+                Label(sourceNote, systemImage: viewModel.usingFallbackQuestions ? "wifi.slash" : "line.3.horizontal.decrease.circle")
                     .font(.caption.bold())
                     .foregroundStyle(PlayHubTheme.mutedInk)
                     .padding(.horizontal, 12)
@@ -98,9 +198,15 @@ struct QuizRushView: View {
                     .background(Color.white.opacity(0.86), in: Capsule())
             }
 
+            Label(viewModel.activeFilterLabel, systemImage: "tag.fill")
+                .font(.caption.bold())
+                .foregroundStyle(PlayHubTheme.berry)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .background(Color.white.opacity(0.86), in: Capsule())
+
             if let question = viewModel.currentQuestion {
-                ProgressView(value: Double(viewModel.currentIndex + 1), total: Double(max(viewModel.questions.count, 1)))
-                    .tint(PlayHubTheme.berry)
+                GameArtProgressBar(value: Double(viewModel.currentIndex + 1), total: Double(max(viewModel.questions.count, 1)))
 
                 VStack(alignment: .leading, spacing: 12) {
                     HStack {
@@ -121,7 +227,10 @@ struct QuizRushView: View {
                 }
                 .padding(18)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Color.white.opacity(0.92), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+                .background {
+                    Image(GameArt.panelBlank)
+                        .resizable(capInsets: EdgeInsets(top: 120, leading: 130, bottom: 130, trailing: 130), resizingMode: .stretch)
+                }
 
                 VStack(spacing: 10) {
                     ForEach(question.choices, id: \.self) { choice in
@@ -139,11 +248,11 @@ struct QuizRushView: View {
                             }
                             .foregroundStyle(answerForeground(for: choice, question: question))
                             .padding(14)
-                            .background(answerBackground(for: choice, question: question), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                    .stroke(Color.black.opacity(0.08), lineWidth: 1)
-                            )
+                            .background {
+                                Image(choice == question.correctAnswer && viewModel.selectedAnswer != nil ? GameArt.buttonGreen : GameArt.buttonOrange)
+                                    .resizable(capInsets: EdgeInsets(top: 28, leading: 42, bottom: 28, trailing: 42), resizingMode: .stretch)
+                                    .opacity(viewModel.selectedAnswer == nil ? 0.92 : 1)
+                            }
                         }
                         .buttonStyle(.plain)
                         .disabled(viewModel.selectedAnswer != nil)
@@ -158,24 +267,107 @@ struct QuizRushView: View {
         ResultView(
             mode: .quizRush,
             score: viewModel.score,
-            bestScore: store.bestScore(for: .quizRush),
+            bestScore: store.bestScore(for: .quizRush, variantID: viewModel.scoreVariantID),
+            variantLabel: viewModel.scoreVariantLabel,
             onPlayAgain: {
-                Task { await viewModel.load() }
+                Task { await viewModel.load(options: options) }
             }
         )
     }
 
-    private func answerBackground(for choice: String, question: TriviaQuestion) -> Color {
-        guard let selected = viewModel.selectedAnswer else { return Color.white.opacity(0.92) }
-        if choice == question.correctAnswer { return PlayHubTheme.mint }
-        if choice == selected { return PlayHubTheme.berry }
-        return Color.white.opacity(0.70)
+    private var availableCategories: [TriviaCategory] {
+        var categories = viewModel.categories
+        if let selectedID = options.categoryID,
+           !categories.contains(where: { $0.id == selectedID }) {
+            categories.append(TriviaCategory(id: selectedID, name: options.categoryName))
+        }
+        return categories
+    }
+
+    private var isRoundActive: Bool {
+        viewModel.phase == .loading || viewModel.phase == .loaded
+    }
+
+    private var currentVariantID: String {
+        switch viewModel.phase {
+        case .loaded, .finished:
+            return viewModel.scoreVariantID
+        default:
+            return options.variantID
+        }
+    }
+
+    private var currentVariantLabel: String {
+        switch viewModel.phase {
+        case .loaded, .finished:
+            return viewModel.scoreVariantLabel
+        default:
+            return options.variantLabel
+        }
+    }
+
+    private var questionCountBinding: Binding<Int> {
+        Binding(
+            get: { options.questionCount },
+            set: { value in options.questionCount = value }
+        )
+    }
+
+    private var difficultyBinding: Binding<QuizDifficulty> {
+        Binding(
+            get: { options.difficulty },
+            set: { value in options.difficulty = value }
+        )
+    }
+
+    private var categoryBinding: Binding<Int> {
+        Binding(
+            get: { options.categoryID ?? TriviaCategory.anyID },
+            set: { selectedID in
+                if selectedID == TriviaCategory.anyID {
+                    options.categoryID = nil
+                    options.categoryName = TriviaCategory.any.name
+                    return
+                }
+
+                guard let category = availableCategories.first(where: { $0.id == selectedID }) else { return }
+                options.categoryID = category.id
+                options.categoryName = category.name
+            }
+        )
+    }
+
+    private var timedQuestionsBinding: Binding<Bool> {
+        Binding(
+            get: { options.timedQuestions },
+            set: { value in options.timedQuestions = value }
+        )
+    }
+
+    private var secondsPerQuestionBinding: Binding<Int> {
+        Binding(
+            get: { options.secondsPerQuestion },
+            set: { value in options.secondsPerQuestion = value }
+        )
+    }
+
+    private var streakBonusBinding: Binding<Bool> {
+        Binding(
+            get: { options.streakBonusEnabled },
+            set: { value in options.streakBonusEnabled = value }
+        )
+    }
+
+    private func loadDefaultsIfNeeded() {
+        guard !didLoadDefaults else { return }
+        didLoadDefaults = true
+        options = settings.defaultQuizOptions
     }
 
     private func answerForeground(for choice: String, question: TriviaQuestion) -> Color {
-        guard viewModel.selectedAnswer != nil else { return PlayHubTheme.ink }
+        guard viewModel.selectedAnswer != nil else { return .white }
         if choice == question.correctAnswer || choice == viewModel.selectedAnswer { return .white }
-        return PlayHubTheme.mutedInk
+        return .white.opacity(0.70)
     }
 
     private func answerSymbol(for choice: String, question: TriviaQuestion) -> String {
@@ -189,4 +381,5 @@ struct QuizRushView: View {
 #Preview {
     NavigationStack { QuizRushView() }
         .environmentObject(GameSessionStore.shared)
+        .environmentObject(GameSettingsStore.shared)
 }

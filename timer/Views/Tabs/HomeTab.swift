@@ -1,65 +1,146 @@
 import SwiftUI
 
 struct HomeTab: View {
+    @EnvironmentObject private var store: GameSessionStore
     private let games = GameMode.allCases
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 28) {
-                hero
-                gameGrid
+        ZStack {
+            PlayHubScreenBackground()
+
+            ScrollView {
+                VStack(spacing: 20) {
+                    topHud
+                    logo
+                    quickPlay
+                    gameLauncher
+                }
+                .padding(.horizontal, 20)
+                .padding(.vertical, 18)
             }
-            .padding(.horizontal, 20)
-            .padding(.vertical, 18)
         }
-        .background(PlayHubScreenBackground())
-        .navigationTitle("Home")
+        .navigationTitle("")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar(.hidden, for: .navigationBar)
     }
 
-    private var hero: some View {
-        VStack(alignment: .leading, spacing: 18) {
-            PlayHubHeroCollage()
-                .frame(height: 210)
-                .accessibilityHidden(true)
-
-            VStack(alignment: .leading, spacing: 8) {
-                Text("PlayHub")
-                    .font(.system(size: 42, weight: .black, design: .rounded))
-                    .foregroundStyle(PlayHubTheme.ink)
-                    .minimumScaleFactor(0.75)
-
-                Text("Three quick-play SwiftUI challenges with sessions, stats, maps, reminders, and score sharing.")
-                    .font(.body)
-                    .foregroundStyle(PlayHubTheme.mutedInk)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-
+    private var topHud: some View {
+        HStack(spacing: 10) {
+            hudPill(icon: GameArt.coinIcon, value: "\(totalScore)")
+            hudPill(icon: GameArt.gemsIcon, value: "\(store.sessions.count)", background: GameArt.gemsBar)
+            Spacer()
             NavigationLink {
-                TapFrenzyView()
+                SettingsTab()
             } label: {
-                Label("Start Tap Frenzy", systemImage: "play.fill")
+                Image(GameArt.settings)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 54, height: 54)
             }
-            .buttonStyle(PlayHubPrimaryButtonStyle())
+            .buttonStyle(.plain)
+            .accessibilityLabel("Settings")
         }
     }
 
-    private var gameGrid: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            Text("Games")
-                .font(.title2.bold())
-                .foregroundStyle(PlayHubTheme.ink)
+    private var logo: some View {
+        Image(GameArt.logo)
+            .resizable()
+            .scaledToFit()
+            .frame(maxWidth: 360)
+            .padding(.top, 6)
+            .shadow(color: Color.black.opacity(0.35), radius: 16, x: 0, y: 8)
+            .accessibilityLabel("Cats Defender Arcade logo")
+    }
 
-            LazyVGrid(columns: [GridItem(.flexible(), spacing: 14), GridItem(.flexible(), spacing: 14)], spacing: 14) {
+    private var quickPlay: some View {
+        NavigationLink {
+            TapFrenzyView()
+        } label: {
+            Label("Play Now", systemImage: "play.fill")
+        }
+        .buttonStyle(PlayHubPrimaryButtonStyle())
+        .padding(.horizontal, 18)
+    }
+
+    private var gameLauncher: some View {
+        GameArtPanel(contentInsets: EdgeInsets(top: 22, leading: 18, bottom: 24, trailing: 18)) {
+            VStack(spacing: 14) {
+                GameArtTitle(text: "Game Modes")
+
                 ForEach(games) { game in
                     NavigationLink {
                         destination(for: game)
                     } label: {
-                        GameCard(game: game)
+                        HStack(spacing: 12) {
+                            Image(systemName: game.symbolName)
+                                .font(.system(size: 24, weight: .black))
+                                .foregroundStyle(.white)
+                                .frame(width: 48, height: 48)
+                                .background(PlayHubTheme.tint(for: game), in: Circle())
+                                .overlay(Circle().stroke(Color.white.opacity(0.65), lineWidth: 3))
+
+                            VStack(alignment: .leading, spacing: 3) {
+                                Text(game.displayName)
+                                    .font(.system(size: 20, weight: .black, design: .rounded))
+                                    .foregroundStyle(PlayHubTheme.ink)
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.72)
+
+                                Text(game.subtitle)
+                                    .font(.system(size: 13, weight: .bold, design: .rounded))
+                                    .foregroundStyle(PlayHubTheme.mutedInk)
+                                    .lineLimit(2)
+                            }
+
+                            Spacer()
+
+                            Text("\(store.bestScore(for: game))")
+                                .font(.system(size: 20, weight: .black, design: .rounded).monospacedDigit())
+                                .foregroundStyle(.white)
+                                .gameTextShadow()
+                                .frame(width: 76, height: 46)
+                                .background {
+                                    Image(GameArt.coinBar)
+                                        .resizable(capInsets: EdgeInsets(top: 18, leading: 42, bottom: 18, trailing: 42), resizingMode: .stretch)
+                                }
+                        }
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 10)
+                        .background {
+                            Image(GameArt.buttonOrange)
+                                .resizable(capInsets: EdgeInsets(top: 28, leading: 42, bottom: 28, trailing: 42), resizingMode: .stretch)
+                                .opacity(0.94)
+                        }
                     }
                     .buttonStyle(.plain)
                 }
             }
         }
+    }
+
+    private func hudPill(icon: String, value: String, background: String = GameArt.coinBar) -> some View {
+        HStack(spacing: 6) {
+            Image(icon)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 30, height: 30)
+
+            Text(value)
+                .font(.system(size: 17, weight: .black, design: .rounded).monospacedDigit())
+                .foregroundStyle(.white)
+                .gameTextShadow()
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+        }
+        .frame(width: 132, height: 46)
+        .background {
+            Image(background)
+                .resizable(capInsets: EdgeInsets(top: 18, leading: 42, bottom: 18, trailing: 42), resizingMode: .stretch)
+        }
+    }
+
+    private var totalScore: Int {
+        store.sessions.reduce(0) { $0 + $1.score }
     }
 
     @ViewBuilder
@@ -75,89 +156,9 @@ struct HomeTab: View {
     }
 }
 
-private struct PlayHubHeroCollage: View {
-    var body: some View {
-        HStack(alignment: .bottom, spacing: 12) {
-            VStack(spacing: 12) {
-                collageTile(symbol: "hand.tap.fill", title: "Tap", tint: PlayHubTheme.orange, height: 92)
-                collageTile(symbol: "bolt.fill", title: "Light", tint: PlayHubTheme.sky, height: 82)
-            }
-
-            VStack(spacing: 12) {
-                collageTile(symbol: "chart.bar.fill", title: "Stats", tint: PlayHubTheme.gold, height: 126)
-                collageTile(symbol: "map.fill", title: "Map", tint: PlayHubTheme.berry, height: 58)
-            }
-        }
-    }
-
-    private func collageTile(symbol: String, title: String, tint: Color, height: CGFloat) -> some View {
-        ZStack(alignment: .bottomLeading) {
-            RoundedRectangle(cornerRadius: 8, style: .continuous)
-                .fill(
-                    LinearGradient(
-                        colors: [tint, tint.opacity(0.68)],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
-
-            Image(systemName: symbol)
-                .font(.system(size: height * 0.38, weight: .black))
-                .foregroundStyle(.white.opacity(0.92))
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-
-            Text(title)
-                .font(.headline.bold())
-                .foregroundStyle(.white)
-                .padding(12)
-        }
-        .frame(maxWidth: .infinity)
-        .frame(height: height)
-        .shadow(color: tint.opacity(0.24), radius: 12, x: 0, y: 8)
-    }
-}
-
-private struct GameCard: View {
-    let game: GameMode
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            Image(systemName: game.symbolName)
-                .font(.system(size: 38, weight: .bold))
-                .foregroundStyle(.white)
-                .frame(width: 72, height: 72)
-                .background(Color.white.opacity(0.20), in: Circle())
-
-            Spacer(minLength: 18)
-
-            VStack(alignment: .leading, spacing: 4) {
-                Text(game.displayName)
-                    .font(.headline.bold())
-                    .foregroundStyle(.white)
-                    .lineLimit(2)
-                    .minimumScaleFactor(0.84)
-
-                Text(game.subtitle)
-                    .font(.caption)
-                    .foregroundStyle(.white.opacity(0.82))
-                    .lineLimit(2)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-        }
-        .frame(maxWidth: .infinity, minHeight: 178, alignment: .leading)
-        .padding(14)
-        .background(PlayHubTheme.gradient(for: game), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
-        .overlay(alignment: .topTrailing) {
-            Image(systemName: "chevron.right.circle.fill")
-                .font(.title3)
-                .foregroundStyle(.white.opacity(0.86))
-                .padding(12)
-        }
-        .shadow(color: Color.black.opacity(0.10), radius: 12, x: 0, y: 8)
-        .accessibilityElement(children: .combine)
-    }
-}
-
 #Preview {
     NavigationStack { HomeTab() }
+        .environmentObject(GameSessionStore.shared)
+        .environmentObject(GameSettingsStore.shared)
+        .environmentObject(LocationService.shared)
 }
