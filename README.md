@@ -1,6 +1,6 @@
 # PlayHub
 
-PlayHub is a Week 4 iOS app development assignment project built with SwiftUI. It wraps three mini games inside an asset-backed game shell with Home, Stats, Map, Settings, score sharing, local reminders, and JSON persistence.
+PlayHub is a Week 4 iOS app development assignment project built with SwiftUI. It wraps three mini games inside a native SwiftUI game shell with Home, Stats, Map, Settings, score sharing, local reminders, and JSON persistence.
 
 ## Architecture Overview
 
@@ -17,6 +17,7 @@ Each completed game writes one `GameSession` to `UserDefaults` as encoded JSON. 
 ## Features
 
 - Four-tab SwiftUI game shell: Home, Stats, Map, and Settings.
+- Native SwiftUI backgrounds, cards, controls, and consistently sized SF Symbols for game actions.
 - Three game modes: Tap Frenzy, Light It Up, and Quiz Rush.
 - Stats tab with totals, best scores, recent games, and a Swift Charts bar chart.
 - Map tab using MapKit markers for completed sessions with real saved coordinates.
