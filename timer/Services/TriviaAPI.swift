@@ -109,7 +109,7 @@ struct TriviaAPI {
         TriviaQuestion(
             category: "Computing",
             difficulty: "medium",
-            prompt: "Which data format does Cats Defender use to persist completed sessions in UserDefaults?",
+            prompt: "Which data format does PlayHub use to persist completed sessions in UserDefaults?",
             correctAnswer: "JSON",
             choices: ["JSON", "CSV", "YAML", "XML"].shuffled()
         ),
@@ -130,7 +130,7 @@ struct TriviaAPI {
         TriviaQuestion(
             category: "Stats",
             difficulty: "medium",
-            prompt: "Which Charts mark is used by Cats Defender for vertical score bars?",
+            prompt: "Which Charts mark is used by PlayHub for vertical score bars?",
             correctAnswer: "BarMark",
             choices: ["BarMark", "PointMark", "RuleMark", "AreaMark"].shuffled()
         ),

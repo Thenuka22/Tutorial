@@ -49,7 +49,7 @@ struct HomeTab: View {
             .frame(maxWidth: 360)
             .padding(.top, 6)
             .shadow(color: Color.black.opacity(0.35), radius: 16, x: 0, y: 8)
-            .accessibilityLabel("Cats Defender Arcade logo")
+            .accessibilityLabel("PlayHub logo")
     }
 
     private var quickPlay: some View {

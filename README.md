@@ -1,6 +1,6 @@
-# Cats Defender Arcade
+# PlayHub
 
-Cats Defender Arcade is a Week 4 iOS app development assignment project built with SwiftUI. It wraps three mini games inside an asset-backed game shell with Home, Stats, Map, Settings, score sharing, local reminders, and JSON persistence.
+PlayHub is a Week 4 iOS app development assignment project built with SwiftUI. It wraps three mini games inside an asset-backed game shell with Home, Stats, Map, Settings, score sharing, local reminders, and JSON persistence.
 
 ## Architecture Overview
 
