@@ -107,10 +107,12 @@ struct MapTab: View {
 
     private func selectedPinCard(_ pin: SessionMapPin) -> some View {
         HStack(spacing: 12) {
-            Image(systemName: pin.session.mode.symbolName)
-                .foregroundStyle(.white)
-                .frame(width: 44, height: 44)
-                .background(PlayHubTheme.tint(for: pin.session.mode), in: Circle())
+            PlayHubSymbolIcon(
+                systemName: pin.session.mode.symbolName,
+                tint: PlayHubTheme.tint(for: pin.session.mode),
+                size: 44,
+                symbolSize: 19
+            )
 
             VStack(alignment: .leading, spacing: 3) {
                 Text(pin.session.mode.displayName)

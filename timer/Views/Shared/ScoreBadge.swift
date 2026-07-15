@@ -7,37 +7,33 @@ struct ScoreBadge: View {
     var tint: Color = PlayHubTheme.orange
 
     var body: some View {
-        HStack(spacing: 8) {
-            Image(systemName: symbol)
-                .font(.system(size: 16, weight: .black))
-                .foregroundStyle(.white)
-                .frame(width: 28, height: 28)
-                .background(tint, in: Circle())
-                .overlay(Circle().stroke(Color.white.opacity(0.55), lineWidth: 2))
+        VStack(spacing: 4) {
+            HStack(spacing: 5) {
+                PlayHubSymbolIcon(
+                    systemName: symbol,
+                    tint: tint,
+                    size: 28,
+                    symbolSize: 13
+                )
 
-            VStack(alignment: .leading, spacing: 0) {
                 Text(title.uppercased())
-                    .font(.system(size: 9, weight: .black, design: .rounded))
+                    .font(.caption2.weight(.semibold))
                     .foregroundStyle(PlayHubTheme.mutedInk)
                     .lineLimit(1)
-                    .minimumScaleFactor(0.65)
-
-                Text(value)
-                    .font(.system(size: 17, weight: .black, design: .rounded).monospacedDigit())
-                    .foregroundStyle(.white)
-                    .gameTextShadow()
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.62)
+                    .minimumScaleFactor(0.68)
             }
 
-            Spacer(minLength: 0)
+            Text(value)
+                .font(.headline.weight(.bold).monospacedDigit())
+                .foregroundStyle(PlayHubTheme.ink)
+                .lineLimit(1)
+                .minimumScaleFactor(0.68)
         }
         .frame(maxWidth: .infinity)
-        .frame(height: 58)
-        .padding(.horizontal, 10)
-        .background {
-            Image(GameArt.coinBar)
-                .resizable(capInsets: EdgeInsets(top: 18, leading: 42, bottom: 18, trailing: 42), resizingMode: .stretch)
-        }
+        .frame(minHeight: 68)
+        .padding(.horizontal, 8)
+        .padding(.vertical, 6)
+        .background(PlayHubPanelBackground(cornerRadius: 18))
+        .accessibilityElement(children: .combine)
     }
 }

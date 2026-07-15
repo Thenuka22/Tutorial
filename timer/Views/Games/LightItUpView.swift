@@ -110,10 +110,11 @@ struct LightItUpView: View {
                     .frame(height: 90)
                     .overlay {
                         if card.isLit {
-                            Image(GameArt.medal)
-                                .resizable()
-                                .scaledToFit()
-                                .padding(18)
+                            Image(systemName: "bolt.fill")
+                                .symbolRenderingMode(.hierarchical)
+                                .font(.system(size: 34, weight: .semibold))
+                                .foregroundStyle(.white)
+                                .frame(width: 44, height: 44, alignment: .center)
                         }
                     }
                     .overlay(

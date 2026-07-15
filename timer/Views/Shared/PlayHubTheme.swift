@@ -86,6 +86,23 @@ struct PlayHubPanelBackground: View {
     }
 }
 
+struct PlayHubSymbolIcon: View {
+    let systemName: String
+    let tint: Color
+    var size: CGFloat = 52
+    var symbolSize: CGFloat = 22
+
+    var body: some View {
+        Image(systemName: systemName)
+            .symbolRenderingMode(.hierarchical)
+            .font(.system(size: symbolSize, weight: .semibold))
+            .foregroundStyle(tint)
+            .frame(width: size, height: size, alignment: .center)
+            .background(tint.opacity(0.14), in: RoundedRectangle(cornerRadius: size * 0.30, style: .continuous))
+            .accessibilityHidden(true)
+    }
+}
+
 struct PlayHubPrimaryButtonStyle: ButtonStyle {
     var tint: Color = PlayHubTheme.orange
 

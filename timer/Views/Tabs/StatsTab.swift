@@ -64,11 +64,12 @@ struct StatsTab: View {
 
             ForEach(viewModel.modeStats) { stat in
                 HStack(spacing: 12) {
-                    Image(systemName: stat.mode.symbolName)
-                        .font(.headline)
-                        .foregroundStyle(.white)
-                        .frame(width: 42, height: 42)
-                        .background(PlayHubTheme.tint(for: stat.mode), in: Circle())
+                    PlayHubSymbolIcon(
+                        systemName: stat.mode.symbolName,
+                        tint: PlayHubTheme.tint(for: stat.mode),
+                        size: 42,
+                        symbolSize: 18
+                    )
 
                     VStack(alignment: .leading, spacing: 3) {
                         Text(stat.mode.displayName)
@@ -102,11 +103,12 @@ struct StatsTab: View {
             } else {
                 ForEach(viewModel.variantStats) { stat in
                     HStack(spacing: 12) {
-                        Image(systemName: stat.mode.symbolName)
-                            .font(.headline)
-                            .foregroundStyle(.white)
-                            .frame(width: 42, height: 42)
-                            .background(PlayHubTheme.tint(for: stat.mode), in: Circle())
+                        PlayHubSymbolIcon(
+                            systemName: stat.mode.symbolName,
+                            tint: PlayHubTheme.tint(for: stat.mode),
+                            size: 42,
+                            symbolSize: 18
+                        )
 
                         VStack(alignment: .leading, spacing: 3) {
                             Text(stat.mode.displayName)
@@ -142,10 +144,12 @@ struct StatsTab: View {
             } else {
                 ForEach(viewModel.recentSessions) { session in
                     HStack(spacing: 12) {
-                        Image(systemName: session.mode.symbolName)
-                            .foregroundStyle(.white)
-                            .frame(width: 40, height: 40)
-                            .background(PlayHubTheme.tint(for: session.mode), in: Circle())
+                        PlayHubSymbolIcon(
+                            systemName: session.mode.symbolName,
+                            tint: PlayHubTheme.tint(for: session.mode),
+                            size: 42,
+                            symbolSize: 18
+                        )
 
                         VStack(alignment: .leading, spacing: 3) {
                             Text(session.mode.displayName)

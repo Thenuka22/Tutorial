@@ -224,20 +224,22 @@ struct QuizRushView: View {
                         } label: {
                             HStack(spacing: 12) {
                                 Image(systemName: answerSymbol(for: choice, question: question))
-                                    .frame(width: 24)
+                                    .symbolRenderingMode(.hierarchical)
+                                    .font(.title3.weight(.semibold))
+                                    .frame(width: 28, height: 28, alignment: .center)
                                 Text(choice)
                                     .font(.headline)
                                     .multilineTextAlignment(.leading)
                                     .fixedSize(horizontal: false, vertical: true)
                                 Spacer()
                             }
-                            .foregroundStyle(answerForeground(for: choice, question: question))
+                            .foregroundStyle(.white)
                             .padding(14)
-                            .background {
-                                Image(choice == question.correctAnswer && viewModel.selectedAnswer != nil ? GameArt.buttonGreen : GameArt.buttonOrange)
-                                    .resizable(capInsets: EdgeInsets(top: 28, leading: 42, bottom: 28, trailing: 42), resizingMode: .stretch)
-                                    .opacity(viewModel.selectedAnswer == nil ? 0.92 : 1)
-                            }
+                            .background(
+                                answerTint(for: choice, question: question),
+                                in: RoundedRectangle(cornerRadius: 16, style: .continuous)
+                            )
+                            .opacity(answerOpacity(for: choice, question: question))
                         }
                         .buttonStyle(.plain)
                         .disabled(viewModel.selectedAnswer != nil)
@@ -349,10 +351,16 @@ struct QuizRushView: View {
         options = settings.defaultQuizOptions
     }
 
-    private func answerForeground(for choice: String, question: TriviaQuestion) -> Color {
-        guard viewModel.selectedAnswer != nil else { return .white }
-        if choice == question.correctAnswer || choice == viewModel.selectedAnswer { return .white }
-        return .white.opacity(0.70)
+    private func answerTint(for choice: String, question: TriviaQuestion) -> Color {
+        guard let selected = viewModel.selectedAnswer else { return PlayHubTheme.berry }
+        if choice == question.correctAnswer { return PlayHubTheme.mint }
+        if choice == selected { return PlayHubTheme.berry }
+        return PlayHubTheme.sky
+    }
+
+    private func answerOpacity(for choice: String, question: TriviaQuestion) -> Double {
+        guard let selected = viewModel.selectedAnswer else { return 1 }
+        return choice == question.correctAnswer || choice == selected ? 1 : 0.45
     }
 
     private func answerSymbol(for choice: String, question: TriviaQuestion) -> String {

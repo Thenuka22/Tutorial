@@ -16,66 +16,83 @@ struct ResultView: View {
         "I just scored \(score) on \(displayTitle) - beat that"
     }
 
+    private var isBestScore: Bool {
+        score >= bestScore
+    }
+
     var body: some View {
-        ZStack {
-            Image(GameArt.winPopup)
-                .resizable(capInsets: EdgeInsets(top: 170, leading: 210, bottom: 180, trailing: 210), resizingMode: .stretch)
+        VStack(spacing: 18) {
+            PlayHubSymbolIcon(
+                systemName: mode.symbolName,
+                tint: PlayHubTheme.tint(for: mode),
+                size: 72,
+                symbolSize: 30
+            )
 
-            VStack(spacing: 12) {
-                Spacer(minLength: 54)
-
-                Text(displayTitle)
-                    .font(.system(size: 26, weight: .black, design: .rounded))
-                    .foregroundStyle(.white)
-                    .gameTextShadow()
-                    .multilineTextAlignment(.center)
-                    .minimumScaleFactor(0.62)
-                    .padding(.horizontal, 56)
-
-                HStack(spacing: 10) {
-                    Image(GameArt.starGold)
-                        .resizable()
-                        .scaledToFit()
-                    Image(GameArt.starGold)
-                        .resizable()
-                        .scaledToFit()
-                    Image(bestScore > score ? GameArt.starBlue : GameArt.starGold)
-                        .resizable()
-                        .scaledToFit()
-                }
-                .frame(height: 40)
-
-                Text("Score \(score)")
-                    .font(.system(size: 32, weight: .black, design: .rounded).monospacedDigit())
-                    .foregroundStyle(.white)
-                    .gameTextShadow()
-                    .padding(.horizontal, 18)
-                    .padding(.vertical, 8)
-                    .background(PlayHubTheme.orange, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
-
-                Text("Best \(bestScore)")
-                    .font(.system(size: 17, weight: .black, design: .rounded).monospacedDigit())
+            VStack(spacing: 6) {
+                Text(isBestScore ? "New Best" : "Round Complete")
+                    .font(.title2.weight(.bold))
                     .foregroundStyle(PlayHubTheme.ink)
 
-                HStack(spacing: 12) {
-                    ShareLink(item: shareText) {
-                        Label("Share", systemImage: "square.and.arrow.up")
-                    }
-                    .buttonStyle(PlayHubSecondaryButtonStyle())
+                Text(displayTitle)
+                    .font(.subheadline.weight(.medium))
+                    .foregroundStyle(PlayHubTheme.mutedInk)
+                    .multilineTextAlignment(.center)
+            }
 
-                    Button(action: onPlayAgain) {
-                        Label("Play Again", systemImage: "play.fill")
-                    }
-                    .buttonStyle(PlayHubPrimaryButtonStyle(tint: PlayHubTheme.tint(for: mode)))
+            HStack(spacing: 8) {
+                ForEach(0..<3, id: \.self) { index in
+                    Image(systemName: index == 2 && !isBestScore ? "star" : "star.fill")
+                        .symbolRenderingMode(.hierarchical)
+                        .font(.title2.weight(.semibold))
+                        .foregroundStyle(index == 2 && !isBestScore ? PlayHubTheme.mutedInk : PlayHubTheme.gold)
+                        .frame(width: 32, height: 32, alignment: .center)
                 }
-                .padding(.horizontal, 42)
+            }
+            .accessibilityHidden(true)
 
-                Spacer(minLength: 22)
+            VStack(spacing: 4) {
+                Text("\(score)")
+                    .font(.system(.largeTitle, design: .rounded, weight: .bold).monospacedDigit())
+                    .foregroundStyle(PlayHubTheme.tint(for: mode))
+                Text("Best \(bestScore)")
+                    .font(.subheadline.weight(.semibold).monospacedDigit())
+                    .foregroundStyle(PlayHubTheme.mutedInk)
+            }
+
+            actionButtons
+        }
+        .padding(24)
+        .frame(maxWidth: 560)
+        .background(PlayHubPanelBackground(cornerRadius: 28))
+        .padding(24)
+    }
+
+    private var actionButtons: some View {
+        ViewThatFits(in: .horizontal) {
+            HStack(spacing: 12) {
+                shareButton
+                playAgainButton
+            }
+
+            VStack(spacing: 12) {
+                playAgainButton
+                shareButton
             }
         }
-        .frame(maxWidth: 620)
-        .frame(minHeight: 390)
-        .padding(24)
-        .accessibilityElement(children: .combine)
+    }
+
+    private var shareButton: some View {
+        ShareLink(item: shareText) {
+            Label("Share", systemImage: "square.and.arrow.up")
+        }
+        .buttonStyle(PlayHubSecondaryButtonStyle())
+    }
+
+    private var playAgainButton: some View {
+        Button(action: onPlayAgain) {
+            Label("Play Again", systemImage: "play.fill")
+        }
+        .buttonStyle(PlayHubPrimaryButtonStyle(tint: PlayHubTheme.tint(for: mode)))
     }
 }
