@@ -132,11 +132,7 @@ struct MapTab: View {
                 .foregroundStyle(PlayHubTheme.ink)
         }
         .padding(14)
-        .background {
-            Image(GameArt.panelBlank)
-                .resizable(capInsets: EdgeInsets(top: 120, leading: 130, bottom: 130, trailing: 130), resizingMode: .stretch)
-                .shadow(color: Color.black.opacity(0.18), radius: 14, x: 0, y: 8)
-        }
+        .background(PlayHubPanelBackground())
     }
 
     private func focusOnFirstPinIfNeeded() {

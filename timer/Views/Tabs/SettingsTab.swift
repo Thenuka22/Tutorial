@@ -217,9 +217,7 @@ struct SettingsTab: View {
     }
 
     private var panelBackground: some View {
-        Image(GameArt.panelBlank)
-            .resizable(capInsets: EdgeInsets(top: 120, leading: 130, bottom: 130, trailing: 130), resizingMode: .stretch)
-            .shadow(color: Color.black.opacity(0.22), radius: 14, x: 0, y: 8)
+        PlayHubPanelBackground()
     }
 
     private func artToggleButton(

@@ -106,10 +106,7 @@ struct QuizRushView: View {
         }
         .font(.subheadline)
         .padding(14)
-        .background {
-            Image(GameArt.panelBlank)
-                .resizable(capInsets: EdgeInsets(top: 120, leading: 130, bottom: 130, trailing: 130), resizingMode: .stretch)
-        }
+        .background(PlayHubPanelBackground())
         .disabled(isRoundActive)
         .opacity(isRoundActive ? 0.68 : 1)
     }
@@ -134,10 +131,7 @@ struct QuizRushView: View {
         }
         .frame(maxWidth: .infinity)
         .padding(24)
-        .background {
-            Image(GameArt.panelBlank)
-                .resizable(capInsets: EdgeInsets(top: 120, leading: 130, bottom: 130, trailing: 130), resizingMode: .stretch)
-        }
+        .background(PlayHubPanelBackground())
     }
 
     private var loadingView: some View {
@@ -151,10 +145,7 @@ struct QuizRushView: View {
         }
         .frame(maxWidth: .infinity)
         .padding(30)
-        .background {
-            Image(GameArt.panelBlank)
-                .resizable(capInsets: EdgeInsets(top: 120, leading: 130, bottom: 130, trailing: 130), resizingMode: .stretch)
-        }
+        .background(PlayHubPanelBackground())
     }
 
     private func failureView(_ message: String) -> some View {
@@ -181,10 +172,7 @@ struct QuizRushView: View {
         }
         .frame(maxWidth: .infinity)
         .padding(24)
-        .background {
-            Image(GameArt.panelBlank)
-                .resizable(capInsets: EdgeInsets(top: 120, leading: 130, bottom: 130, trailing: 130), resizingMode: .stretch)
-        }
+        .background(PlayHubPanelBackground())
     }
 
     private var quizContent: some View {
@@ -227,10 +215,7 @@ struct QuizRushView: View {
                 }
                 .padding(18)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background {
-                    Image(GameArt.panelBlank)
-                        .resizable(capInsets: EdgeInsets(top: 120, leading: 130, bottom: 130, trailing: 130), resizingMode: .stretch)
-                }
+                .background(PlayHubPanelBackground())
 
                 VStack(spacing: 10) {
                     ForEach(question.choices, id: \.self) { choice in

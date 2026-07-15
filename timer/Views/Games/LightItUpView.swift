@@ -97,10 +97,7 @@ struct LightItUpView: View {
         }
         .font(.subheadline)
         .padding(14)
-        .background {
-            Image(GameArt.panelBlank)
-                .resizable(capInsets: EdgeInsets(top: 120, leading: 130, bottom: 130, trailing: 130), resizingMode: .stretch)
-        }
+        .background(PlayHubPanelBackground())
         .disabled(viewModel.isRunning)
         .opacity(viewModel.isRunning ? 0.68 : 1)
     }
