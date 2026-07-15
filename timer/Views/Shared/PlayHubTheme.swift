@@ -1,10 +1,6 @@
 import SwiftUI
 
 enum GameArt {
-    static let logo = "GameLogo"
-    static let winPopup = "GameWinPopup"
-    static let buttonOrange = "GameButtonOrange"
-    static let buttonGreen = "GameButtonGreen"
     static let musicOn = "GameButtonMusic"
     static let musicOff = "GameButtonMusicOff"
     static let soundOn = "GameButtonSound"
@@ -12,13 +8,6 @@ enum GameArt {
     static let vibraOn = "GameButtonVibra"
     static let vibraOff = "GameButtonVibraOff"
     static let settings = "GameSettingsButton"
-    static let coinBar = "GameCoinBar"
-    static let coinIcon = "GameCoinIcon"
-    static let gemsBar = "GameGemsBar"
-    static let gemsIcon = "GameGemsIcon"
-    static let starGold = "GameStarGold"
-    static let starBlue = "GameStarBlue"
-    static let medal = "GameMedal"
 }
 
 enum PlayHubTheme {
