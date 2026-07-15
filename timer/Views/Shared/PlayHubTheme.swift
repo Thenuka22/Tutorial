@@ -1,6 +1,8 @@
 import SwiftUI
 
 enum GameArt {
+    static let quizBackground = "QuizBackground"
+    static let quizBoard = "QuizBoard"
     static let musicOn = "GameButtonMusic"
     static let musicOff = "GameButtonMusicOff"
     static let soundOn = "GameButtonSound"
@@ -8,6 +10,16 @@ enum GameArt {
     static let vibraOn = "GameButtonVibra"
     static let vibraOff = "GameButtonVibraOff"
     static let settings = "GameSettingsButton"
+}
+
+enum PlayHubGameFont {
+    static func display(_ size: CGFloat) -> Font {
+        .system(size: size, weight: .black, design: .rounded)
+    }
+
+    static func label(_ size: CGFloat) -> Font {
+        .system(size: size, weight: .bold, design: .rounded)
+    }
 }
 
 enum PlayHubTheme {
