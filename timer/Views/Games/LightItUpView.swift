@@ -65,11 +65,11 @@ struct LightItUpView: View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Label("Customize", systemImage: "slider.horizontal.3")
-                    .font(.headline.bold())
+                    .font(PlayHubGameFont.display(16))
                     .foregroundStyle(PlayHubTheme.ink)
                 Spacer()
                 Text(options.variantLabel)
-                    .font(.caption.bold())
+                    .font(PlayHubGameFont.label(11))
                     .foregroundStyle(PlayHubTheme.mutedInk)
             }
 
@@ -95,7 +95,7 @@ struct LightItUpView: View {
 
             Stepper("Extra Lights \(options.extraLightsPerTick)", value: extraLightsBinding, in: 0...2)
         }
-        .font(.subheadline)
+        .font(PlayHubGameFont.label(13))
         .padding(14)
         .background(PlayHubPanelBackground())
         .disabled(viewModel.isRunning)
@@ -137,11 +137,13 @@ struct LightItUpView: View {
                 viewModel.start(options: options)
             } label: {
                 Label(viewModel.isRunning ? "Restart" : "Start", systemImage: viewModel.isRunning ? "arrow.counterclockwise" : "play.fill")
+                    .font(PlayHubGameFont.display(15))
             }
             .buttonStyle(PlayHubPrimaryButtonStyle(tint: levelTint))
 
             Button(action: viewModel.stop) {
                 Label("Stop", systemImage: "stop.fill")
+                    .font(PlayHubGameFont.display(15))
             }
             .buttonStyle(PlayHubSecondaryButtonStyle())
             .disabled(!viewModel.isRunning)

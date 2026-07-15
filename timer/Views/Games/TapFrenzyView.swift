@@ -64,11 +64,11 @@ struct TapFrenzyView: View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Label("Customize", systemImage: "slider.horizontal.3")
-                    .font(.headline.bold())
+                    .font(PlayHubGameFont.display(16))
                     .foregroundStyle(PlayHubTheme.ink)
                 Spacer()
                 Text(options.variantLabel)
-                    .font(.caption.bold())
+                    .font(PlayHubGameFont.label(11))
                     .foregroundStyle(PlayHubTheme.mutedInk)
             }
 
@@ -89,13 +89,13 @@ struct TapFrenzyView: View {
 
             VStack(alignment: .leading, spacing: 6) {
                 Text("Target Moves Every \(options.targetMoveInterval, specifier: "%.2f")s")
-                    .font(.subheadline)
+                    .font(PlayHubGameFont.label(13))
                     .foregroundStyle(PlayHubTheme.ink)
                 Slider(value: targetMoveBinding, in: 0.5...1.5, step: 0.05)
                     .tint(PlayHubTheme.orange)
             }
         }
-        .font(.subheadline)
+        .font(PlayHubGameFont.label(13))
         .padding(14)
         .background(PlayHubPanelBackground())
         .disabled(viewModel.isRunning)
@@ -118,11 +118,11 @@ struct TapFrenzyView: View {
                             .font(.system(size: 54, weight: .black))
                             .foregroundStyle(PlayHubTheme.orange)
                         Text("Tap as fast as you can.")
-                            .font(.system(size: 22, weight: .black, design: .rounded))
+                            .font(PlayHubGameFont.display(22))
                             .foregroundStyle(.white)
                             .gameTextShadow()
                         Text(options.trapsEnabled ? "Combos, bonuses, moving targets, and traps are active." : "Focus mode keeps traps away so you can chase clean combos.")
-                            .font(.system(size: 14, weight: .bold, design: .rounded))
+                            .font(PlayHubGameFont.label(14))
                             .multilineTextAlignment(.center)
                             .foregroundStyle(.white.opacity(0.92))
                             .gameTextShadow()
@@ -138,7 +138,7 @@ struct TapFrenzyView: View {
                             Image(systemName: viewModel.targetMood.symbolName)
                                 .font(.system(size: 34, weight: .black))
                             Text(viewModel.targetMood.buttonTitle)
-                                .font(.headline.bold())
+                                .font(PlayHubGameFont.display(15))
                                 .lineLimit(1)
                                 .minimumScaleFactor(0.75)
                         }
@@ -164,7 +164,7 @@ struct TapFrenzyView: View {
                     Spacer()
                     HStack {
                         Label("Combo x\(viewModel.multiplier)", systemImage: "flame.fill")
-                            .font(.subheadline.bold())
+                            .font(PlayHubGameFont.label(13))
                             .foregroundStyle(PlayHubTheme.berry)
                             .padding(.horizontal, 12)
                             .padding(.vertical, 8)
@@ -172,7 +172,7 @@ struct TapFrenzyView: View {
                         Spacer()
                         if viewModel.bonusBurstActive {
                             Label("Double Points", systemImage: "sparkles")
-                                .font(.subheadline.bold())
+                                .font(PlayHubGameFont.label(13))
                                 .foregroundStyle(PlayHubTheme.mint)
                                 .padding(.horizontal, 12)
                                 .padding(.vertical, 8)
@@ -200,6 +200,7 @@ struct TapFrenzyView: View {
             }
         } label: {
             Label(viewModel.isRunning ? "Reset" : "Start", systemImage: viewModel.isRunning ? "arrow.counterclockwise" : "play.fill")
+                .font(PlayHubGameFont.display(15))
         }
         .buttonStyle(PlayHubPrimaryButtonStyle(tint: viewModel.isRunning ? PlayHubTheme.berry : PlayHubTheme.orange))
     }

@@ -17,14 +17,14 @@ struct ScoreBadge: View {
                 )
 
                 Text(title.uppercased())
-                    .font(.caption2.weight(.semibold))
+                    .font(PlayHubGameFont.label(10))
                     .foregroundStyle(PlayHubTheme.mutedInk)
                     .lineLimit(1)
                     .minimumScaleFactor(0.68)
             }
 
             Text(value)
-                .font(.headline.weight(.bold).monospacedDigit())
+                .font(PlayHubGameFont.display(18).monospacedDigit())
                 .foregroundStyle(PlayHubTheme.ink)
                 .lineLimit(1)
                 .minimumScaleFactor(0.68)

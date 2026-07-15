@@ -31,11 +31,11 @@ struct ResultView: View {
 
             VStack(spacing: 6) {
                 Text(isBestScore ? "New Best" : "Round Complete")
-                    .font(.title2.weight(.bold))
+                    .font(PlayHubGameFont.display(24))
                     .foregroundStyle(PlayHubTheme.ink)
 
                 Text(displayTitle)
-                    .font(.subheadline.weight(.medium))
+                    .font(PlayHubGameFont.label(14))
                     .foregroundStyle(PlayHubTheme.mutedInk)
                     .multilineTextAlignment(.center)
             }
@@ -53,10 +53,10 @@ struct ResultView: View {
 
             VStack(spacing: 4) {
                 Text("\(score)")
-                    .font(.system(.largeTitle, design: .rounded, weight: .bold).monospacedDigit())
+                    .font(PlayHubGameFont.display(40).monospacedDigit())
                     .foregroundStyle(PlayHubTheme.tint(for: mode))
                 Text("Best \(bestScore)")
-                    .font(.subheadline.weight(.semibold).monospacedDigit())
+                    .font(PlayHubGameFont.label(15).monospacedDigit())
                     .foregroundStyle(PlayHubTheme.mutedInk)
             }
 
@@ -85,6 +85,7 @@ struct ResultView: View {
     private var shareButton: some View {
         ShareLink(item: shareText) {
             Label("Share", systemImage: "square.and.arrow.up")
+                .font(PlayHubGameFont.label(14))
         }
         .buttonStyle(PlayHubSecondaryButtonStyle())
     }
@@ -92,6 +93,7 @@ struct ResultView: View {
     private var playAgainButton: some View {
         Button(action: onPlayAgain) {
             Label("Play Again", systemImage: "play.fill")
+                .font(PlayHubGameFont.label(14))
         }
         .buttonStyle(PlayHubPrimaryButtonStyle(tint: PlayHubTheme.tint(for: mode)))
     }
