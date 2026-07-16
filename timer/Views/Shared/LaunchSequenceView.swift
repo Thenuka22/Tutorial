@@ -1,6 +1,6 @@
 import AVKit
 import SwiftUI
-import UIKit
+internal import UIKit
 
 struct LaunchSequenceView<Content: View>: View {
     @Environment(\.scenePhase) private var scenePhase
