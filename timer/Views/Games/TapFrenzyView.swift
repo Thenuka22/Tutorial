@@ -11,6 +11,10 @@ struct TapFrenzyView: View {
 
     private let timer = Timer.publish(every: 1.0 / 60.0, on: .main, in: .common).autoconnect()
 
+    private var usesEnhancedControls: Bool {
+        settings.selectedBackgroundTheme.usesEnhancedControls
+    }
+
     var body: some View {
         ZStack {
             PlayHubScreenBackground()
@@ -125,18 +129,43 @@ struct TapFrenzyView: View {
                         }
                         .foregroundStyle(PlayHubTheme.wood)
                         .frame(width: viewModel.targetSize, height: viewModel.targetSize)
-                        .background(viewModel.targetMood.color, in: Circle())
+                        .background {
+                            if usesEnhancedControls {
+                                Circle()
+                                    .fill(
+                                        LinearGradient(
+                                            colors: [viewModel.targetMood.color, viewModel.targetMood.color.opacity(0.68)],
+                                            startPoint: .top,
+                                            endPoint: .bottom
+                                        )
+                                    )
+                            } else {
+                                Circle()
+                                    .fill(viewModel.targetMood.color)
+                            }
+                        }
                         .overlay(
                             Circle()
                                 .stroke(PlayHubTheme.cream.opacity(0.72), lineWidth: 4)
                         )
-                        .shadow(color: viewModel.targetMood.color.opacity(0.36), radius: 18, x: 0, y: 10)
+                        .shadow(
+                            color: usesEnhancedControls ? PlayHubTheme.wood.opacity(0.92) : .clear,
+                            radius: 0,
+                            x: 0,
+                            y: 8
+                        )
+                        .shadow(
+                            color: viewModel.targetMood.color.opacity(0.36),
+                            radius: usesEnhancedControls ? 12 : 18,
+                            x: 0,
+                            y: 10
+                        )
                         .scaleEffect(viewModel.bonusBurstActive ? 1.08 : 1.0)
                         .animation(.snappy(duration: 0.22), value: viewModel.targetSize)
                         .animation(.snappy(duration: 0.22), value: viewModel.targetOffset)
                         .animation(.snappy(duration: 0.18), value: viewModel.targetMood)
                     }
-                    .buttonStyle(.plain)
+                    .buttonStyle(TapTargetButtonStyle(usesEnhancedControls: usesEnhancedControls))
                     .offset(viewModel.targetOffset)
                     .accessibilityLabel(viewModel.targetMood.accessibilityLabel)
                 }
@@ -279,6 +308,17 @@ struct TapFrenzyView: View {
         didLoadDefaults = true
         options = settings.defaultTapOptions
         viewModel.applyOptions(options)
+    }
+}
+
+private struct TapTargetButtonStyle: ButtonStyle {
+    let usesEnhancedControls: Bool
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .offset(y: usesEnhancedControls && configuration.isPressed ? 5 : 0)
+            .scaleEffect(usesEnhancedControls && configuration.isPressed ? 0.98 : 1)
+            .animation(.snappy(duration: 0.14), value: configuration.isPressed)
     }
 }
 

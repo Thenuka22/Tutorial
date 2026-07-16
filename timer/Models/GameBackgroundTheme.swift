@@ -30,4 +30,8 @@ enum GameBackgroundTheme: String, CaseIterable, Codable, Hashable, Identifiable 
         case .moonlitForest: return 0.22
         }
     }
+
+    var usesEnhancedControls: Bool {
+        self != .jungleDay
+    }
 }

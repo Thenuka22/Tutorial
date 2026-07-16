@@ -9,6 +9,10 @@ struct LightItUpView: View {
     @State private var didLoadDefaults = false
     @State private var showCustomization = false
 
+    private var usesEnhancedControls: Bool {
+        settings.selectedBackgroundTheme.usesEnhancedControls
+    }
+
     var body: some View {
         ZStack {
             PlayHubScreenBackground()
@@ -85,32 +89,54 @@ struct LightItUpView: View {
     private var grid: some View {
         LazyVGrid(columns: viewModel.columns, spacing: 12) {
             ForEach(viewModel.cards) { card in
-                RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .fill(card.isLit ? levelTint : PlayHubTheme.woodLight)
-                    .frame(height: 90)
-                    .overlay {
-                        if card.isLit {
-                            Image(systemName: "bolt.fill")
-                                .symbolRenderingMode(.monochrome)
-                                .font(.system(size: 34, weight: .black))
-                                .foregroundStyle(PlayHubTheme.wood)
-                                .frame(width: 44, height: 44, alignment: .center)
-                        } else {
-                            Circle()
-                                .fill(PlayHubTheme.wood.opacity(0.44))
-                                .frame(width: 14, height: 14)
+                Button {
+                    viewModel.tapCard(card)
+                } label: {
+                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                        .fill(
+                            usesEnhancedControls
+                                ? AnyShapeStyle(
+                                    LinearGradient(
+                                        colors: [
+                                            card.isLit ? levelTint : PlayHubTheme.woodLight,
+                                            (card.isLit ? levelTint : PlayHubTheme.woodLight).opacity(0.66)
+                                        ],
+                                        startPoint: .top,
+                                        endPoint: .bottom
+                                    )
+                                )
+                                : AnyShapeStyle(card.isLit ? levelTint : PlayHubTheme.woodLight)
+                        )
+                        .frame(height: 90)
+                        .overlay {
+                            if card.isLit {
+                                Image(systemName: "bolt.fill")
+                                    .symbolRenderingMode(.monochrome)
+                                    .font(.system(size: 34, weight: .black))
+                                    .foregroundStyle(PlayHubTheme.wood)
+                                    .frame(width: 44, height: 44, alignment: .center)
+                            } else {
+                                Circle()
+                                    .fill(PlayHubTheme.wood.opacity(0.44))
+                                    .frame(width: 14, height: 14)
+                            }
                         }
-                    }
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 16, style: .continuous)
-                            .strokeBorder(card.isLit ? PlayHubTheme.cream.opacity(0.72) : PlayHubTheme.lime.opacity(0.26), lineWidth: 2)
-                    )
-                    .shadow(color: Color.black.opacity(card.isLit ? 0.36 : 0.18), radius: 8, x: 0, y: 5)
-                    .scaleEffect(card.isLit ? 1.03 : 1.0)
-                    .onTapGesture { viewModel.tapCard(card) }
-                    .animation(.easeInOut(duration: 0.15), value: card.isLit)
-                    .accessibilityLabel(card.isLit ? "Lit tile" : "Dim tile")
-                    .accessibilityAddTraits(.isButton)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                                .strokeBorder(card.isLit ? PlayHubTheme.cream.opacity(0.72) : PlayHubTheme.lime.opacity(0.26), lineWidth: 2)
+                        )
+                        .shadow(
+                            color: usesEnhancedControls ? PlayHubTheme.wood.opacity(0.92) : .clear,
+                            radius: 0,
+                            x: 0,
+                            y: 6
+                        )
+                        .shadow(color: Color.black.opacity(card.isLit ? 0.36 : 0.18), radius: 8, x: 0, y: 5)
+                        .scaleEffect(card.isLit ? 1.03 : 1.0)
+                        .animation(.easeInOut(duration: 0.15), value: card.isLit)
+                }
+                .buttonStyle(LightTileButtonStyle(usesEnhancedControls: usesEnhancedControls))
+                .accessibilityLabel(card.isLit ? "Lit tile" : "Dim tile")
             }
         }
         .padding(12)
@@ -241,6 +267,17 @@ struct LightItUpView: View {
         didLoadDefaults = true
         options = settings.defaultLightOptions
         viewModel.applyOptions(options)
+    }
+}
+
+private struct LightTileButtonStyle: ButtonStyle {
+    let usesEnhancedControls: Bool
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .offset(y: usesEnhancedControls && configuration.isPressed ? 4 : 0)
+            .scaleEffect(usesEnhancedControls && configuration.isPressed ? 0.98 : 1)
+            .animation(.snappy(duration: 0.12), value: configuration.isPressed)
     }
 }
 
