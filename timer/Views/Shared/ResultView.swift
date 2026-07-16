@@ -1,7 +1,11 @@
 import SwiftUI
+#if canImport(ConfettiSwiftUI)
+import ConfettiSwiftUI
+#endif
 
 struct ResultView: View {
     @Environment(\.dismiss) private var dismiss
+    @State private var confettiCounter = 0
 
     let mode: GameMode
     let score: Int
@@ -57,6 +61,14 @@ struct ResultView: View {
             .frame(width: proxy.size.width, height: proxy.size.height)
         }
         .ignoresSafeArea()
+        #if canImport(ConfettiSwiftUI)
+        .confettiCannon(counter: $confettiCounter, num: 50, openingAngle: Angle(degrees: 0), closingAngle: Angle(degrees: 360), radius: 200)
+        #endif
+        .onAppear {
+            if isBestScore {
+                confettiCounter += 1
+            }
+        }
     }
 
     private var resultBoard: some View {
