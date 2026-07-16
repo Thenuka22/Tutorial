@@ -6,7 +6,7 @@ struct HomeTab: View {
 
     var body: some View {
         ZStack {
-            PlayHubScreenBackground()
+            MiniArcadeScreenBackground()
 
             ScrollView {
                 VStack(alignment: .leading, spacing: 18) {
@@ -30,14 +30,14 @@ struct HomeTab: View {
     private var header: some View {
         HStack(alignment: .center, spacing: 16) {
             VStack(alignment: .leading, spacing: 5) {
-                Text("GAME ARCADE")
-                    .font(PlayHubGameFont.display(31))
-                    .foregroundStyle(PlayHubTheme.lime)
+                Text("MiNi ARCADE")
+                    .font(MiniArcadeGameFont.display(31))
+                    .foregroundStyle(MiniArcadeTheme.lime)
                     .gameTextShadow()
 
                 Text("Pick a challenge. Beat your best.")
-                    .font(PlayHubGameFont.label(13))
-                    .foregroundStyle(PlayHubTheme.mutedInk)
+                    .font(MiniArcadeGameFont.label(13))
+                    .foregroundStyle(MiniArcadeTheme.mutedInk)
             }
 
             Spacer(minLength: 8)
@@ -55,7 +55,7 @@ struct HomeTab: View {
             .accessibilityLabel("Settings")
         }
         .padding(16)
-        .background(PlayHubPanelBackground(cornerRadius: 24))
+        .background(MiniArcadePanelBackground(cornerRadius: 24))
     }
 
     private var overview: some View {
@@ -64,13 +64,13 @@ struct HomeTab: View {
                 title: "Total Score",
                 value: "\(totalScore)",
                 symbol: "trophy.fill",
-                tint: PlayHubTheme.gold
+                tint: MiniArcadeTheme.gold
             )
             ScoreBadge(
                 title: "Games Played",
                 value: "\(store.sessions.count)",
                 symbol: "gamecontroller.fill",
-                tint: PlayHubTheme.sky
+                tint: MiniArcadeTheme.sky
             )
         }
     }
@@ -81,20 +81,20 @@ struct HomeTab: View {
                 GameActionLabel(title: "START TAP FRENZY", mode: .tapFrenzy)
                 Spacer()
                 Text("QUICK PLAY")
-                    .font(PlayHubGameFont.label(10))
+                    .font(MiniArcadeGameFont.label(10))
                     .padding(.horizontal, 9)
                     .padding(.vertical, 5)
-                    .background(PlayHubTheme.wood.opacity(0.16), in: Capsule())
+                    .background(MiniArcadeTheme.wood.opacity(0.16), in: Capsule())
             }
         }
-        .buttonStyle(PlayHubPrimaryButtonStyle())
+        .buttonStyle(MiniArcadePrimaryButtonStyle())
     }
 
     private var gameLauncher: some View {
         VStack(alignment: .leading, spacing: 14) {
             Label("CHOOSE A GAME", systemImage: "gamecontroller.fill")
-                .font(PlayHubGameFont.display(19))
-                .foregroundStyle(PlayHubTheme.lime)
+                .font(MiniArcadeGameFont.display(19))
+                .foregroundStyle(MiniArcadeTheme.lime)
                 .gameTextShadow()
 
             LazyVStack(spacing: 12) {
@@ -135,13 +135,13 @@ private struct GameRow: View {
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(game.displayName)
-                    .font(PlayHubGameFont.display(17))
-                    .foregroundStyle(PlayHubTheme.ink)
+                    .font(MiniArcadeGameFont.display(17))
+                    .foregroundStyle(MiniArcadeTheme.ink)
                     .lineLimit(1)
 
                 Text(game.subtitle)
-                    .font(PlayHubGameFont.label(12))
-                    .foregroundStyle(PlayHubTheme.mutedInk)
+                    .font(MiniArcadeGameFont.label(12))
+                    .foregroundStyle(MiniArcadeTheme.mutedInk)
                     .lineLimit(2)
             }
 
@@ -149,23 +149,23 @@ private struct GameRow: View {
 
             VStack(alignment: .center, spacing: 1) {
                 Text("BEST")
-                    .font(PlayHubGameFont.label(9))
-                    .foregroundStyle(PlayHubTheme.wood.opacity(0.72))
+                    .font(MiniArcadeGameFont.label(9))
+                    .foregroundStyle(MiniArcadeTheme.wood.opacity(0.72))
                 Text("\(bestScore)")
-                    .font(PlayHubGameFont.display(18).monospacedDigit())
-                    .foregroundStyle(PlayHubTheme.wood)
+                    .font(MiniArcadeGameFont.display(18).monospacedDigit())
+                    .foregroundStyle(MiniArcadeTheme.wood)
             }
             .frame(width: 48, height: 48)
-            .background(PlayHubTheme.sand, in: RoundedRectangle(cornerRadius: 13, style: .continuous))
+            .background(MiniArcadeTheme.sand, in: RoundedRectangle(cornerRadius: 13, style: .continuous))
 
             Image(systemName: "chevron.right")
                 .font(.subheadline.weight(.black))
-                .foregroundStyle(PlayHubTheme.lime)
+                .foregroundStyle(MiniArcadeTheme.lime)
                 .frame(width: 18, height: 24, alignment: .center)
         }
         .padding(14)
         .frame(maxWidth: .infinity, minHeight: 92, alignment: .leading)
-        .background(PlayHubPanelBackground(cornerRadius: 20))
+        .background(MiniArcadePanelBackground(cornerRadius: 20))
         .contentShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
         .accessibilityElement(children: .combine)
         .accessibilityHint("Opens \(game.displayName)")

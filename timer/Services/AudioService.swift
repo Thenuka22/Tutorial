@@ -4,7 +4,7 @@ import Combine
 import Foundation
 internal import UIKit
 
-enum PlayHubSound {
+enum MiniArcadeSound {
     case tap
     case bonus
     case mistake
@@ -50,7 +50,7 @@ final class AudioService: ObservableObject {
         }
     }
 
-    func play(_ sound: PlayHubSound, settings: GameSettingsStore? = nil) {
+    func play(_ sound: MiniArcadeSound, settings: GameSettingsStore? = nil) {
         let settings = settings ?? .shared
         guard settings.soundEffectsEnabled, settings.soundVolume > 0 else { return }
         do {

@@ -4,12 +4,12 @@ struct ScoreBadge: View {
     let title: String
     let value: String
     let symbol: String
-    var tint: Color = PlayHubTheme.orange
+    var tint: Color = MiniArcadeTheme.orange
 
     var body: some View {
         VStack(spacing: 4) {
             HStack(spacing: 5) {
-                PlayHubSymbolIcon(
+                MiniArcadeSymbolIcon(
                     systemName: symbol,
                     tint: tint,
                     size: 28,
@@ -17,15 +17,15 @@ struct ScoreBadge: View {
                 )
 
                 Text(title.uppercased())
-                    .font(PlayHubGameFont.label(10))
-                    .foregroundStyle(PlayHubTheme.mutedInk)
+                    .font(MiniArcadeGameFont.label(10))
+                    .foregroundStyle(MiniArcadeTheme.mutedInk)
                     .lineLimit(1)
                     .minimumScaleFactor(0.68)
             }
 
             Text(value)
-                .font(PlayHubGameFont.display(18).monospacedDigit())
-                .foregroundStyle(PlayHubTheme.ink)
+                .font(MiniArcadeGameFont.display(18).monospacedDigit())
+                .foregroundStyle(MiniArcadeTheme.ink)
                 .lineLimit(1)
                 .minimumScaleFactor(0.68)
         }
@@ -33,7 +33,7 @@ struct ScoreBadge: View {
         .frame(minHeight: 68)
         .padding(.horizontal, 8)
         .padding(.vertical, 6)
-        .background(PlayHubPanelBackground(cornerRadius: 18))
+        .background(MiniArcadePanelBackground(cornerRadius: 18))
         .accessibilityElement(children: .combine)
     }
 }

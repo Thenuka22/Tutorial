@@ -27,7 +27,7 @@ struct MapTab: View {
 
     var body: some View {
         ZStack {
-            PlayHubScreenBackground()
+            MiniArcadeScreenBackground()
 
             if pins.isEmpty {
                 emptyMapState
@@ -39,7 +39,7 @@ struct MapTab: View {
                             systemImage: pin.session.mode.symbolName,
                             coordinate: pin.coordinate
                         )
-                        .tint(PlayHubTheme.tint(for: pin.session.mode))
+                        .tint(MiniArcadeTheme.tint(for: pin.session.mode))
                         .tag(pin.id)
                     }
                 }
@@ -75,21 +75,21 @@ struct MapTab: View {
         VStack(spacing: 16) {
             Image(systemName: "mappin.slash")
                 .font(.system(size: 58, weight: .black))
-                .foregroundStyle(PlayHubTheme.berry)
+                .foregroundStyle(MiniArcadeTheme.berry)
 
             Text("No Map Pins Yet")
                 .font(.title2.bold())
-                .foregroundStyle(PlayHubTheme.ink)
+                .foregroundStyle(MiniArcadeTheme.ink)
 
             Text("Complete a game after location permission is enabled. Scores still save even when location is unavailable.")
                 .font(.subheadline)
                 .multilineTextAlignment(.center)
-                .foregroundStyle(PlayHubTheme.mutedInk)
+                .foregroundStyle(MiniArcadeTheme.mutedInk)
                 .padding(.horizontal, 28)
 
             Text(locationService.permissionLabel)
                 .font(.caption.bold())
-                .foregroundStyle(PlayHubTheme.ink)
+                .foregroundStyle(MiniArcadeTheme.ink)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)
                 .background(Color.white.opacity(0.92), in: Capsule())
@@ -99,7 +99,7 @@ struct MapTab: View {
             } label: {
                 Label("Enable Location", systemImage: "location.fill")
             }
-            .buttonStyle(PlayHubPrimaryButtonStyle(tint: PlayHubTheme.berry))
+            .buttonStyle(MiniArcadePrimaryButtonStyle(tint: MiniArcadeTheme.berry))
             .padding(.horizontal, 24)
         }
         .padding(24)
@@ -107,9 +107,9 @@ struct MapTab: View {
 
     private func selectedPinCard(_ pin: SessionMapPin) -> some View {
         HStack(spacing: 12) {
-            PlayHubSymbolIcon(
+            MiniArcadeSymbolIcon(
                 systemName: pin.session.mode.symbolName,
-                tint: PlayHubTheme.tint(for: pin.session.mode),
+                tint: MiniArcadeTheme.tint(for: pin.session.mode),
                 size: 44,
                 symbolSize: 19
             )
@@ -117,24 +117,24 @@ struct MapTab: View {
             VStack(alignment: .leading, spacing: 3) {
                 Text(pin.session.mode.displayName)
                     .font(.headline)
-                    .foregroundStyle(PlayHubTheme.ink)
+                    .foregroundStyle(MiniArcadeTheme.ink)
                 Text(pin.session.displayVariantLabel)
                     .font(.caption)
-                    .foregroundStyle(PlayHubTheme.mutedInk)
+                    .foregroundStyle(MiniArcadeTheme.mutedInk)
                     .lineLimit(1)
                 Text(pin.session.timestamp, style: .relative)
                     .font(.caption)
-                    .foregroundStyle(PlayHubTheme.mutedInk)
+                    .foregroundStyle(MiniArcadeTheme.mutedInk)
             }
 
             Spacer()
 
             Text("\(pin.session.score)")
                 .font(.title2.bold().monospacedDigit())
-                .foregroundStyle(PlayHubTheme.ink)
+                .foregroundStyle(MiniArcadeTheme.ink)
         }
         .padding(14)
-        .background(PlayHubPanelBackground())
+        .background(MiniArcadePanelBackground())
     }
 
     private func focusOnFirstPinIfNeeded() {

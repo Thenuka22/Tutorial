@@ -1,12 +1,12 @@
-# PlayHub
+# MiNi ARCADE
 
-PlayHub is a Week 4 iOS app development assignment project built with SwiftUI. It wraps three mini games inside a native SwiftUI game shell with Home, Stats, Map, Settings, score sharing, local reminders, and JSON persistence.
+MiNi ARCADE is a portrait SwiftUI mini-game collection. It brings three games into one native app with Home, Stats, Map, Settings, score sharing, local reminders, and JSON persistence.
 
 ## Architecture Overview
 
 The app is organized under `timer/` into the assignment folders:
 
-- `App`: `PlayHubApp` and the root `TabView` shell.
+- `App`: `MiniArcadeApp` and the root `TabView` shell.
 - `Models`: `GameMode`, `GameSession`, and `TriviaQuestion`.
 - `ViewModels`: one view model per game plus `StatsVM`.
 - `Services`: session persistence, free trivia loading, local notifications, and Core Location.
@@ -17,7 +17,9 @@ Each completed game writes one `GameSession` to `UserDefaults` as encoded JSON. 
 ## Features
 
 - Four-tab SwiftUI game shell: Home, Stats, Map, and Settings.
-- Native SwiftUI backgrounds, cards, controls, and consistently sized SF Symbols for game actions.
+- A portrait launch artwork and full-screen intro video before the game shell appears.
+- Switchable Jungle Day, Sunset Ruins, and Moonlit Forest artwork, while Jungle Day keeps its original visual treatment.
+- Custom game glyphs and compact arcade controls built with SwiftUI.
 - Three game modes: Tap Frenzy, Light It Up, and Quiz Rush.
 - Stats tab with totals, best scores, recent games, and a Swift Charts bar chart.
 - Map tab using MapKit markers for completed sessions with real saved coordinates.

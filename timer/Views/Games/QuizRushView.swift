@@ -53,17 +53,17 @@ struct QuizRushView: View {
     }
 
     private var quizBackground: some View {
-        PlayHubScreenBackground()
+        MiniArcadeScreenBackground()
     }
 
     private var gameBar: some View {
         HStack(spacing: 10) {
             VStack(alignment: .leading, spacing: 2) {
                 Text(currentVariantLabel)
-                    .font(PlayHubGameFont.label(13))
+                    .font(MiniArcadeGameFont.label(13))
                     .lineLimit(1)
                 Text(gameStatusLabel)
-                    .font(PlayHubGameFont.label(11))
+                    .font(MiniArcadeGameFont.label(11))
                     .foregroundStyle(QuizPalette.lime.opacity(0.82))
                     .lineLimit(1)
             }
@@ -75,7 +75,7 @@ struct QuizRushView: View {
                     showCustomization = true
                 } label: {
                     GameSetupLabel(title: "SETUP")
-                        .font(PlayHubGameFont.label(12))
+                        .font(MiniArcadeGameFont.label(12))
                         .padding(.horizontal, 11)
                         .frame(height: 34)
                         .background(QuizPalette.lime, in: Capsule())
@@ -116,12 +116,12 @@ struct QuizRushView: View {
             Spacer(minLength: 0)
 
             Text("READY?")
-                .font(PlayHubGameFont.display(32))
+                .font(MiniArcadeGameFont.display(32))
                 .foregroundStyle(QuizPalette.lime)
                 .gameTextShadow()
 
             Text(options.variantLabel)
-                .font(PlayHubGameFont.label(16))
+                .font(MiniArcadeGameFont.label(16))
                 .foregroundStyle(QuizPalette.lime.opacity(0.92))
                 .multilineTextAlignment(.center)
                 .lineLimit(3)
@@ -131,7 +131,7 @@ struct QuizRushView: View {
                 Task { await viewModel.load(options: options) }
             } label: {
                 GameActionLabel(title: "START QUIZ", mode: .quizRush)
-                    .font(PlayHubGameFont.display(16))
+                    .font(MiniArcadeGameFont.display(16))
             }
             .buttonStyle(JungleQuizButtonStyle(background: QuizPalette.lime))
 
@@ -146,7 +146,7 @@ struct QuizRushView: View {
                 .controlSize(.large)
                 .tint(QuizPalette.lime)
             Text("LOADING TRIVIA")
-                .font(PlayHubGameFont.display(18))
+                .font(MiniArcadeGameFont.display(18))
                 .foregroundStyle(QuizPalette.lime)
             Spacer()
         }
@@ -159,11 +159,11 @@ struct QuizRushView: View {
                 .font(.system(size: 34, weight: .black))
                 .foregroundStyle(QuizPalette.lime)
             Text("TRIVIA DID NOT LOAD")
-                .font(PlayHubGameFont.display(18))
+                .font(MiniArcadeGameFont.display(18))
                 .foregroundStyle(QuizPalette.lime)
                 .multilineTextAlignment(.center)
             Text(message)
-                .font(PlayHubGameFont.label(13))
+                .font(MiniArcadeGameFont.label(13))
                 .foregroundStyle(QuizPalette.lime.opacity(0.86))
                 .multilineTextAlignment(.center)
                 .lineLimit(3)
@@ -171,7 +171,7 @@ struct QuizRushView: View {
                 Task { await viewModel.load(options: options) }
             } label: {
                 Text("TRY AGAIN")
-                    .font(PlayHubGameFont.display(14))
+                    .font(MiniArcadeGameFont.display(14))
             }
             .buttonStyle(JungleQuizButtonStyle(background: QuizPalette.lime))
             Spacer()
@@ -191,7 +191,7 @@ struct QuizRushView: View {
                         Text("\(viewModel.timeRemaining)S")
                     }
                 }
-                .font(PlayHubGameFont.label(11))
+                .font(MiniArcadeGameFont.label(11))
                 .foregroundStyle(QuizPalette.lime.opacity(0.92))
                 .lineLimit(1)
                 .minimumScaleFactor(0.72)
@@ -203,7 +203,7 @@ struct QuizRushView: View {
                 .tint(QuizPalette.lime)
 
                 Text(question.prompt)
-                    .font(PlayHubGameFont.display(20))
+                    .font(MiniArcadeGameFont.display(20))
                     .foregroundStyle(QuizPalette.lime)
                     .multilineTextAlignment(.center)
                     .lineLimit(4)
@@ -222,7 +222,7 @@ struct QuizRushView: View {
                                 Text(choice.uppercased())
                                     .frame(maxWidth: .infinity, alignment: .leading)
                             }
-                            .font(PlayHubGameFont.label(13))
+                            .font(MiniArcadeGameFont.label(13))
                             .lineLimit(2)
                             .minimumScaleFactor(0.70)
                         }
@@ -239,7 +239,7 @@ struct QuizRushView: View {
 
                 if let sourceNote = viewModel.sourceNote {
                     Text(sourceNote.uppercased())
-                        .font(PlayHubGameFont.label(10))
+                        .font(MiniArcadeGameFont.label(10))
                         .foregroundStyle(QuizPalette.lime.opacity(0.72))
                         .lineLimit(1)
                 }
@@ -253,30 +253,30 @@ struct QuizRushView: View {
             Spacer(minLength: 0)
 
             Text("ROUND COMPLETE")
-                .font(PlayHubGameFont.display(22))
+                .font(MiniArcadeGameFont.display(22))
                 .foregroundStyle(QuizPalette.lime)
                 .multilineTextAlignment(.center)
 
             Text("\(viewModel.score)")
-                .font(PlayHubGameFont.display(48))
+                .font(MiniArcadeGameFont.display(48))
                 .foregroundStyle(QuizPalette.lime)
                 .monospacedDigit()
 
             Text("BEST \(store.bestScore(for: .quizRush, variantID: viewModel.scoreVariantID))")
-                .font(PlayHubGameFont.label(14))
+                .font(MiniArcadeGameFont.label(14))
                 .foregroundStyle(QuizPalette.lime.opacity(0.86))
 
             Button {
                 Task { await viewModel.load(options: options) }
             } label: {
                 GameActionLabel(title: "PLAY AGAIN", mode: .quizRush)
-                    .font(PlayHubGameFont.display(14))
+                    .font(MiniArcadeGameFont.display(14))
             }
             .buttonStyle(JungleQuizButtonStyle(background: QuizPalette.lime))
 
             ShareLink(item: shareText) {
                 Label("SHARE SCORE", systemImage: "square.and.arrow.up")
-                    .font(PlayHubGameFont.display(13))
+                    .font(MiniArcadeGameFont.display(13))
             }
             .buttonStyle(JungleQuizButtonStyle(background: QuizPalette.sand))
 

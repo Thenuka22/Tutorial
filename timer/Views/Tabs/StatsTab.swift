@@ -7,7 +7,7 @@ struct StatsTab: View {
 
     var body: some View {
         ZStack {
-            PlayHubScreenBackground()
+            MiniArcadeScreenBackground()
 
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
@@ -34,26 +34,26 @@ struct StatsTab: View {
 
     private var adventureHeader: some View {
         HStack(spacing: 14) {
-            PlayHubSymbolIcon(
+            MiniArcadeSymbolIcon(
                 systemName: "map.fill",
-                tint: PlayHubTheme.lime,
+                tint: MiniArcadeTheme.lime,
                 size: 54,
                 symbolSize: 23
             )
 
             VStack(alignment: .leading, spacing: 3) {
                 Text("ADVENTURE LOG")
-                    .font(PlayHubGameFont.display(24))
-                    .foregroundStyle(PlayHubTheme.lime)
+                    .font(MiniArcadeGameFont.display(24))
+                    .foregroundStyle(MiniArcadeTheme.lime)
                 Text("PLAY. LEVEL UP. CONQUER.")
-                    .font(PlayHubGameFont.label(10))
-                    .foregroundStyle(PlayHubTheme.cream)
+                    .font(MiniArcadeGameFont.label(10))
+                    .foregroundStyle(MiniArcadeTheme.cream)
             }
 
             Spacer()
         }
         .padding(16)
-        .background(PlayHubPanelBackground(cornerRadius: 22))
+        .background(MiniArcadePanelBackground(cornerRadius: 22))
     }
 
     private var playerProgress: some View {
@@ -61,25 +61,25 @@ struct StatsTab: View {
             HStack(alignment: .center, spacing: 12) {
                 ZStack {
                     Circle()
-                        .fill(PlayHubTheme.gold)
+                        .fill(MiniArcadeTheme.gold)
                     Circle()
-                        .strokeBorder(PlayHubTheme.woodLight, lineWidth: 4)
+                        .strokeBorder(MiniArcadeTheme.woodLight, lineWidth: 4)
                     Text("\(playerLevel)")
-                        .font(PlayHubGameFont.display(27).monospacedDigit())
-                        .foregroundStyle(PlayHubTheme.wood)
+                        .font(MiniArcadeGameFont.display(27).monospacedDigit())
+                        .foregroundStyle(MiniArcadeTheme.wood)
                 }
                 .frame(width: 68, height: 68)
 
                 VStack(alignment: .leading, spacing: 3) {
                     Text("LEVEL \(playerLevel)")
-                        .font(PlayHubGameFont.label(11))
-                        .foregroundStyle(PlayHubTheme.woodLight.opacity(0.76))
+                        .font(MiniArcadeGameFont.label(11))
+                        .foregroundStyle(MiniArcadeTheme.woodLight.opacity(0.76))
                     Text(rankName.uppercased())
-                        .font(PlayHubGameFont.display(20))
-                        .foregroundStyle(PlayHubTheme.wood)
+                        .font(MiniArcadeGameFont.display(20))
+                        .foregroundStyle(MiniArcadeTheme.wood)
                     Text("\(viewModel.totalGames) quests completed")
-                        .font(PlayHubGameFont.label(10))
-                        .foregroundStyle(PlayHubTheme.woodLight.opacity(0.74))
+                        .font(MiniArcadeGameFont.label(10))
+                        .foregroundStyle(MiniArcadeTheme.woodLight.opacity(0.74))
                 }
 
                 Spacer()
@@ -91,11 +91,11 @@ struct StatsTab: View {
                     Spacer()
                     Text("\(currentLevelXP) / \(xpPerLevel) XP")
                 }
-                .font(PlayHubGameFont.label(10))
-                .foregroundStyle(PlayHubTheme.woodLight)
+                .font(MiniArcadeGameFont.label(10))
+                .foregroundStyle(MiniArcadeTheme.woodLight)
 
                 ProgressView(value: Double(currentLevelXP), total: Double(xpPerLevel))
-                    .tint(PlayHubTheme.leaf)
+                    .tint(MiniArcadeTheme.leaf)
                     .scaleEffect(x: 1, y: 2.2, anchor: .center)
             }
         }
@@ -148,29 +148,29 @@ struct StatsTab: View {
 
                         VStack(alignment: .leading, spacing: 4) {
                             Text(stat.mode.displayName.uppercased())
-                                .font(PlayHubGameFont.display(16))
-                                .foregroundStyle(PlayHubTheme.wood)
+                                .font(MiniArcadeGameFont.display(16))
+                                .foregroundStyle(MiniArcadeTheme.wood)
                             Text("\(stat.games) RUNS")
-                                .font(PlayHubGameFont.label(10))
-                                .foregroundStyle(PlayHubTheme.woodLight.opacity(0.72))
+                                .font(MiniArcadeGameFont.label(10))
+                                .foregroundStyle(MiniArcadeTheme.woodLight.opacity(0.72))
                         }
 
                         Spacer()
 
                         VStack(spacing: 1) {
                             Text("BEST")
-                                .font(PlayHubGameFont.label(9))
+                                .font(MiniArcadeGameFont.label(9))
                             Text("\(stat.bestScore)")
-                                .font(PlayHubGameFont.display(19).monospacedDigit())
+                                .font(MiniArcadeGameFont.display(19).monospacedDigit())
                         }
-                        .foregroundStyle(PlayHubTheme.wood)
+                        .foregroundStyle(MiniArcadeTheme.wood)
                         .frame(minWidth: 58, minHeight: 48)
                         .padding(.horizontal, 4)
-                        .background(PlayHubTheme.gold, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                        .background(MiniArcadeTheme.gold, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
 
                         Image(systemName: "play.fill")
                             .font(.system(size: 13, weight: .black))
-                            .foregroundStyle(PlayHubTheme.wood)
+                            .foregroundStyle(MiniArcadeTheme.wood)
                     }
                     .padding(15)
                     .background(adventurePanel)
@@ -189,13 +189,13 @@ struct StatsTab: View {
                 VStack(spacing: 10) {
                     Image(systemName: "flag.checkered")
                         .font(.system(size: 36, weight: .black))
-                        .foregroundStyle(PlayHubTheme.orange)
+                        .foregroundStyle(MiniArcadeTheme.orange)
                     Text("YOUR FIRST QUEST AWAITS")
-                        .font(PlayHubGameFont.display(14))
-                        .foregroundStyle(PlayHubTheme.wood)
+                        .font(MiniArcadeGameFont.display(14))
+                        .foregroundStyle(MiniArcadeTheme.wood)
                     Text("Complete any game to begin your adventure log.")
-                        .font(PlayHubGameFont.label(10))
-                        .foregroundStyle(PlayHubTheme.woodLight.opacity(0.74))
+                        .font(MiniArcadeGameFont.label(10))
+                        .foregroundStyle(MiniArcadeTheme.woodLight.opacity(0.74))
                         .multilineTextAlignment(.center)
                 }
                 .frame(maxWidth: .infinity)
@@ -208,19 +208,19 @@ struct StatsTab: View {
 
                         VStack(alignment: .leading, spacing: 2) {
                             Text(session.mode.displayName)
-                                .font(PlayHubGameFont.display(13))
-                                .foregroundStyle(PlayHubTheme.wood)
+                                .font(MiniArcadeGameFont.display(13))
+                                .foregroundStyle(MiniArcadeTheme.wood)
                             Text(session.displayVariantLabel.uppercased())
-                                .font(PlayHubGameFont.label(9))
-                                .foregroundStyle(PlayHubTheme.woodLight.opacity(0.70))
+                                .font(MiniArcadeGameFont.label(9))
+                                .foregroundStyle(MiniArcadeTheme.woodLight.opacity(0.70))
                                 .lineLimit(1)
                         }
 
                         Spacer()
 
                         Text("+\(session.score) XP")
-                            .font(PlayHubGameFont.display(13).monospacedDigit())
-                            .foregroundStyle(PlayHubTheme.orange)
+                            .font(MiniArcadeGameFont.display(13).monospacedDigit())
+                            .foregroundStyle(MiniArcadeTheme.orange)
                     }
                     .padding(13)
                     .background(adventurePanel)
@@ -231,8 +231,8 @@ struct StatsTab: View {
 
     private func sectionTitle(_ title: String) -> some View {
         Text(title)
-            .font(PlayHubGameFont.display(18))
-            .foregroundStyle(PlayHubTheme.lime)
+            .font(MiniArcadeGameFont.display(18))
+            .foregroundStyle(MiniArcadeTheme.lime)
             .gameTextShadow()
             .accessibilityAddTraits(.isHeader)
     }
@@ -282,10 +282,10 @@ private struct AchievementBadge: View {
             ZStack(alignment: .bottomTrailing) {
                 Image(systemName: symbol)
                     .font(.system(size: 24, weight: .black))
-                    .foregroundStyle(unlocked ? PlayHubTheme.wood : PlayHubTheme.woodLight.opacity(0.42))
+                    .foregroundStyle(unlocked ? MiniArcadeTheme.wood : MiniArcadeTheme.woodLight.opacity(0.42))
                     .frame(width: 48, height: 48)
                     .background(
-                        unlocked ? PlayHubTheme.gold : PlayHubTheme.sand.opacity(0.56),
+                        unlocked ? MiniArcadeTheme.gold : MiniArcadeTheme.sand.opacity(0.56),
                         in: Circle()
                     )
 
@@ -294,19 +294,19 @@ private struct AchievementBadge: View {
                         .font(.system(size: 9, weight: .black))
                         .foregroundStyle(.white)
                         .frame(width: 20, height: 20)
-                        .background(PlayHubTheme.woodLight, in: Circle())
+                        .background(MiniArcadeTheme.woodLight, in: Circle())
                 }
             }
 
             Text(title.uppercased())
-                .font(PlayHubGameFont.display(11))
-                .foregroundStyle(PlayHubTheme.wood)
+                .font(MiniArcadeGameFont.display(11))
+                .foregroundStyle(MiniArcadeTheme.wood)
                 .lineLimit(1)
                 .minimumScaleFactor(0.72)
 
             Text(detail)
-                .font(PlayHubGameFont.label(9))
-                .foregroundStyle(PlayHubTheme.woodLight.opacity(0.70))
+                .font(MiniArcadeGameFont.label(9))
+                .foregroundStyle(MiniArcadeTheme.woodLight.opacity(0.70))
                 .multilineTextAlignment(.center)
                 .lineLimit(2)
         }

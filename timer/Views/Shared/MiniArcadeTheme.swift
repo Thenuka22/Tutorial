@@ -16,7 +16,7 @@ enum GameArt {
     static let settings = "GameSettingsButton"
 }
 
-enum PlayHubGameFont {
+enum MiniArcadeGameFont {
     static func display(_ size: CGFloat) -> Font {
         .system(size: size, weight: .black, design: .rounded)
     }
@@ -26,7 +26,7 @@ enum PlayHubGameFont {
     }
 }
 
-enum PlayHubTheme {
+enum MiniArcadeTheme {
     static let wood = Color(red: 0.25, green: 0.11, blue: 0.03)
     static let woodLight = Color(red: 0.43, green: 0.22, blue: 0.06)
     static let paper = wood
@@ -52,7 +52,7 @@ enum PlayHubTheme {
     }
 }
 
-struct PlayHubScreenBackground: View {
+struct MiniArcadeScreenBackground: View {
     @EnvironmentObject private var settings: GameSettingsStore
 
     var body: some View {
@@ -69,21 +69,21 @@ struct PlayHubScreenBackground: View {
     }
 }
 
-struct PlayHubPanelBackground: View {
+struct MiniArcadePanelBackground: View {
     var cornerRadius: CGFloat = 22
 
     var body: some View {
         RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-            .fill(PlayHubTheme.wood.opacity(0.95))
+            .fill(MiniArcadeTheme.wood.opacity(0.95))
             .overlay {
                 RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                    .strokeBorder(PlayHubTheme.lime.opacity(0.42), lineWidth: 1.5)
+                    .strokeBorder(MiniArcadeTheme.lime.opacity(0.42), lineWidth: 1.5)
             }
             .shadow(color: Color.black.opacity(0.32), radius: 12, x: 0, y: 7)
     }
 }
 
-struct PlayHubSymbolIcon: View {
+struct MiniArcadeSymbolIcon: View {
     let systemName: String
     let tint: Color
     var size: CGFloat = 52
@@ -93,12 +93,12 @@ struct PlayHubSymbolIcon: View {
         Image(systemName: systemName)
             .symbolRenderingMode(.monochrome)
             .font(.system(size: symbolSize, weight: .black))
-            .foregroundStyle(PlayHubTheme.wood)
+            .foregroundStyle(MiniArcadeTheme.wood)
             .frame(width: size, height: size, alignment: .center)
             .background(tint, in: RoundedRectangle(cornerRadius: size * 0.28, style: .continuous))
             .overlay {
                 RoundedRectangle(cornerRadius: size * 0.28, style: .continuous)
-                    .strokeBorder(PlayHubTheme.cream.opacity(0.48), lineWidth: 1)
+                    .strokeBorder(MiniArcadeTheme.cream.opacity(0.48), lineWidth: 1)
             }
             .accessibilityHidden(true)
     }
@@ -111,27 +111,27 @@ struct GameModeArtworkIcon: View {
 
     var body: some View {
         GameModeGlyph(mode: mode, size: iconSize)
-            .foregroundStyle(PlayHubTheme.wood)
+            .foregroundStyle(MiniArcadeTheme.wood)
             .frame(width: size, height: size)
             .background(
-                PlayHubTheme.tint(for: mode),
+                MiniArcadeTheme.tint(for: mode),
                 in: RoundedRectangle(cornerRadius: size * 0.28, style: .continuous)
             )
             .overlay {
                 RoundedRectangle(cornerRadius: size * 0.28, style: .continuous)
-                    .strokeBorder(PlayHubTheme.cream.opacity(0.52), lineWidth: 1.5)
+                    .strokeBorder(MiniArcadeTheme.cream.opacity(0.52), lineWidth: 1.5)
             }
             .accessibilityHidden(true)
     }
 }
 
-struct PlayHubPrimaryButtonStyle: ButtonStyle {
-    var tint: Color = PlayHubTheme.orange
+struct MiniArcadePrimaryButtonStyle: ButtonStyle {
+    var tint: Color = MiniArcadeTheme.orange
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .font(PlayHubGameFont.display(15))
-            .foregroundStyle(PlayHubTheme.wood)
+            .font(MiniArcadeGameFont.display(15))
+            .foregroundStyle(MiniArcadeTheme.wood)
             .frame(maxWidth: .infinity)
             .frame(minHeight: 52)
             .padding(.horizontal, 18)
@@ -141,7 +141,7 @@ struct PlayHubPrimaryButtonStyle: ButtonStyle {
             )
             .overlay {
                 RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .strokeBorder(PlayHubTheme.wood.opacity(0.28), lineWidth: 1)
+                    .strokeBorder(MiniArcadeTheme.wood.opacity(0.28), lineWidth: 1)
             }
             .shadow(color: Color.black.opacity(configuration.isPressed ? 0.08 : 0.28), radius: 8, x: 0, y: 5)
             .scaleEffect(configuration.isPressed ? 0.98 : 1)
@@ -230,21 +230,21 @@ struct GameSetupLabel: View {
     }
 }
 
-struct PlayHubSecondaryButtonStyle: ButtonStyle {
+struct MiniArcadeSecondaryButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .font(PlayHubGameFont.display(15))
-            .foregroundStyle(PlayHubTheme.wood)
+            .font(MiniArcadeGameFont.display(15))
+            .foregroundStyle(MiniArcadeTheme.wood)
             .frame(maxWidth: .infinity)
             .frame(minHeight: 52)
             .padding(.horizontal, 18)
             .background(
-                PlayHubTheme.sand.opacity(configuration.isPressed ? 0.78 : 1),
+                MiniArcadeTheme.sand.opacity(configuration.isPressed ? 0.78 : 1),
                 in: RoundedRectangle(cornerRadius: 16, style: .continuous)
             )
             .overlay {
                 RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .strokeBorder(PlayHubTheme.wood.opacity(0.28), lineWidth: 1)
+                    .strokeBorder(MiniArcadeTheme.wood.opacity(0.28), lineWidth: 1)
             }
             .scaleEffect(configuration.isPressed ? 0.98 : 1)
             .opacity(configuration.isPressed ? 0.82 : 1)
@@ -267,7 +267,7 @@ struct GameArtPanel<Content: View>: View {
     var body: some View {
         content
             .padding(contentInsets)
-            .background(PlayHubPanelBackground())
+            .background(MiniArcadePanelBackground())
     }
 }
 
@@ -276,8 +276,8 @@ struct GameArtTitle: View {
 
     var body: some View {
         Text(text)
-            .font(PlayHubGameFont.display(20))
-            .foregroundStyle(PlayHubTheme.ink)
+            .font(MiniArcadeGameFont.display(20))
+            .foregroundStyle(MiniArcadeTheme.ink)
             .frame(maxWidth: .infinity, alignment: .leading)
             .accessibilityAddTraits(.isHeader)
     }
@@ -295,7 +295,7 @@ struct GameArtProgressBar: View {
     var body: some View {
         ProgressView(value: fraction)
             .progressViewStyle(.linear)
-            .tint(PlayHubTheme.lime)
+            .tint(MiniArcadeTheme.lime)
             .scaleEffect(x: 1, y: 1.8, anchor: .center)
             .padding(.vertical, 8)
             .accessibilityLabel("Progress")
@@ -313,11 +313,11 @@ struct ArcadeGameBar: View {
         HStack(spacing: 10) {
             VStack(alignment: .leading, spacing: 2) {
                 Text(variantLabel.uppercased())
-                    .font(PlayHubGameFont.label(13))
+                    .font(MiniArcadeGameFont.label(13))
                     .lineLimit(1)
                 Text(statusLabel.uppercased())
-                    .font(PlayHubGameFont.label(10))
-                    .foregroundStyle(PlayHubTheme.lime.opacity(0.82))
+                    .font(MiniArcadeGameFont.label(10))
+                    .foregroundStyle(MiniArcadeTheme.lime.opacity(0.82))
                     .lineLimit(1)
             }
 
@@ -326,19 +326,19 @@ struct ArcadeGameBar: View {
             if canConfigure {
                 Button(action: onSetup) {
                     GameSetupLabel()
-                        .font(PlayHubGameFont.label(11))
-                        .foregroundStyle(PlayHubTheme.wood)
+                        .font(MiniArcadeGameFont.label(11))
+                        .foregroundStyle(MiniArcadeTheme.wood)
                         .padding(.horizontal, 11)
                         .frame(height: 34)
-                        .background(PlayHubTheme.lime, in: Capsule())
+                        .background(MiniArcadeTheme.lime, in: Capsule())
                 }
                 .buttonStyle(.plain)
             }
         }
-        .foregroundStyle(PlayHubTheme.ink)
+        .foregroundStyle(MiniArcadeTheme.ink)
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
-        .background(PlayHubPanelBackground(cornerRadius: 16))
+        .background(MiniArcadePanelBackground(cornerRadius: 16))
     }
 }
 
@@ -356,8 +356,8 @@ struct AdventureArtSlice: View {
 struct AdventureButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .font(PlayHubGameFont.display(14))
-            .foregroundStyle(PlayHubTheme.wood)
+            .font(MiniArcadeGameFont.display(14))
+            .foregroundStyle(MiniArcadeTheme.wood)
             .lineLimit(1)
             .minimumScaleFactor(0.72)
             .frame(maxWidth: .infinity, minHeight: 50)

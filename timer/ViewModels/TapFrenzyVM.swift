@@ -205,8 +205,8 @@ enum TapTargetMood: CaseIterable, Equatable {
 
     var color: Color {
         switch self {
-        case .normal: return PlayHubTheme.orange
-        case .bonus: return PlayHubTheme.mint
+        case .normal: return MiniArcadeTheme.orange
+        case .bonus: return MiniArcadeTheme.mint
         case .trap: return Color.gray
         }
     }

@@ -11,7 +11,7 @@ struct TapFrenzyView: View {
 
     var body: some View {
         ZStack {
-            PlayHubScreenBackground()
+            MiniArcadeScreenBackground()
 
             ScrollView {
                 VStack(spacing: 14) {
@@ -68,9 +68,9 @@ struct TapFrenzyView: View {
             GameArtProgressBar(value: viewModel.roundDuration - viewModel.timeRemaining, total: viewModel.roundDuration)
 
             HStack(spacing: 10) {
-                ScoreBadge(title: "Time", value: String(format: "%.1fs", viewModel.timeRemaining), symbol: "clock.fill", tint: PlayHubTheme.orange)
-                ScoreBadge(title: "Score", value: "\(viewModel.score)", symbol: "trophy.fill", tint: PlayHubTheme.gold)
-                ScoreBadge(title: "Best", value: "\(store.bestScore(for: .tapFrenzy, variantID: options.variantID))", symbol: "crown.fill", tint: PlayHubTheme.mint)
+                ScoreBadge(title: "Time", value: String(format: "%.1fs", viewModel.timeRemaining), symbol: "clock.fill", tint: MiniArcadeTheme.orange)
+                ScoreBadge(title: "Score", value: "\(viewModel.score)", symbol: "trophy.fill", tint: MiniArcadeTheme.gold)
+                ScoreBadge(title: "Best", value: "\(store.bestScore(for: .tapFrenzy, variantID: options.variantID))", symbol: "crown.fill", tint: MiniArcadeTheme.mint)
             }
         }
     }
@@ -89,10 +89,10 @@ struct TapFrenzyView: View {
         GeometryReader { proxy in
             ZStack {
                 RoundedRectangle(cornerRadius: 22, style: .continuous)
-                    .fill(PlayHubTheme.woodLight.opacity(0.94))
+                    .fill(MiniArcadeTheme.woodLight.opacity(0.94))
                     .overlay(
                         RoundedRectangle(cornerRadius: 22, style: .continuous)
-                            .stroke(PlayHubTheme.lime.opacity(0.58), lineWidth: 2)
+                            .stroke(MiniArcadeTheme.lime.opacity(0.58), lineWidth: 2)
                     )
                     .shadow(color: Color.black.opacity(0.32), radius: 12, x: 0, y: 7)
 
@@ -100,13 +100,13 @@ struct TapFrenzyView: View {
                     VStack(spacing: 10) {
                         GameModeArtworkIcon(mode: .tapFrenzy, size: 76, iconSize: 44)
                         Text("Tap as fast as you can.")
-                            .font(PlayHubGameFont.display(22))
-                            .foregroundStyle(PlayHubTheme.lime)
+                            .font(MiniArcadeGameFont.display(22))
+                            .foregroundStyle(MiniArcadeTheme.lime)
                             .gameTextShadow()
                         Text(options.trapsEnabled ? "Combos, bonuses, moving targets, and traps are active." : "Focus mode keeps traps away so you can chase clean combos.")
-                            .font(PlayHubGameFont.label(14))
+                            .font(MiniArcadeGameFont.label(14))
                             .multilineTextAlignment(.center)
-                            .foregroundStyle(PlayHubTheme.cream.opacity(0.90))
+                            .foregroundStyle(MiniArcadeTheme.cream.opacity(0.90))
                             .gameTextShadow()
                             .padding(.horizontal, 24)
                     }
@@ -119,16 +119,16 @@ struct TapFrenzyView: View {
                         VStack(spacing: 8) {
                             TapTargetGlyph(mood: viewModel.targetMood)
                             Text(viewModel.targetMood.buttonTitle)
-                                .font(PlayHubGameFont.display(15))
+                                .font(MiniArcadeGameFont.display(15))
                                 .lineLimit(1)
                                 .minimumScaleFactor(0.75)
                         }
-                        .foregroundStyle(PlayHubTheme.wood)
+                        .foregroundStyle(MiniArcadeTheme.wood)
                         .frame(width: viewModel.targetSize, height: viewModel.targetSize)
                         .background(viewModel.targetMood.color, in: Circle())
                         .overlay(
                             Circle()
-                                .stroke(PlayHubTheme.cream.opacity(0.72), lineWidth: 4)
+                                .stroke(MiniArcadeTheme.cream.opacity(0.72), lineWidth: 4)
                         )
                         .shadow(
                             color: viewModel.targetMood.color.opacity(0.36),
@@ -150,19 +150,19 @@ struct TapFrenzyView: View {
                     Spacer()
                     HStack {
                         Label("Combo x\(viewModel.multiplier)", systemImage: "flame.fill")
-                            .font(PlayHubGameFont.label(13))
-                            .foregroundStyle(PlayHubTheme.wood)
+                            .font(MiniArcadeGameFont.label(13))
+                            .foregroundStyle(MiniArcadeTheme.wood)
                             .padding(.horizontal, 12)
                             .padding(.vertical, 8)
-                            .background(PlayHubTheme.sand, in: Capsule())
+                            .background(MiniArcadeTheme.sand, in: Capsule())
                         Spacer()
                         if viewModel.bonusBurstActive {
                             Label("Double Points", systemImage: "sparkles")
-                                .font(PlayHubGameFont.label(13))
-                                .foregroundStyle(PlayHubTheme.wood)
+                                .font(MiniArcadeGameFont.label(13))
+                                .foregroundStyle(MiniArcadeTheme.wood)
                                 .padding(.horizontal, 12)
                                 .padding(.vertical, 8)
-                                .background(PlayHubTheme.lime, in: Capsule())
+                                .background(MiniArcadeTheme.lime, in: Capsule())
                         }
                     }
                     .padding(14)
@@ -198,10 +198,10 @@ struct TapFrenzyView: View {
                     }
                 }
             }
-            .font(PlayHubGameFont.label(13))
-            .tint(PlayHubTheme.lime)
+            .font(MiniArcadeGameFont.label(13))
+            .tint(MiniArcadeTheme.lime)
             .scrollContentBackground(.hidden)
-            .background(PlayHubTheme.wood)
+            .background(MiniArcadeTheme.wood)
             .navigationTitle("Tap Frenzy Setup")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -228,9 +228,9 @@ struct TapFrenzyView: View {
                 title: viewModel.isRunning ? "RESET" : "START",
                 mode: .tapFrenzy
             )
-                .font(PlayHubGameFont.display(15))
+                .font(MiniArcadeGameFont.display(15))
         }
-        .buttonStyle(PlayHubPrimaryButtonStyle(tint: viewModel.isRunning ? PlayHubTheme.berry : PlayHubTheme.orange))
+        .buttonStyle(MiniArcadePrimaryButtonStyle(tint: viewModel.isRunning ? MiniArcadeTheme.berry : MiniArcadeTheme.orange))
     }
 
     private var presetBinding: Binding<TapFrenzyPreset> {
@@ -300,10 +300,10 @@ private struct TapTargetGlyph: View {
                 GameModeGlyph(mode: .tapFrenzy, size: 34)
             case .bonus:
                 Text("+2")
-                    .font(PlayHubGameFont.display(28).monospacedDigit())
+                    .font(MiniArcadeGameFont.display(28).monospacedDigit())
             case .trap:
                 Text("-2")
-                    .font(PlayHubGameFont.display(28).monospacedDigit())
+                    .font(MiniArcadeGameFont.display(28).monospacedDigit())
             }
         }
         .frame(width: 44, height: 40)

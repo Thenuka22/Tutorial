@@ -42,7 +42,7 @@ struct ResultView: View {
             let boardHeight = boardWidth / 0.62
 
             ZStack {
-                PlayHubScreenBackground()
+                MiniArcadeScreenBackground()
                     .frame(width: proxy.size.width, height: proxy.size.height)
                     .clipped()
 
@@ -61,8 +61,8 @@ struct ResultView: View {
 
             VStack(spacing: 12) {
                 Text(resultTitle)
-                    .font(PlayHubGameFont.display(24))
-                    .foregroundStyle(PlayHubTheme.wood)
+                    .font(MiniArcadeGameFont.display(24))
+                    .foregroundStyle(MiniArcadeTheme.wood)
                     .lineLimit(1)
                     .minimumScaleFactor(0.72)
                     .frame(maxWidth: .infinity, minHeight: 58)
@@ -75,8 +75,8 @@ struct ResultView: View {
                     )
 
                 Text(displayTitle.uppercased())
-                    .font(PlayHubGameFont.label(12))
-                    .foregroundStyle(PlayHubTheme.woodLight)
+                    .font(MiniArcadeGameFont.label(12))
+                    .foregroundStyle(MiniArcadeTheme.woodLight)
                     .multilineTextAlignment(.center)
                     .lineLimit(2)
                     .minimumScaleFactor(0.72)
@@ -86,8 +86,8 @@ struct ResultView: View {
                         Image(systemName: index < starCount ? "star.fill" : "star")
                             .symbolRenderingMode(.monochrome)
                             .font(.system(size: index == 1 ? 54 : 40, weight: .black))
-                            .foregroundStyle(index < starCount ? PlayHubTheme.gold : PlayHubTheme.sand.opacity(0.56))
-                            .shadow(color: PlayHubTheme.orange, radius: 0, x: 2, y: 3)
+                            .foregroundStyle(index < starCount ? MiniArcadeTheme.gold : MiniArcadeTheme.sand.opacity(0.56))
+                            .shadow(color: MiniArcadeTheme.orange, radius: 0, x: 2, y: 3)
                             .frame(width: index == 1 ? 62 : 48, height: 64)
                     }
                 }
@@ -96,24 +96,24 @@ struct ResultView: View {
 
                 VStack(spacing: 5) {
                     Text("SCORE")
-                        .font(PlayHubGameFont.display(13))
-                        .foregroundStyle(PlayHubTheme.woodLight)
+                        .font(MiniArcadeGameFont.display(13))
+                        .foregroundStyle(MiniArcadeTheme.woodLight)
 
                     Text("\(score)")
-                        .font(PlayHubGameFont.display(34).monospacedDigit())
-                        .foregroundStyle(PlayHubTheme.orange)
+                        .font(MiniArcadeGameFont.display(34).monospacedDigit())
+                        .foregroundStyle(MiniArcadeTheme.orange)
                         .lineLimit(1)
                         .minimumScaleFactor(0.60)
                         .frame(maxWidth: .infinity, minHeight: 52)
                         .background(Color.white, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
                         .overlay {
                             RoundedRectangle(cornerRadius: 12, style: .continuous)
-                                .strokeBorder(PlayHubTheme.woodLight, lineWidth: 5)
+                                .strokeBorder(MiniArcadeTheme.woodLight, lineWidth: 5)
                         }
 
                     Text("BEST \(bestScore)")
-                        .font(PlayHubGameFont.label(11).monospacedDigit())
-                        .foregroundStyle(PlayHubTheme.woodLight)
+                        .font(MiniArcadeGameFont.label(11).monospacedDigit())
+                        .foregroundStyle(MiniArcadeTheme.woodLight)
                 }
 
                 actionButtons

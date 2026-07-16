@@ -11,7 +11,7 @@ struct LightItUpView: View {
 
     var body: some View {
         ZStack {
-            PlayHubScreenBackground()
+            MiniArcadeScreenBackground()
 
             ScrollView {
                 VStack(spacing: 14) {
@@ -76,8 +76,8 @@ struct LightItUpView: View {
             }
 
             HStack(spacing: 10) {
-                ScoreBadge(title: "Best", value: "\(store.bestScore(for: .lightItUp, variantID: options.variantID))", symbol: "crown.fill", tint: PlayHubTheme.gold)
-                ScoreBadge(title: "Time", value: "\(viewModel.remaining)s", symbol: "clock.fill", tint: PlayHubTheme.sky)
+                ScoreBadge(title: "Best", value: "\(store.bestScore(for: .lightItUp, variantID: options.variantID))", symbol: "crown.fill", tint: MiniArcadeTheme.gold)
+                ScoreBadge(title: "Time", value: "\(viewModel.remaining)s", symbol: "clock.fill", tint: MiniArcadeTheme.sky)
             }
         }
     }
@@ -89,22 +89,22 @@ struct LightItUpView: View {
                     viewModel.tapCard(card)
                 } label: {
                     RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .fill(card.isLit ? levelTint : PlayHubTheme.woodLight)
+                        .fill(card.isLit ? levelTint : MiniArcadeTheme.woodLight)
                         .frame(height: 90)
                         .overlay {
                             if card.isLit {
                                 GameModeGlyph(mode: .lightItUp, size: 36)
-                                    .foregroundStyle(PlayHubTheme.wood)
+                                    .foregroundStyle(MiniArcadeTheme.wood)
                                     .frame(width: 44, height: 44, alignment: .center)
                             } else {
                                 Circle()
-                                    .fill(PlayHubTheme.wood.opacity(0.44))
+                                    .fill(MiniArcadeTheme.wood.opacity(0.44))
                                     .frame(width: 14, height: 14)
                             }
                         }
                         .overlay(
                             RoundedRectangle(cornerRadius: 16, style: .continuous)
-                                .strokeBorder(card.isLit ? PlayHubTheme.cream.opacity(0.72) : PlayHubTheme.lime.opacity(0.26), lineWidth: 2)
+                                .strokeBorder(card.isLit ? MiniArcadeTheme.cream.opacity(0.72) : MiniArcadeTheme.lime.opacity(0.26), lineWidth: 2)
                         )
                         .shadow(color: Color.black.opacity(card.isLit ? 0.36 : 0.18), radius: 8, x: 0, y: 5)
                         .scaleEffect(card.isLit ? 1.03 : 1.0)
@@ -115,7 +115,7 @@ struct LightItUpView: View {
             }
         }
         .padding(12)
-        .background(PlayHubPanelBackground(cornerRadius: 22))
+        .background(MiniArcadePanelBackground(cornerRadius: 22))
     }
 
     private var customizationSheet: some View {
@@ -142,10 +142,10 @@ struct LightItUpView: View {
                     Stepper("Extra Lights \(options.extraLightsPerTick)", value: extraLightsBinding, in: 0...2)
                 }
             }
-            .font(PlayHubGameFont.label(13))
-            .tint(PlayHubTheme.lime)
+            .font(MiniArcadeGameFont.label(13))
+            .tint(MiniArcadeTheme.lime)
             .scrollContentBackground(.hidden)
-            .background(PlayHubTheme.wood)
+            .background(MiniArcadeTheme.wood)
             .navigationTitle("Light It Up Setup")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -169,25 +169,25 @@ struct LightItUpView: View {
                     title: viewModel.isRunning ? "RESTART" : "START",
                     mode: .lightItUp
                 )
-                    .font(PlayHubGameFont.display(15))
+                    .font(MiniArcadeGameFont.display(15))
             }
-            .buttonStyle(PlayHubPrimaryButtonStyle(tint: levelTint))
+            .buttonStyle(MiniArcadePrimaryButtonStyle(tint: levelTint))
 
             Button(action: viewModel.stop) {
                 Text("STOP")
-                    .font(PlayHubGameFont.display(15))
+                    .font(MiniArcadeGameFont.display(15))
             }
-            .buttonStyle(PlayHubSecondaryButtonStyle())
+            .buttonStyle(MiniArcadeSecondaryButtonStyle())
             .disabled(!viewModel.isRunning)
         }
     }
 
     private var levelTint: Color {
         switch viewModel.level {
-        case .l1: return PlayHubTheme.sky
-        case .l2: return PlayHubTheme.mint
-        case .l3: return PlayHubTheme.gold
-        case .l4: return PlayHubTheme.berry
+        case .l1: return MiniArcadeTheme.sky
+        case .l2: return MiniArcadeTheme.mint
+        case .l3: return MiniArcadeTheme.gold
+        case .l4: return MiniArcadeTheme.berry
         }
     }
 

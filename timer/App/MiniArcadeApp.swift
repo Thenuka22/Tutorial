@@ -1,7 +1,7 @@
 import SwiftUI
 
 @main
-struct GameArcadeApp: App {
+struct MiniArcadeApp: App {
     @StateObject private var sessionStore = GameSessionStore.shared
     @StateObject private var settingsStore = GameSettingsStore.shared
     @StateObject private var locationService = LocationService.shared
@@ -9,7 +9,7 @@ struct GameArcadeApp: App {
     var body: some Scene {
         WindowGroup {
             LaunchSequenceView {
-                GameArcadeShellView()
+                MiniArcadeShellView()
                     .task {
                         locationService.requestPermission()
                         AudioService.shared.sync(with: settingsStore)
@@ -22,7 +22,7 @@ struct GameArcadeApp: App {
     }
 }
 
-struct GameArcadeShellView: View {
+struct MiniArcadeShellView: View {
     var body: some View {
         TabView {
             NavigationStack {
@@ -57,21 +57,21 @@ struct GameArcadeShellView: View {
                 Label("Settings", systemImage: "gearshape.fill")
             }
         }
-        .tint(PlayHubTheme.gold)
+        .tint(MiniArcadeTheme.gold)
         .preferredColorScheme(.dark)
     }
 }
 
 private extension View {
     func arcadeTabBarStyle() -> some View {
-        toolbarBackground(PlayHubTheme.wood, for: .tabBar)
+        toolbarBackground(MiniArcadeTheme.wood, for: .tabBar)
             .toolbarBackground(.visible, for: .tabBar)
             .toolbarColorScheme(.dark, for: .tabBar)
     }
 }
 
 #Preview {
-    GameArcadeShellView()
+    MiniArcadeShellView()
         .environmentObject(GameSessionStore.shared)
         .environmentObject(GameSettingsStore.shared)
         .environmentObject(LocationService.shared)

@@ -10,7 +10,7 @@ struct SettingsTab: View {
 
     var body: some View {
         ZStack {
-            PlayHubScreenBackground()
+            MiniArcadeScreenBackground()
 
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
@@ -30,10 +30,10 @@ struct SettingsTab: View {
         }
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
-        .toolbarBackground(PlayHubTheme.wood, for: .navigationBar)
+        .toolbarBackground(MiniArcadeTheme.wood, for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
         .toolbarColorScheme(.dark, for: .navigationBar)
-        .confirmationDialog("Reset all Game Arcade stats?", isPresented: $confirmReset, titleVisibility: .visible) {
+        .confirmationDialog("Reset all MiNi ARCADE stats?", isPresented: $confirmReset, titleVisibility: .visible) {
             Button("Reset All Stats", role: .destructive) {
                 store.resetAll()
             }
@@ -55,17 +55,17 @@ struct SettingsTab: View {
 
             VStack(alignment: .leading, spacing: 3) {
                 Text("SETTINGS")
-                    .font(PlayHubGameFont.display(26))
-                    .foregroundStyle(PlayHubTheme.lime)
+                    .font(MiniArcadeGameFont.display(26))
+                    .foregroundStyle(MiniArcadeTheme.lime)
                 Text("Tune every game your way.")
-                    .font(PlayHubGameFont.label(12))
-                    .foregroundStyle(PlayHubTheme.mutedInk)
+                    .font(MiniArcadeGameFont.label(12))
+                    .foregroundStyle(MiniArcadeTheme.mutedInk)
             }
 
             Spacer()
         }
         .padding(15)
-        .background(PlayHubPanelBackground(cornerRadius: 22))
+        .background(MiniArcadePanelBackground(cornerRadius: 22))
     }
 
     private var audioSection: some View {
@@ -100,7 +100,7 @@ struct SettingsTab: View {
                 title: "Sound Volume",
                 symbol: "speaker.wave.2.fill",
                 value: $settings.soundVolume,
-                tint: PlayHubTheme.orange,
+                tint: MiniArcadeTheme.orange,
                 isEnabled: settings.soundEffectsEnabled
             )
 
@@ -108,7 +108,7 @@ struct SettingsTab: View {
                 title: "Music Volume",
                 symbol: "music.note",
                 value: $settings.musicVolume,
-                tint: PlayHubTheme.sky,
+                tint: MiniArcadeTheme.sky,
                 isEnabled: settings.musicEnabled
             )
         }
@@ -137,7 +137,7 @@ struct SettingsTab: View {
                                 if settings.selectedBackgroundTheme == theme {
                                     Image(systemName: "checkmark.circle.fill")
                                         .font(.system(size: 20, weight: .black))
-                                        .foregroundStyle(PlayHubTheme.lime, PlayHubTheme.wood)
+                                        .foregroundStyle(MiniArcadeTheme.lime, MiniArcadeTheme.wood)
                                         .padding(6)
                                 }
                             }
@@ -145,14 +145,14 @@ struct SettingsTab: View {
                             .overlay {
                                 RoundedRectangle(cornerRadius: 12, style: .continuous)
                                     .strokeBorder(
-                                        settings.selectedBackgroundTheme == theme ? PlayHubTheme.lime : PlayHubTheme.cream.opacity(0.34),
+                                        settings.selectedBackgroundTheme == theme ? MiniArcadeTheme.lime : MiniArcadeTheme.cream.opacity(0.34),
                                         lineWidth: settings.selectedBackgroundTheme == theme ? 3 : 1
                                     )
                             }
 
                             Text(theme.displayName)
-                                .font(PlayHubGameFont.label(11))
-                                .foregroundStyle(PlayHubTheme.ink)
+                                .font(MiniArcadeGameFont.label(11))
+                                .foregroundStyle(MiniArcadeTheme.ink)
                                 .lineLimit(1)
                                 .minimumScaleFactor(0.72)
                         }
@@ -217,8 +217,8 @@ struct SettingsTab: View {
                     set: { notificationService.setNotificationsEnabled($0) }
                 )
             )
-            .font(PlayHubGameFont.label(14))
-            .tint(PlayHubTheme.lime)
+            .font(MiniArcadeGameFont.label(14))
+            .tint(MiniArcadeTheme.lime)
             .padding(12)
             .background(settingRowBackground)
 
@@ -230,15 +230,15 @@ struct SettingsTab: View {
                 ),
                 displayedComponents: .hourAndMinute
             )
-            .font(PlayHubGameFont.label(14))
-            .tint(PlayHubTheme.lime)
+            .font(MiniArcadeGameFont.label(14))
+            .tint(MiniArcadeTheme.lime)
             .padding(12)
             .background(settingRowBackground)
             .disabled(!notificationService.notificationsEnabled)
 
             Text(notificationService.permissionLabel)
                 .font(.caption)
-                .foregroundStyle(PlayHubTheme.mutedInk)
+                .foregroundStyle(MiniArcadeTheme.mutedInk)
         }
         .padding(16)
         .background(panelBackground)
@@ -250,12 +250,12 @@ struct SettingsTab: View {
 
             Text(locationService.permissionLabel)
                 .font(.subheadline)
-                .foregroundStyle(PlayHubTheme.mutedInk)
+                .foregroundStyle(MiniArcadeTheme.mutedInk)
 
             if let lastErrorMessage = locationService.lastErrorMessage {
                 Text(lastErrorMessage)
                     .font(.caption)
-                    .foregroundStyle(PlayHubTheme.berry)
+                    .foregroundStyle(MiniArcadeTheme.berry)
             }
 
             Button {
@@ -263,7 +263,7 @@ struct SettingsTab: View {
             } label: {
                 Label("Refresh Location", systemImage: "location.circle.fill")
             }
-            .buttonStyle(PlayHubSecondaryButtonStyle())
+            .buttonStyle(MiniArcadeSecondaryButtonStyle())
         }
         .padding(16)
         .background(panelBackground)
@@ -275,44 +275,44 @@ struct SettingsTab: View {
 
             Text("\(store.sessions.count) saved sessions")
                 .font(.subheadline)
-                .foregroundStyle(PlayHubTheme.mutedInk)
+                .foregroundStyle(MiniArcadeTheme.mutedInk)
 
             Button(role: .destructive) {
                 confirmReset = true
             } label: {
                 Label("Reset All Stats", systemImage: "trash")
             }
-            .buttonStyle(PlayHubSecondaryButtonStyle())
+            .buttonStyle(MiniArcadeSecondaryButtonStyle())
         }
         .padding(16)
         .background(panelBackground)
     }
 
     private var panelBackground: some View {
-        PlayHubPanelBackground()
+        MiniArcadePanelBackground()
     }
 
     private var settingRowBackground: some View {
         RoundedRectangle(cornerRadius: 14, style: .continuous)
-            .fill(PlayHubTheme.woodLight.opacity(0.72))
+            .fill(MiniArcadeTheme.woodLight.opacity(0.72))
             .overlay {
                 RoundedRectangle(cornerRadius: 14, style: .continuous)
-                    .strokeBorder(PlayHubTheme.lime.opacity(0.18), lineWidth: 1)
+                    .strokeBorder(MiniArcadeTheme.lime.opacity(0.18), lineWidth: 1)
             }
     }
 
     private func sectionTitle(_ title: String, systemImage: String) -> some View {
         HStack(spacing: 9) {
-            PlayHubSymbolIcon(
+            MiniArcadeSymbolIcon(
                 systemName: systemImage,
-                tint: PlayHubTheme.lime,
+                tint: MiniArcadeTheme.lime,
                 size: 32,
                 symbolSize: 14
             )
 
             Text(title)
-                .font(PlayHubGameFont.display(16))
-                .foregroundStyle(PlayHubTheme.lime)
+                .font(MiniArcadeGameFont.display(16))
+                .foregroundStyle(MiniArcadeTheme.lime)
         }
         .accessibilityAddTraits(.isHeader)
     }
@@ -326,8 +326,8 @@ struct SettingsTab: View {
     ) -> some View {
         VStack(alignment: .leading, spacing: 7) {
             Label(title, systemImage: symbol)
-                .font(PlayHubGameFont.label(13))
-                .foregroundStyle(PlayHubTheme.ink)
+                .font(MiniArcadeGameFont.label(13))
+                .foregroundStyle(MiniArcadeTheme.ink)
 
             Slider(value: value, in: 0...1)
                 .tint(tint)
@@ -346,8 +346,8 @@ struct SettingsTab: View {
     ) -> some View {
         HStack(spacing: 10) {
             Label(title, systemImage: systemImage)
-                .font(PlayHubGameFont.label(13))
-                .foregroundStyle(PlayHubTheme.ink)
+                .font(MiniArcadeGameFont.label(13))
+                .foregroundStyle(MiniArcadeTheme.ink)
 
             Spacer(minLength: 6)
 
@@ -358,7 +358,7 @@ struct SettingsTab: View {
             }
             .pickerStyle(.menu)
             .labelsHidden()
-            .tint(PlayHubTheme.lime)
+            .tint(MiniArcadeTheme.lime)
         }
         .padding(12)
         .background(settingRowBackground)
@@ -381,14 +381,14 @@ struct SettingsTab: View {
 
                 Text(label)
                     .font(.system(size: 12, weight: .black, design: .rounded))
-                    .foregroundStyle(PlayHubTheme.ink)
+                    .foregroundStyle(MiniArcadeTheme.ink)
 
                 Text(isOn.wrappedValue ? "ON" : "OFF")
-                    .font(PlayHubGameFont.label(9))
-                    .foregroundStyle(PlayHubTheme.wood)
+                    .font(MiniArcadeGameFont.label(9))
+                    .foregroundStyle(MiniArcadeTheme.wood)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 3)
-                    .background(isOn.wrappedValue ? PlayHubTheme.lime : PlayHubTheme.sand, in: Capsule())
+                    .background(isOn.wrappedValue ? MiniArcadeTheme.lime : MiniArcadeTheme.sand, in: Capsule())
             }
             .frame(maxWidth: .infinity)
         }
