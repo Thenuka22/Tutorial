@@ -29,9 +29,6 @@ struct LightItUpView: View {
             .scrollIndicators(.hidden)
 
             if viewModel.didFinishRound {
-                Color.black.opacity(0.34)
-                    .ignoresSafeArea()
-
                 ResultView(
                     mode: .lightItUp,
                     score: viewModel.score,
@@ -54,6 +51,7 @@ struct LightItUpView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbarBackground(.hidden, for: .navigationBar)
         .toolbarColorScheme(.dark, for: .navigationBar)
+        .toolbar(viewModel.didFinishRound ? .hidden : .visible, for: .navigationBar)
         .toolbar(.hidden, for: .tabBar)
         .sheet(isPresented: $showCustomization) {
             customizationSheet

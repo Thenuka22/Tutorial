@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct ResultView: View {
+    @Environment(\.dismiss) private var dismiss
+
     let mode: GameMode
     let score: Int
     let bestScore: Int
@@ -17,84 +19,140 @@ struct ResultView: View {
     }
 
     private var isBestScore: Bool {
-        score >= bestScore
+        score > 0 && score >= bestScore
+    }
+
+    private var resultTitle: String {
+        if isBestScore { return "NEW BEST" }
+        if starCount == 2 { return "GREAT RUN" }
+        return "ROUND COMPLETE"
+    }
+
+    private var starCount: Int {
+        guard score > 0 else { return 1 }
+        guard bestScore > 0 else { return 3 }
+        if score >= bestScore { return 3 }
+        if Double(score) >= Double(bestScore) * 0.70 { return 2 }
+        return 1
     }
 
     var body: some View {
-        VStack(spacing: 18) {
-            PlayHubSymbolIcon(
-                systemName: mode.symbolName,
-                tint: PlayHubTheme.tint(for: mode),
-                size: 72,
-                symbolSize: 30
-            )
+        GeometryReader { proxy in
+            let boardWidth = min(max(proxy.size.width - 32, 280), 370)
+            let boardHeight = boardWidth / 0.62
 
-            VStack(spacing: 6) {
-                Text(isBestScore ? "New Best" : "Round Complete")
-                    .font(PlayHubGameFont.display(24))
-                    .foregroundStyle(PlayHubTheme.ink)
+            ZStack {
+                Image(GameArt.scoreBackground)
+                    .resizable()
+                    .aspectRatio(9.0 / 16.0, contentMode: .fill)
+                    .frame(width: proxy.size.width, height: proxy.size.height)
+                    .clipped()
+                    .accessibilityHidden(true)
 
-                Text(displayTitle)
-                    .font(PlayHubGameFont.label(14))
-                    .foregroundStyle(PlayHubTheme.mutedInk)
-                    .multilineTextAlignment(.center)
+                resultBoard
+                    .frame(width: boardWidth, height: boardHeight)
+                    .position(x: proxy.size.width / 2, y: proxy.size.height * 0.58)
             }
-
-            HStack(spacing: 8) {
-                ForEach(0..<3, id: \.self) { index in
-                    Image(systemName: index == 2 && !isBestScore ? "star" : "star.fill")
-                        .symbolRenderingMode(.hierarchical)
-                        .font(.title2.weight(.semibold))
-                        .foregroundStyle(index == 2 && !isBestScore ? PlayHubTheme.mutedInk : PlayHubTheme.gold)
-                        .frame(width: 32, height: 32, alignment: .center)
-                }
-            }
-            .accessibilityHidden(true)
-
-            VStack(spacing: 4) {
-                Text("\(score)")
-                    .font(PlayHubGameFont.display(40).monospacedDigit())
-                    .foregroundStyle(PlayHubTheme.tint(for: mode))
-                Text("Best \(bestScore)")
-                    .font(PlayHubGameFont.label(15).monospacedDigit())
-                    .foregroundStyle(PlayHubTheme.mutedInk)
-            }
-
-            actionButtons
+            .frame(width: proxy.size.width, height: proxy.size.height)
         }
-        .padding(24)
-        .frame(maxWidth: 560)
-        .background(PlayHubPanelBackground(cornerRadius: 28))
-        .padding(24)
+        .ignoresSafeArea()
+    }
+
+    private var resultBoard: some View {
+        ZStack {
+            PixelArtSlice(imageName: GameArt.pixelPanelBrown, capInset: 11)
+
+            PixelArtSlice(imageName: GameArt.pixelPanelTan, capInset: 11)
+                .padding(10)
+
+            VStack(spacing: 12) {
+                Text(resultTitle)
+                    .font(PlayHubGameFont.display(24))
+                    .foregroundStyle(PlayHubTheme.wood)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.72)
+                    .frame(maxWidth: .infinity, minHeight: 58)
+                    .padding(.horizontal, 14)
+                    .background(PixelArtSlice(imageName: GameArt.pixelButtonYellow))
+
+                Text(displayTitle.uppercased())
+                    .font(PlayHubGameFont.label(12))
+                    .foregroundStyle(PlayHubTheme.woodLight)
+                    .multilineTextAlignment(.center)
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.72)
+
+                HStack(alignment: .center, spacing: 10) {
+                    ForEach(0..<3, id: \.self) { index in
+                        Image(systemName: index < starCount ? "star.fill" : "star")
+                            .symbolRenderingMode(.monochrome)
+                            .font(.system(size: index == 1 ? 54 : 40, weight: .black))
+                            .foregroundStyle(index < starCount ? PlayHubTheme.gold : PlayHubTheme.sand.opacity(0.56))
+                            .shadow(color: PlayHubTheme.orange, radius: 0, x: 2, y: 3)
+                            .frame(width: index == 1 ? 62 : 48, height: 64)
+                    }
+                }
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel("\(starCount) out of 3 stars")
+
+                VStack(spacing: 5) {
+                    Text("SCORE")
+                        .font(PlayHubGameFont.display(13))
+                        .foregroundStyle(PlayHubTheme.woodLight)
+
+                    Text("\(score)")
+                        .font(PlayHubGameFont.display(34).monospacedDigit())
+                        .foregroundStyle(PlayHubTheme.orange)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.60)
+                        .frame(maxWidth: .infinity, minHeight: 52)
+                        .background(Color.white, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                        .overlay {
+                            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                .strokeBorder(PlayHubTheme.woodLight, lineWidth: 5)
+                        }
+
+                    Text("BEST \(bestScore)")
+                        .font(PlayHubGameFont.label(11).monospacedDigit())
+                        .foregroundStyle(PlayHubTheme.woodLight)
+                }
+
+                actionButtons
+            }
+            .padding(26)
+        }
     }
 
     private var actionButtons: some View {
-        ViewThatFits(in: .horizontal) {
-            HStack(spacing: 12) {
-                shareButton
-                playAgainButton
+        VStack(spacing: 9) {
+            HStack(spacing: 10) {
+                Button(action: onPlayAgain) {
+                    Label("REPLAY", systemImage: "arrow.counterclockwise")
+                }
+                .buttonStyle(PixelArtButtonStyle(imageName: GameArt.pixelButtonYellow))
+
+                Button {
+                    dismiss()
+                } label: {
+                    Label("HOME", systemImage: "house.fill")
+                }
+                .buttonStyle(
+                    PixelArtButtonStyle(
+                        imageName: GameArt.pixelButtonBlue,
+                        foreground: .white
+                    )
+                )
             }
 
-            VStack(spacing: 12) {
-                playAgainButton
-                shareButton
+            ShareLink(item: shareText) {
+                Label("SHARE SCORE", systemImage: "square.and.arrow.up")
             }
+            .buttonStyle(
+                PixelArtButtonStyle(
+                    imageName: GameArt.pixelPanelBrown,
+                    foreground: .white
+                )
+            )
         }
-    }
-
-    private var shareButton: some View {
-        ShareLink(item: shareText) {
-            Label("Share", systemImage: "square.and.arrow.up")
-                .font(PlayHubGameFont.label(14))
-        }
-        .buttonStyle(PlayHubSecondaryButtonStyle())
-    }
-
-    private var playAgainButton: some View {
-        Button(action: onPlayAgain) {
-            Label("Play Again", systemImage: "play.fill")
-                .font(PlayHubGameFont.label(14))
-        }
-        .buttonStyle(PlayHubPrimaryButtonStyle(tint: PlayHubTheme.tint(for: mode)))
     }
 }

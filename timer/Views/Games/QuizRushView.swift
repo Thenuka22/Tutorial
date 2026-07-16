@@ -23,11 +23,24 @@ struct QuizRushView: View {
                 .frame(maxWidth: .infinity)
             }
             .scrollIndicators(.hidden)
+
+            if viewModel.phase == .finished {
+                ResultView(
+                    mode: .quizRush,
+                    score: viewModel.score,
+                    bestScore: store.bestScore(for: .quizRush, variantID: viewModel.scoreVariantID),
+                    variantLabel: viewModel.scoreVariantLabel,
+                    onPlayAgain: {
+                        Task { await viewModel.load(options: options) }
+                    }
+                )
+            }
         }
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
         .toolbarBackground(.hidden, for: .navigationBar)
         .toolbarColorScheme(.dark, for: .navigationBar)
+        .toolbar(viewModel.phase == .finished ? .hidden : .visible, for: .navigationBar)
         .toolbar(.hidden, for: .tabBar)
         .sheet(isPresented: $showCustomization) {
             customizationSheet

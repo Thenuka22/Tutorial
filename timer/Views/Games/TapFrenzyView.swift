@@ -30,9 +30,6 @@ struct TapFrenzyView: View {
             .scrollIndicators(.hidden)
 
             if viewModel.showResults {
-                Color.black.opacity(0.34)
-                    .ignoresSafeArea()
-
                 ResultView(
                     mode: .tapFrenzy,
                     score: viewModel.score,
@@ -46,6 +43,7 @@ struct TapFrenzyView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbarBackground(.hidden, for: .navigationBar)
         .toolbarColorScheme(.dark, for: .navigationBar)
+        .toolbar(viewModel.showResults ? .hidden : .visible, for: .navigationBar)
         .toolbar(.hidden, for: .tabBar)
         .sheet(isPresented: $showCustomization) {
             customizationSheet
