@@ -419,7 +419,9 @@ struct AdventureButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(PlayHubGameFont.display(14))
-            .foregroundStyle(PlayHubTheme.cream)
+            .foregroundStyle(PlayHubTheme.wood)
+            .lineLimit(1)
+            .minimumScaleFactor(0.72)
             .frame(maxWidth: .infinity, minHeight: 50)
             .padding(.horizontal, 12)
             .background(

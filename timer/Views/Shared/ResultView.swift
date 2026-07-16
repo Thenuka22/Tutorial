@@ -62,7 +62,7 @@ struct ResultView: View {
             VStack(spacing: 12) {
                 Text(resultTitle)
                     .font(PlayHubGameFont.display(24))
-                    .foregroundStyle(PlayHubTheme.cream)
+                    .foregroundStyle(PlayHubTheme.wood)
                     .lineLimit(1)
                     .minimumScaleFactor(0.72)
                     .frame(maxWidth: .infinity, minHeight: 58)
