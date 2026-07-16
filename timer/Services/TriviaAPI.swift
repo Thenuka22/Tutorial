@@ -15,7 +15,8 @@ struct TriviaAPI {
         return payload.triviaCategories.map { TriviaCategory(id: $0.id, name: $0.name.htmlDecoded) }
     }
 
-    func fetchQuestions(options: QuizRushOptions = QuizRushOptions()) async throws -> [TriviaQuestion] {
+    func fetchQuestions(options: QuizRushOptions? = nil) async throws -> [TriviaQuestion] {
+        let options = options ?? QuizRushOptions()
         var components = URLComponents(url: questionsEndpoint, resolvingAgainstBaseURL: false)
         var queryItems = [
             URLQueryItem(name: "amount", value: "\(options.questionCount)"),
