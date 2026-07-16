@@ -253,8 +253,8 @@
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = PlayHub;
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "PlayHub records your game location to place completed sessions on the map.";
+				INFOPLIST_KEY_CFBundleDisplayName = "Game Arcade";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Game Arcade records your game location to place completed sessions on the map.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -287,8 +287,8 @@
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = PlayHub;
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "PlayHub records your game location to place completed sessions on the map.";
+				INFOPLIST_KEY_CFBundleDisplayName = "Game Arcade";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Game Arcade records your game location to place completed sessions on the map.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

@@ -79,7 +79,7 @@ final class NotificationService: ObservableObject {
         dateComponents.second = 0
 
         let content = UNMutableNotificationContent()
-        content.title = "PlayHub Daily Challenge"
+        content.title = "Game Arcade Daily Challenge"
         content.body = "Try one quick game and beat your best score."
         content.sound = .default
 

@@ -28,7 +28,7 @@ struct HomeTab: View {
     private var header: some View {
         HStack(alignment: .center, spacing: 16) {
             VStack(alignment: .leading, spacing: 4) {
-                Text("PlayHub")
+                Text("Game Arcade")
                     .font(.largeTitle.weight(.bold))
                     .foregroundStyle(PlayHubTheme.ink)
 

@@ -1,14 +1,14 @@
 import SwiftUI
 
 @main
-struct PlayHubApp: App {
+struct GameArcadeApp: App {
     @StateObject private var sessionStore = GameSessionStore.shared
     @StateObject private var settingsStore = GameSettingsStore.shared
     @StateObject private var locationService = LocationService.shared
 
     var body: some Scene {
         WindowGroup {
-            PlayHubShellView()
+            GameArcadeShellView()
                 .environmentObject(sessionStore)
                 .environmentObject(settingsStore)
                 .environmentObject(locationService)
@@ -20,7 +20,7 @@ struct PlayHubApp: App {
     }
 }
 
-struct PlayHubShellView: View {
+struct GameArcadeShellView: View {
     var body: some View {
         TabView {
             NavigationStack {
@@ -56,7 +56,7 @@ struct PlayHubShellView: View {
 }
 
 #Preview {
-    PlayHubShellView()
+    GameArcadeShellView()
         .environmentObject(GameSessionStore.shared)
         .environmentObject(GameSettingsStore.shared)
         .environmentObject(LocationService.shared)

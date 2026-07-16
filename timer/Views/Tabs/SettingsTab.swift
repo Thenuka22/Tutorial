@@ -21,7 +21,7 @@ struct SettingsTab: View {
         }
         .background(PlayHubScreenBackground())
         .navigationTitle("Settings")
-        .confirmationDialog("Reset all PlayHub stats?", isPresented: $confirmReset, titleVisibility: .visible) {
+        .confirmationDialog("Reset all Game Arcade stats?", isPresented: $confirmReset, titleVisibility: .visible) {
             Button("Reset All Stats", role: .destructive) {
                 store.resetAll()
             }
