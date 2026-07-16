@@ -23,53 +23,39 @@ enum PlayHubGameFont {
 }
 
 enum PlayHubTheme {
-    static let paper = Color(uiColor: .systemGroupedBackground)
-    static let surface = Color(uiColor: .secondarySystemGroupedBackground)
-    static let ink = Color.primary
-    static let mutedInk = Color.secondary
-    static let orange = Color(red: 1.00, green: 0.46, blue: 0.16)
-    static let sky = Color(red: 0.18, green: 0.54, blue: 0.95)
-    static let mint = Color(red: 0.08, green: 0.68, blue: 0.48)
-    static let berry = Color(red: 0.88, green: 0.20, blue: 0.42)
-    static let gold = Color(red: 1.00, green: 0.68, blue: 0.08)
-    static let cream = Color(red: 1.00, green: 0.89, blue: 0.60)
+    static let wood = Color(red: 0.25, green: 0.11, blue: 0.03)
+    static let woodLight = Color(red: 0.43, green: 0.22, blue: 0.06)
+    static let paper = wood
+    static let surface = woodLight
+    static let cream = Color(red: 1.00, green: 0.92, blue: 0.65)
+    static let sand = Color(red: 0.92, green: 0.82, blue: 0.49)
+    static let lime = Color(red: 0.82, green: 0.93, blue: 0.39)
+    static let leaf = Color(red: 0.34, green: 0.67, blue: 0.08)
+    static let ink = cream
+    static let mutedInk = cream.opacity(0.76)
+    static let orange = Color(red: 1.00, green: 0.38, blue: 0.08)
+    static let sky = Color(red: 0.30, green: 0.78, blue: 0.84)
+    static let mint = Color(red: 0.48, green: 0.82, blue: 0.28)
+    static let berry = Color(red: 0.94, green: 0.35, blue: 0.22)
+    static let gold = Color(red: 1.00, green: 0.72, blue: 0.14)
 
     static func tint(for mode: GameMode) -> Color {
         switch mode {
         case .tapFrenzy: return orange
         case .lightItUp: return sky
-        case .quizRush: return berry
-        }
-    }
-
-    static func gradient(for mode: GameMode) -> LinearGradient {
-        switch mode {
-        case .tapFrenzy:
-            return LinearGradient(colors: [orange, gold], startPoint: .topLeading, endPoint: .bottomTrailing)
-        case .lightItUp:
-            return LinearGradient(colors: [sky, mint], startPoint: .topLeading, endPoint: .bottomTrailing)
-        case .quizRush:
-            return LinearGradient(colors: [berry, Color(red: 0.38, green: 0.31, blue: 0.86)], startPoint: .topLeading, endPoint: .bottomTrailing)
+        case .quizRush: return lime
         }
     }
 }
 
 struct PlayHubScreenBackground: View {
     var body: some View {
-        ZStack {
-            PlayHubTheme.paper
-
-            LinearGradient(
-                colors: [
-                    PlayHubTheme.sky.opacity(0.10),
-                    Color.clear,
-                    PlayHubTheme.orange.opacity(0.08)
-                ],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-        }
-        .ignoresSafeArea()
+        Image(GameArt.quizBackground)
+            .resizable()
+            .scaledToFill()
+            .ignoresSafeArea()
+            .overlay(Color.black.opacity(0.18).ignoresSafeArea())
+            .accessibilityHidden(true)
     }
 }
 
@@ -78,12 +64,12 @@ struct PlayHubPanelBackground: View {
 
     var body: some View {
         RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-            .fill(.regularMaterial)
+            .fill(PlayHubTheme.wood.opacity(0.95))
             .overlay {
                 RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                    .strokeBorder(Color.primary.opacity(0.08), lineWidth: 1)
+                    .strokeBorder(PlayHubTheme.lime.opacity(0.42), lineWidth: 1.5)
             }
-            .shadow(color: Color.black.opacity(0.08), radius: 14, x: 0, y: 8)
+            .shadow(color: Color.black.opacity(0.32), radius: 12, x: 0, y: 7)
     }
 }
 
@@ -95,11 +81,15 @@ struct PlayHubSymbolIcon: View {
 
     var body: some View {
         Image(systemName: systemName)
-            .symbolRenderingMode(.hierarchical)
-            .font(.system(size: symbolSize, weight: .semibold))
-            .foregroundStyle(tint)
+            .symbolRenderingMode(.monochrome)
+            .font(.system(size: symbolSize, weight: .black))
+            .foregroundStyle(PlayHubTheme.wood)
             .frame(width: size, height: size, alignment: .center)
-            .background(tint.opacity(0.14), in: RoundedRectangle(cornerRadius: size * 0.30, style: .continuous))
+            .background(tint, in: RoundedRectangle(cornerRadius: size * 0.28, style: .continuous))
+            .overlay {
+                RoundedRectangle(cornerRadius: size * 0.28, style: .continuous)
+                    .strokeBorder(PlayHubTheme.cream.opacity(0.48), lineWidth: 1)
+            }
             .accessibilityHidden(true)
     }
 }
@@ -109,8 +99,8 @@ struct PlayHubPrimaryButtonStyle: ButtonStyle {
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .font(.headline.weight(.semibold))
-            .foregroundStyle(.white)
+            .font(PlayHubGameFont.display(15))
+            .foregroundStyle(PlayHubTheme.wood)
             .frame(maxWidth: .infinity)
             .frame(minHeight: 52)
             .padding(.horizontal, 18)
@@ -118,7 +108,11 @@ struct PlayHubPrimaryButtonStyle: ButtonStyle {
                 tint.opacity(configuration.isPressed ? 0.78 : 1),
                 in: RoundedRectangle(cornerRadius: 16, style: .continuous)
             )
-            .shadow(color: tint.opacity(configuration.isPressed ? 0.08 : 0.22), radius: 10, x: 0, y: 6)
+            .overlay {
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .strokeBorder(PlayHubTheme.wood.opacity(0.28), lineWidth: 1)
+            }
+            .shadow(color: Color.black.opacity(configuration.isPressed ? 0.08 : 0.28), radius: 8, x: 0, y: 5)
             .scaleEffect(configuration.isPressed ? 0.98 : 1)
             .animation(.snappy(duration: 0.18), value: configuration.isPressed)
     }
@@ -127,18 +121,18 @@ struct PlayHubPrimaryButtonStyle: ButtonStyle {
 struct PlayHubSecondaryButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .font(.headline.weight(.semibold))
-            .foregroundStyle(PlayHubTheme.ink)
+            .font(PlayHubGameFont.display(15))
+            .foregroundStyle(PlayHubTheme.wood)
             .frame(maxWidth: .infinity)
             .frame(minHeight: 52)
             .padding(.horizontal, 18)
             .background(
-                .regularMaterial,
+                PlayHubTheme.sand.opacity(configuration.isPressed ? 0.78 : 1),
                 in: RoundedRectangle(cornerRadius: 16, style: .continuous)
             )
             .overlay {
                 RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .strokeBorder(Color.primary.opacity(0.10), lineWidth: 1)
+                    .strokeBorder(PlayHubTheme.wood.opacity(0.28), lineWidth: 1)
             }
             .scaleEffect(configuration.isPressed ? 0.98 : 1)
             .opacity(configuration.isPressed ? 0.82 : 1)
@@ -170,7 +164,7 @@ struct GameArtTitle: View {
 
     var body: some View {
         Text(text)
-            .font(.title3.weight(.bold))
+            .font(PlayHubGameFont.display(20))
             .foregroundStyle(PlayHubTheme.ink)
             .frame(maxWidth: .infinity, alignment: .leading)
             .accessibilityAddTraits(.isHeader)
@@ -189,7 +183,7 @@ struct GameArtProgressBar: View {
     var body: some View {
         ProgressView(value: fraction)
             .progressViewStyle(.linear)
-            .tint(PlayHubTheme.sky)
+            .tint(PlayHubTheme.lime)
             .scaleEffect(x: 1, y: 1.8, anchor: .center)
             .padding(.vertical, 8)
             .accessibilityLabel("Progress")

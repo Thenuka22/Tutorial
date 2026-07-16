@@ -56,12 +56,13 @@ struct GameArcadeShellView: View {
             }
         }
         .tint(PlayHubTheme.gold)
+        .preferredColorScheme(.dark)
     }
 }
 
 private extension View {
     func arcadeTabBarStyle() -> some View {
-        toolbarBackground(Color(red: 0.25, green: 0.11, blue: 0.03), for: .tabBar)
+        toolbarBackground(PlayHubTheme.wood, for: .tabBar)
             .toolbarBackground(.visible, for: .tabBar)
             .toolbarColorScheme(.dark, for: .tabBar)
     }
