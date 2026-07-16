@@ -1,5 +1,6 @@
 import Combine
 import Foundation
+internal import UIKit
 
 @MainActor
 final class QuizRushVM: ObservableObject {

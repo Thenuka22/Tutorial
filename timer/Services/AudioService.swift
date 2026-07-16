@@ -2,7 +2,7 @@ import AVFoundation
 import AudioToolbox
 import Combine
 import Foundation
-import UIKit
+internal import UIKit
 
 enum PlayHubSound {
     case tap

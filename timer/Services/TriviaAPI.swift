@@ -1,5 +1,5 @@
 import Foundation
-import UIKit
+internal import UIKit
 
 struct TriviaAPI {
     private let questionsEndpoint = URL(string: "https://opentdb.com/api.php")!
