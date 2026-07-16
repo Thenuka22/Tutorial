@@ -7,6 +7,7 @@ struct TapFrenzyView: View {
     @StateObject private var viewModel = TapFrenzyVM()
     @State private var options = TapFrenzyPreset.classic.options
     @State private var didLoadDefaults = false
+    @State private var showCustomization = false
 
     private let timer = Timer.publish(every: 1.0 / 60.0, on: .main, in: .common).autoconnect()
 
@@ -14,13 +15,19 @@ struct TapFrenzyView: View {
         ZStack {
             PlayHubScreenBackground()
 
-            VStack(spacing: 18) {
-                header
-                customizePanel
-                playField
-                controls
+            ScrollView {
+                VStack(spacing: 14) {
+                    gameBar
+                    header
+                    playField
+                    controls
+                }
+                .frame(maxWidth: 430)
+                .padding(.horizontal, 14)
+                .padding(.bottom, 20)
+                .frame(maxWidth: .infinity)
             }
-            .padding(20)
+            .scrollIndicators(.hidden)
 
             if viewModel.showResults {
                 Color.black.opacity(0.34)
@@ -35,9 +42,14 @@ struct TapFrenzyView: View {
                 )
             }
         }
-        .navigationTitle("Tap Frenzy")
+        .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbarBackground(.hidden, for: .navigationBar)
+        .toolbarColorScheme(.dark, for: .navigationBar)
         .toolbar(.hidden, for: .tabBar)
+        .sheet(isPresented: $showCustomization) {
+            customizationSheet
+        }
         .onAppear {
             loadDefaultsIfNeeded()
             LocationService.shared.refreshLocation()
@@ -62,57 +74,26 @@ struct TapFrenzyView: View {
         }
     }
 
-    private var customizePanel: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Label("Customize", systemImage: "slider.horizontal.3")
-                    .font(PlayHubGameFont.display(16))
-                    .foregroundStyle(PlayHubTheme.ink)
-                Spacer()
-                Text(options.variantLabel)
-                    .font(PlayHubGameFont.label(11))
-                    .foregroundStyle(PlayHubTheme.mutedInk)
-            }
-
-            Picker("Preset", selection: presetBinding) {
-                ForEach(TapFrenzyPreset.allCases) { preset in
-                    Text(preset.displayName).tag(preset)
-                }
-            }
-            .pickerStyle(.segmented)
-
-            Stepper("Round \(Int(options.roundDuration))s", value: roundDurationBinding, in: 5...30, step: 5)
-
-            Toggle("Traps", isOn: trapsBinding)
-                .tint(PlayHubTheme.berry)
-
-            Toggle("Bonus Burst", isOn: bonusBurstBinding)
-                .tint(PlayHubTheme.mint)
-
-            VStack(alignment: .leading, spacing: 6) {
-                Text("Target Moves Every \(options.targetMoveInterval, specifier: "%.2f")s")
-                    .font(PlayHubGameFont.label(13))
-                    .foregroundStyle(PlayHubTheme.ink)
-                Slider(value: targetMoveBinding, in: 0.5...1.5, step: 0.05)
-                    .tint(PlayHubTheme.orange)
-            }
+    private var gameBar: some View {
+        ArcadeGameBar(
+            variantLabel: options.variantLabel,
+            statusLabel: viewModel.isRunning ? "Round in progress" : "Ready to play",
+            canConfigure: !viewModel.isRunning
+        ) {
+            showCustomization = true
         }
-        .font(PlayHubGameFont.label(13))
-        .padding(14)
-        .background(PlayHubPanelBackground())
-        .disabled(viewModel.isRunning)
-        .opacity(viewModel.isRunning ? 0.68 : 1)
     }
 
     private var playField: some View {
         GeometryReader { proxy in
             ZStack {
-                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .fill(Color(red: 0.11, green: 0.17, blue: 0.19).opacity(0.78))
+                RoundedRectangle(cornerRadius: 22, style: .continuous)
+                    .fill(PlayHubTheme.woodLight.opacity(0.94))
                     .overlay(
-                        RoundedRectangle(cornerRadius: 8, style: .continuous)
-                            .stroke(Color.white.opacity(0.22), lineWidth: 2)
+                        RoundedRectangle(cornerRadius: 22, style: .continuous)
+                            .stroke(PlayHubTheme.lime.opacity(0.58), lineWidth: 2)
                     )
+                    .shadow(color: Color.black.opacity(0.32), radius: 12, x: 0, y: 7)
 
                 if !viewModel.isRunning && !viewModel.showResults {
                     VStack(spacing: 10) {
@@ -121,12 +102,12 @@ struct TapFrenzyView: View {
                             .foregroundStyle(PlayHubTheme.orange)
                         Text("Tap as fast as you can.")
                             .font(PlayHubGameFont.display(22))
-                            .foregroundStyle(.white)
+                            .foregroundStyle(PlayHubTheme.lime)
                             .gameTextShadow()
                         Text(options.trapsEnabled ? "Combos, bonuses, moving targets, and traps are active." : "Focus mode keeps traps away so you can chase clean combos.")
                             .font(PlayHubGameFont.label(14))
                             .multilineTextAlignment(.center)
-                            .foregroundStyle(.white.opacity(0.92))
+                            .foregroundStyle(PlayHubTheme.cream.opacity(0.90))
                             .gameTextShadow()
                             .padding(.horizontal, 24)
                     }
@@ -144,12 +125,12 @@ struct TapFrenzyView: View {
                                 .lineLimit(1)
                                 .minimumScaleFactor(0.75)
                         }
-                        .foregroundStyle(.white)
+                        .foregroundStyle(PlayHubTheme.wood)
                         .frame(width: viewModel.targetSize, height: viewModel.targetSize)
                         .background(viewModel.targetMood.color, in: Circle())
                         .overlay(
                             Circle()
-                                .stroke(Color.white.opacity(0.65), lineWidth: 4)
+                                .stroke(PlayHubTheme.cream.opacity(0.72), lineWidth: 4)
                         )
                         .shadow(color: viewModel.targetMood.color.opacity(0.36), radius: 18, x: 0, y: 10)
                         .scaleEffect(viewModel.bonusBurstActive ? 1.08 : 1.0)
@@ -167,18 +148,18 @@ struct TapFrenzyView: View {
                     HStack {
                         Label("Combo x\(viewModel.multiplier)", systemImage: "flame.fill")
                             .font(PlayHubGameFont.label(13))
-                            .foregroundStyle(PlayHubTheme.berry)
+                            .foregroundStyle(PlayHubTheme.wood)
                             .padding(.horizontal, 12)
                             .padding(.vertical, 8)
-                            .background(PlayHubTheme.cream.opacity(0.94), in: Capsule())
+                            .background(PlayHubTheme.sand, in: Capsule())
                         Spacer()
                         if viewModel.bonusBurstActive {
                             Label("Double Points", systemImage: "sparkles")
                                 .font(PlayHubGameFont.label(13))
-                                .foregroundStyle(PlayHubTheme.mint)
+                                .foregroundStyle(PlayHubTheme.wood)
                                 .padding(.horizontal, 12)
                                 .padding(.vertical, 8)
-                                .background(PlayHubTheme.cream.opacity(0.94), in: Capsule())
+                                .background(PlayHubTheme.lime, in: Capsule())
                         }
                     }
                     .padding(14)
@@ -191,6 +172,45 @@ struct TapFrenzyView: View {
             }
         }
         .frame(minHeight: 330)
+    }
+
+    private var customizationSheet: some View {
+        NavigationStack {
+            Form {
+                Section("Tap Frenzy Setup") {
+                    Picker("Preset", selection: presetBinding) {
+                        ForEach(TapFrenzyPreset.allCases) { preset in
+                            Text(preset.displayName).tag(preset)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+
+                    Stepper("Round \(Int(options.roundDuration))s", value: roundDurationBinding, in: 5...30, step: 5)
+                    Toggle("Traps", isOn: trapsBinding)
+                    Toggle("Bonus Burst", isOn: bonusBurstBinding)
+
+                    VStack(alignment: .leading, spacing: 7) {
+                        Text("Target Moves Every \(options.targetMoveInterval, specifier: "%.2f")s")
+                        Slider(value: targetMoveBinding, in: 0.5...1.5, step: 0.05)
+                    }
+                }
+            }
+            .font(PlayHubGameFont.label(13))
+            .tint(PlayHubTheme.lime)
+            .scrollContentBackground(.hidden)
+            .background(PlayHubTheme.wood)
+            .navigationTitle("Tap Frenzy Setup")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") {
+                        showCustomization = false
+                    }
+                }
+            }
+        }
+        .presentationDetents([.medium, .large])
+        .presentationDragIndicator(.visible)
     }
 
     private var controls: some View {

@@ -191,6 +191,45 @@ struct GameArtProgressBar: View {
     }
 }
 
+struct ArcadeGameBar: View {
+    let variantLabel: String
+    let statusLabel: String
+    var canConfigure = true
+    let onSetup: () -> Void
+
+    var body: some View {
+        HStack(spacing: 10) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(variantLabel.uppercased())
+                    .font(PlayHubGameFont.label(13))
+                    .lineLimit(1)
+                Text(statusLabel.uppercased())
+                    .font(PlayHubGameFont.label(10))
+                    .foregroundStyle(PlayHubTheme.lime.opacity(0.82))
+                    .lineLimit(1)
+            }
+
+            Spacer(minLength: 6)
+
+            if canConfigure {
+                Button(action: onSetup) {
+                    Label("SETUP", systemImage: "slider.horizontal.3")
+                        .font(PlayHubGameFont.label(11))
+                        .foregroundStyle(PlayHubTheme.wood)
+                        .padding(.horizontal, 11)
+                        .frame(height: 34)
+                        .background(PlayHubTheme.lime, in: Capsule())
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        .foregroundStyle(PlayHubTheme.ink)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
+        .background(PlayHubPanelBackground(cornerRadius: 16))
+    }
+}
+
 extension View {
     func gameTextShadow() -> some View {
         shadow(color: Color.black.opacity(0.18), radius: 2, x: 0, y: 1)
