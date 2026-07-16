@@ -77,9 +77,13 @@ final class GameSettingsStore: ObservableObject {
         soundVolume = (defaults.object(forKey: Keys.soundVolume) as? Double ?? 0.85).clamped(to: 0...1)
         musicVolume = (defaults.object(forKey: Keys.musicVolume) as? Double ?? 0.35).clamped(to: 0...1)
 
-        if let rawValue = defaults.string(forKey: Keys.defaultTapPreset),
-           let preset = TapFrenzyPreset(rawValue: rawValue) {
-            defaultTapPreset = preset
+        if let rawValue = defaults.string(forKey: Keys.defaultTapPreset) {
+            if let preset = TapFrenzyPreset(rawValue: rawValue) {
+                defaultTapPreset = preset
+            } else {
+                defaultTapPreset = .classic
+                defaults.set(TapFrenzyPreset.classic.rawValue, forKey: Keys.defaultTapPreset)
+            }
         }
 
         if let rawValue = defaults.string(forKey: Keys.defaultLightPreset),

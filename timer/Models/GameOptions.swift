@@ -3,7 +3,6 @@ import Foundation
 enum TapFrenzyPreset: String, CaseIterable, Codable, Hashable, Identifiable {
     case classic
     case focus
-    case chaos
 
     var id: String { rawValue }
 
@@ -11,7 +10,6 @@ enum TapFrenzyPreset: String, CaseIterable, Codable, Hashable, Identifiable {
         switch self {
         case .classic: return "Classic"
         case .focus: return "Focus"
-        case .chaos: return "Chaos"
         }
     }
 
@@ -19,7 +17,6 @@ enum TapFrenzyPreset: String, CaseIterable, Codable, Hashable, Identifiable {
         switch self {
         case .classic: return "10-second sprint with bonuses and traps"
         case .focus: return "Longer round with traps disabled"
-        case .chaos: return "Fast targets and higher scoring swings"
         }
     }
 
@@ -37,17 +34,6 @@ enum TapFrenzyPreset: String, CaseIterable, Codable, Hashable, Identifiable {
                 moodChangeInterval: 1.7,
                 bonusChance: 14,
                 trapChance: 0
-            )
-        case .chaos:
-            return TapFrenzyOptions(
-                preset: self,
-                roundDuration: 15,
-                trapsEnabled: true,
-                bonusBurstEnabled: true,
-                targetMoveInterval: 0.65,
-                moodChangeInterval: 0.8,
-                bonusChance: 28,
-                trapChance: 26
             )
         }
     }
