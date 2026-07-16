@@ -126,13 +126,7 @@ struct GameModeArtworkIcon: View {
 }
 
 struct PlayHubPrimaryButtonStyle: ButtonStyle {
-    @EnvironmentObject private var settings: GameSettingsStore
-
     var tint: Color = PlayHubTheme.orange
-
-    private var usesEnhancedControls: Bool {
-        settings.selectedBackgroundTheme.usesEnhancedControls
-    }
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
@@ -141,38 +135,16 @@ struct PlayHubPrimaryButtonStyle: ButtonStyle {
             .frame(maxWidth: .infinity)
             .frame(minHeight: 52)
             .padding(.horizontal, 18)
-            .background {
-                if usesEnhancedControls {
-                    RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .fill(
-                            LinearGradient(
-                                colors: [tint, tint.opacity(0.76)],
-                                startPoint: .top,
-                                endPoint: .bottom
-                            )
-                        )
-                        .opacity(configuration.isPressed ? 0.90 : 1)
-                } else {
-                    RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .fill(tint.opacity(configuration.isPressed ? 0.78 : 1))
-                }
-            }
+            .background(
+                tint.opacity(configuration.isPressed ? 0.78 : 1),
+                in: RoundedRectangle(cornerRadius: 16, style: .continuous)
+            )
             .overlay {
                 RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .strokeBorder(
-                        usesEnhancedControls ? PlayHubTheme.cream.opacity(0.58) : PlayHubTheme.wood.opacity(0.28),
-                        lineWidth: usesEnhancedControls ? 2 : 1
-                    )
+                    .strokeBorder(PlayHubTheme.wood.opacity(0.28), lineWidth: 1)
             }
-            .shadow(
-                color: usesEnhancedControls ? PlayHubTheme.wood.opacity(0.92) : .clear,
-                radius: 0,
-                x: 0,
-                y: configuration.isPressed ? 2 : 6
-            )
             .shadow(color: Color.black.opacity(configuration.isPressed ? 0.08 : 0.28), radius: 8, x: 0, y: 5)
-            .offset(y: usesEnhancedControls && configuration.isPressed ? 4 : 0)
-            .scaleEffect(configuration.isPressed ? (usesEnhancedControls ? 0.99 : 0.98) : 1)
+            .scaleEffect(configuration.isPressed ? 0.98 : 1)
             .animation(.snappy(duration: 0.18), value: configuration.isPressed)
     }
 }
@@ -259,12 +231,6 @@ struct GameSetupLabel: View {
 }
 
 struct PlayHubSecondaryButtonStyle: ButtonStyle {
-    @EnvironmentObject private var settings: GameSettingsStore
-
-    private var usesEnhancedControls: Bool {
-        settings.selectedBackgroundTheme.usesEnhancedControls
-    }
-
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(PlayHubGameFont.display(15))
@@ -272,43 +238,15 @@ struct PlayHubSecondaryButtonStyle: ButtonStyle {
             .frame(maxWidth: .infinity)
             .frame(minHeight: 52)
             .padding(.horizontal, 18)
-            .background {
-                if usesEnhancedControls {
-                    RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .fill(
-                            LinearGradient(
-                                colors: [PlayHubTheme.cream, PlayHubTheme.sand],
-                                startPoint: .top,
-                                endPoint: .bottom
-                            )
-                        )
-                        .opacity(configuration.isPressed ? 0.90 : 1)
-                } else {
-                    RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .fill(PlayHubTheme.sand.opacity(configuration.isPressed ? 0.78 : 1))
-                }
-            }
+            .background(
+                PlayHubTheme.sand.opacity(configuration.isPressed ? 0.78 : 1),
+                in: RoundedRectangle(cornerRadius: 16, style: .continuous)
+            )
             .overlay {
                 RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .strokeBorder(
-                        usesEnhancedControls ? PlayHubTheme.cream.opacity(0.58) : PlayHubTheme.wood.opacity(0.28),
-                        lineWidth: usesEnhancedControls ? 2 : 1
-                    )
+                    .strokeBorder(PlayHubTheme.wood.opacity(0.28), lineWidth: 1)
             }
-            .shadow(
-                color: usesEnhancedControls ? PlayHubTheme.wood.opacity(0.92) : .clear,
-                radius: 0,
-                x: 0,
-                y: configuration.isPressed ? 2 : 6
-            )
-            .shadow(
-                color: usesEnhancedControls ? Color.black.opacity(configuration.isPressed ? 0.08 : 0.26) : .clear,
-                radius: 8,
-                x: 0,
-                y: configuration.isPressed ? 2 : 7
-            )
-            .offset(y: usesEnhancedControls && configuration.isPressed ? 4 : 0)
-            .scaleEffect(configuration.isPressed ? (usesEnhancedControls ? 0.99 : 0.98) : 1)
+            .scaleEffect(configuration.isPressed ? 0.98 : 1)
             .opacity(configuration.isPressed ? 0.82 : 1)
             .animation(.snappy(duration: 0.18), value: configuration.isPressed)
     }

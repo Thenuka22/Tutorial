@@ -477,13 +477,7 @@ private struct QuizBoardContainer<Content: View>: View {
 }
 
 private struct JungleQuizButtonStyle: ButtonStyle {
-    @EnvironmentObject private var settings: GameSettingsStore
-
     let background: Color
-
-    private var usesEnhancedControls: Bool {
-        settings.selectedBackgroundTheme.usesEnhancedControls
-    }
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
@@ -491,37 +485,15 @@ private struct JungleQuizButtonStyle: ButtonStyle {
             .frame(maxWidth: .infinity, minHeight: 38, alignment: .leading)
             .padding(.horizontal, 12)
             .padding(.vertical, 7)
-            .background {
-                if usesEnhancedControls {
-                    Capsule()
-                        .fill(
-                            LinearGradient(
-                                colors: [background, background.opacity(0.72)],
-                                startPoint: .top,
-                                endPoint: .bottom
-                            )
-                        )
-                        .opacity(configuration.isPressed ? 0.90 : 1)
-                } else {
-                    Capsule()
-                        .fill(background.opacity(configuration.isPressed ? 0.78 : 1))
-                }
-            }
+            .background(
+                background.opacity(configuration.isPressed ? 0.78 : 1),
+                in: Capsule()
+            )
             .overlay {
                 Capsule()
-                    .strokeBorder(
-                        usesEnhancedControls ? Color.white.opacity(0.50) : QuizPalette.ink.opacity(0.24),
-                        lineWidth: usesEnhancedControls ? 2 : 1
-                    )
+                    .strokeBorder(QuizPalette.ink.opacity(0.24), lineWidth: 1)
             }
-            .shadow(
-                color: usesEnhancedControls ? QuizPalette.wood.opacity(0.94) : .clear,
-                radius: 0,
-                x: 0,
-                y: configuration.isPressed ? 1 : 5
-            )
-            .offset(y: usesEnhancedControls && configuration.isPressed ? 3 : 0)
-            .scaleEffect(configuration.isPressed ? (usesEnhancedControls ? 0.99 : 0.97) : 1)
+            .scaleEffect(configuration.isPressed ? 0.97 : 1)
             .animation(.snappy(duration: 0.16), value: configuration.isPressed)
     }
 }

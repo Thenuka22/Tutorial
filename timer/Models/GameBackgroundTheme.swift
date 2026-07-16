@@ -31,7 +31,4 @@ enum GameBackgroundTheme: String, CaseIterable, Codable, Hashable, Identifiable 
         }
     }
 
-    var usesEnhancedControls: Bool {
-        self != .jungleDay
-    }
 }
