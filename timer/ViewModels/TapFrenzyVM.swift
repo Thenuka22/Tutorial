@@ -22,6 +22,7 @@ final class TapFrenzyVM: ObservableObject {
     private var lastMoodChange = Date()
     private var bonusBurstUsed = false
     private var hasRecordedCurrentRound = false
+    private var tickCancellable: AnyCancellable?
 
     var multiplier: Int {
         min(5, max(1, 1 + comboCount / 4))
@@ -48,9 +49,11 @@ final class TapFrenzyVM: ObservableObject {
         lastTargetMove = Date()
         lastMoodChange = Date()
         targetMood = .normal
+        startTicking()
     }
 
     func reset(clearResults: Bool) {
+        stopTicking()
         isRunning = false
         timeRemaining = options.roundDuration
         score = 0
@@ -67,7 +70,13 @@ final class TapFrenzyVM: ObservableObject {
         }
     }
 
-    func tick(_ now: Date) {
+    func stop() {
+        guard isRunning else { return }
+        stopTicking()
+        isRunning = false
+    }
+
+    private func tick(_ now: Date) {
         guard isRunning else { return }
 
         let delta = now.timeIntervalSince(lastTick)
@@ -142,6 +151,7 @@ final class TapFrenzyVM: ObservableObject {
     }
 
     private func finishRound() {
+        stopTicking()
         isRunning = false
         recordCompletionIfNeeded()
         AudioService.shared.play(.finish)
@@ -167,6 +177,24 @@ final class TapFrenzyVM: ObservableObject {
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [weak self] in
             self?.bonusBurstActive = false
         }
+    }
+
+    private func startTicking() {
+        stopTicking()
+        tickCancellable = Timer.publish(every: 1.0 / 30.0, on: .main, in: .common)
+            .autoconnect()
+            .sink { [weak self] now in
+                self?.tick(now)
+            }
+    }
+
+    private func stopTicking() {
+        tickCancellable?.cancel()
+        tickCancellable = nil
+    }
+
+    deinit {
+        tickCancellable?.cancel()
     }
 }
 

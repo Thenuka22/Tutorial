@@ -1,15 +1,13 @@
-import Combine
 import SwiftUI
 
 struct TapFrenzyView: View {
     @EnvironmentObject private var store: GameSessionStore
     @EnvironmentObject private var settings: GameSettingsStore
+    @Environment(\.scenePhase) private var scenePhase
     @StateObject private var viewModel = TapFrenzyVM()
     @State private var options = TapFrenzyPreset.classic.options
     @State private var didLoadDefaults = false
     @State private var showCustomization = false
-
-    private let timer = Timer.publish(every: 1.0 / 60.0, on: .main, in: .common).autoconnect()
 
     private var usesEnhancedControls: Bool {
         settings.selectedBackgroundTheme.usesEnhancedControls
@@ -59,8 +57,13 @@ struct TapFrenzyView: View {
                 viewModel.reset(clearResults: true)
             }
         }
-        .onReceive(timer) { now in
-            viewModel.tick(now)
+        .onChange(of: scenePhase) { _, newPhase in
+            if newPhase != .active {
+                viewModel.stop()
+            }
+        }
+        .onDisappear {
+            viewModel.stop()
         }
     }
 
