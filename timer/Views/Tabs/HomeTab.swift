@@ -16,7 +16,8 @@ struct HomeTab: View {
                     gameLauncher
                 }
                 .padding(.horizontal, 20)
-                .padding(.vertical, 18)
+                .padding(.top, 18)
+                .padding(.bottom, 108)
             }
         }
         .navigationDestination(for: GameMode.self) { game in

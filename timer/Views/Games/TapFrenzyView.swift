@@ -37,6 +37,7 @@ struct TapFrenzyView: View {
         }
         .navigationTitle("Tap Frenzy")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar(.hidden, for: .tabBar)
         .onAppear {
             loadDefaultsIfNeeded()
             LocationService.shared.refreshLocation()

@@ -26,6 +26,7 @@ struct GameArcadeShellView: View {
             NavigationStack {
                 HomeTab()
             }
+            .arcadeTabBarStyle()
             .tabItem {
                 Label("Home", systemImage: "gamecontroller.fill")
             }
@@ -33,6 +34,7 @@ struct GameArcadeShellView: View {
             NavigationStack {
                 StatsTab()
             }
+            .arcadeTabBarStyle()
             .tabItem {
                 Label("Stats", systemImage: "chart.bar.fill")
             }
@@ -40,6 +42,7 @@ struct GameArcadeShellView: View {
             NavigationStack {
                 MapTab()
             }
+            .arcadeTabBarStyle()
             .tabItem {
                 Label("Map", systemImage: "map.fill")
             }
@@ -47,11 +50,20 @@ struct GameArcadeShellView: View {
             NavigationStack {
                 SettingsTab()
             }
+            .arcadeTabBarStyle()
             .tabItem {
                 Label("Settings", systemImage: "gearshape.fill")
             }
         }
-        .tint(PlayHubTheme.orange)
+        .tint(PlayHubTheme.gold)
+    }
+}
+
+private extension View {
+    func arcadeTabBarStyle() -> some View {
+        toolbarBackground(Color(red: 0.25, green: 0.11, blue: 0.03), for: .tabBar)
+            .toolbarBackground(.visible, for: .tabBar)
+            .toolbarColorScheme(.dark, for: .tabBar)
     }
 }
 

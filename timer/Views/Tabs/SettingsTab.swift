@@ -17,7 +17,9 @@ struct SettingsTab: View {
                 locationSection
                 resetSection
             }
-            .padding(20)
+            .padding(.horizontal, 20)
+            .padding(.top, 20)
+            .padding(.bottom, 108)
         }
         .background(PlayHubScreenBackground())
         .navigationTitle("Settings")

@@ -13,7 +13,9 @@ struct StatsTab: View {
                 variantLeaderboards
                 recentGames
             }
-            .padding(20)
+            .padding(.horizontal, 20)
+            .padding(.top, 20)
+            .padding(.bottom, 108)
         }
         .background(PlayHubScreenBackground())
         .navigationTitle("Stats")

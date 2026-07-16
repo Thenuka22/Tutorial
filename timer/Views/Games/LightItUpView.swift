@@ -45,6 +45,7 @@ struct LightItUpView: View {
         }
         .navigationTitle("Light It Up")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar(.hidden, for: .tabBar)
     }
 
     private var header: some View {
