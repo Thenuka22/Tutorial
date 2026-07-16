@@ -1,5 +1,6 @@
 import AVKit
 import SwiftUI
+import UIKit
 
 struct LaunchSequenceView<Content: View>: View {
     @Environment(\.scenePhase) private var scenePhase
@@ -35,7 +36,7 @@ struct LaunchSequenceView<Content: View>: View {
                 }
             }
             .frame(width: proxy.size.width, height: proxy.size.height)
-            .background(Color.black)
+            .background(splashBackdrop)
         }
         .ignoresSafeArea()
         .task {
@@ -51,10 +52,13 @@ struct LaunchSequenceView<Content: View>: View {
     private func splashArtwork(size: CGSize) -> some View {
         Image("SplashBackground")
             .resizable()
-            .scaledToFill()
+            .scaledToFit()
             .frame(width: size.width, height: size.height)
-            .clipped()
             .accessibilityLabel("MiNi ARCADE")
+    }
+
+    private var splashBackdrop: Color {
+        Color(red: 0.035, green: 0.18, blue: 0.05)
     }
 }
 
@@ -75,8 +79,8 @@ private struct SplashVideoPlayer: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> AVPlayerViewController {
         let controller = AVPlayerViewController()
         controller.showsPlaybackControls = false
-        controller.videoGravity = .resizeAspectFill
-        controller.view.backgroundColor = .black
+        controller.videoGravity = .resizeAspect
+        controller.view.backgroundColor = UIColor(red: 0.035, green: 0.18, blue: 0.05, alpha: 1)
 
         guard let url = Bundle.main.url(forResource: "SplashVideo", withExtension: "mp4") else {
             DispatchQueue.main.async {

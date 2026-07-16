@@ -14,11 +14,11 @@
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" image="SplashBackground" translatesAutoresizingMaskIntoConstraints="NO" id="P0q-1R-s2T">
+                            <imageView opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" image="SplashBackground" translatesAutoresizingMaskIntoConstraints="NO" id="P0q-1R-s2T">
                                 <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                             </imageView>
                         </subviews>
-                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="backgroundColor" red="0.035" green="0.18" blue="0.05" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="P0q-1R-s2T" firstAttribute="leading" secondItem="K7l-8M-n9O" secondAttribute="leading" id="U3v-4W-x5Y"/>
                             <constraint firstAttribute="trailing" secondItem="P0q-1R-s2T" secondAttribute="trailing" id="Z6a-7B-c8D"/>
