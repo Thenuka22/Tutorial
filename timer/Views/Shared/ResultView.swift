@@ -42,11 +42,12 @@ struct ResultView: View {
             let boardHeight = boardWidth / 0.62
 
             ZStack {
-                Image(GameArt.scoreBackground)
+                Image(GameArt.quizBackground)
                     .resizable()
                     .aspectRatio(9.0 / 16.0, contentMode: .fill)
                     .frame(width: proxy.size.width, height: proxy.size.height)
                     .clipped()
+                    .overlay(Color.black.opacity(0.08))
                     .accessibilityHidden(true)
 
                 resultBoard
@@ -60,20 +61,22 @@ struct ResultView: View {
 
     private var resultBoard: some View {
         ZStack {
-            PixelArtSlice(imageName: GameArt.pixelPanelBrown, capInset: 11)
-
-            PixelArtSlice(imageName: GameArt.pixelPanelTan, capInset: 11)
-                .padding(10)
+            AdventureArtSlice(imageName: GameArt.adventurePanel)
 
             VStack(spacing: 12) {
                 Text(resultTitle)
                     .font(PlayHubGameFont.display(24))
-                    .foregroundStyle(PlayHubTheme.wood)
+                    .foregroundStyle(PlayHubTheme.cream)
                     .lineLimit(1)
                     .minimumScaleFactor(0.72)
                     .frame(maxWidth: .infinity, minHeight: 58)
                     .padding(.horizontal, 14)
-                    .background(PixelArtSlice(imageName: GameArt.pixelButtonYellow))
+                    .background(
+                        AdventureArtSlice(
+                            imageName: GameArt.adventureButton,
+                            capInsets: EdgeInsets(top: 7, leading: 13, bottom: 7, trailing: 13)
+                        )
+                    )
 
                 Text(displayTitle.uppercased())
                     .font(PlayHubGameFont.label(12))
@@ -129,30 +132,20 @@ struct ResultView: View {
                 Button(action: onPlayAgain) {
                     Label("REPLAY", systemImage: "arrow.counterclockwise")
                 }
-                .buttonStyle(PixelArtButtonStyle(imageName: GameArt.pixelButtonYellow))
+                .buttonStyle(AdventureButtonStyle())
 
                 Button {
                     dismiss()
                 } label: {
                     Label("HOME", systemImage: "house.fill")
                 }
-                .buttonStyle(
-                    PixelArtButtonStyle(
-                        imageName: GameArt.pixelButtonBlue,
-                        foreground: .white
-                    )
-                )
+                .buttonStyle(AdventureButtonStyle())
             }
 
             ShareLink(item: shareText) {
                 Label("SHARE SCORE", systemImage: "square.and.arrow.up")
             }
-            .buttonStyle(
-                PixelArtButtonStyle(
-                    imageName: GameArt.pixelPanelBrown,
-                    foreground: .white
-                )
-            )
+            .buttonStyle(AdventureButtonStyle())
         }
     }
 }

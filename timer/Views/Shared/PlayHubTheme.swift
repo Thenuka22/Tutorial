@@ -8,6 +8,8 @@ enum GameArt {
     static let pixelPanelBrown = "PixelPanelBrown"
     static let pixelButtonYellow = "PixelButtonYellow"
     static let pixelButtonBlue = "PixelButtonBlue"
+    static let adventurePanel = "AdventurePanel"
+    static let adventureButton = "AdventureButton"
     static let musicOn = "GameButtonMusic"
     static let musicOff = "GameButtonMusicOff"
     static let soundOn = "GameButtonSound"
@@ -293,6 +295,36 @@ struct PixelArtButtonStyle: ButtonStyle {
             .background(PixelArtSlice(imageName: imageName))
             .scaleEffect(configuration.isPressed ? 0.96 : 1)
             .opacity(configuration.isPressed ? 0.82 : 1)
+            .animation(.snappy(duration: 0.14), value: configuration.isPressed)
+    }
+}
+
+struct AdventureArtSlice: View {
+    let imageName: String
+    var capInsets = EdgeInsets(top: 14, leading: 14, bottom: 14, trailing: 14)
+
+    var body: some View {
+        Image(imageName)
+            .resizable(capInsets: capInsets, resizingMode: .stretch)
+            .accessibilityHidden(true)
+    }
+}
+
+struct AdventureButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(PlayHubGameFont.display(14))
+            .foregroundStyle(PlayHubTheme.cream)
+            .frame(maxWidth: .infinity, minHeight: 50)
+            .padding(.horizontal, 12)
+            .background(
+                AdventureArtSlice(
+                    imageName: GameArt.adventureButton,
+                    capInsets: EdgeInsets(top: 7, leading: 13, bottom: 7, trailing: 13)
+                )
+            )
+            .scaleEffect(configuration.isPressed ? 0.96 : 1)
+            .opacity(configuration.isPressed ? 0.80 : 1)
             .animation(.snappy(duration: 0.14), value: configuration.isPressed)
     }
 }
