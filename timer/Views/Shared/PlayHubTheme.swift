@@ -99,6 +99,31 @@ struct PlayHubSymbolIcon: View {
     }
 }
 
+struct GameModeArtworkIcon: View {
+    let mode: GameMode
+    var size: CGFloat = 54
+    var iconSize: CGFloat = 31
+
+    var body: some View {
+        Image(mode.artworkName)
+            .renderingMode(.template)
+            .resizable()
+            .scaledToFit()
+            .foregroundStyle(PlayHubTheme.wood)
+            .frame(width: iconSize, height: iconSize)
+            .frame(width: size, height: size)
+            .background(
+                PlayHubTheme.tint(for: mode),
+                in: RoundedRectangle(cornerRadius: size * 0.28, style: .continuous)
+            )
+            .overlay {
+                RoundedRectangle(cornerRadius: size * 0.28, style: .continuous)
+                    .strokeBorder(PlayHubTheme.cream.opacity(0.52), lineWidth: 1.5)
+            }
+            .accessibilityHidden(true)
+    }
+}
+
 struct PlayHubPrimaryButtonStyle: ButtonStyle {
     var tint: Color = PlayHubTheme.orange
 

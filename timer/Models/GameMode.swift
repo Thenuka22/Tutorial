@@ -38,4 +38,12 @@ enum GameMode: String, CaseIterable, Codable, Hashable, Identifiable {
         case .quizRush: return "questionmark.bubble.fill"
         }
     }
+
+    var artworkName: String {
+        switch self {
+        case .tapFrenzy: return "GameIconTap"
+        case .lightItUp: return "GameIconLight"
+        case .quizRush: return "GameIconQuiz"
+        }
+    }
 }

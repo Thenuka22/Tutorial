@@ -131,12 +131,7 @@ private struct GameRow: View {
 
     var body: some View {
         HStack(spacing: 14) {
-            PlayHubSymbolIcon(
-                systemName: game.symbolName,
-                tint: PlayHubTheme.tint(for: game),
-                size: 54,
-                symbolSize: 24
-            )
+            GameModeArtworkIcon(mode: game)
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(game.displayName)
