@@ -7,19 +7,26 @@ struct LightItUpView: View {
     @StateObject private var viewModel = LightItUpVM()
     @State private var options = LightItUpPreset.classic.options
     @State private var didLoadDefaults = false
+    @State private var showCustomization = false
 
     var body: some View {
         ZStack {
             PlayHubScreenBackground()
 
-            VStack(spacing: 18) {
-                header
-                customizePanel
-                GameArtProgressBar(value: Double(viewModel.elapsed), total: Double(viewModel.roundDuration))
-                grid
-                controls
+            ScrollView {
+                VStack(spacing: 14) {
+                    gameBar
+                    header
+                    GameArtProgressBar(value: Double(viewModel.elapsed), total: Double(viewModel.roundDuration))
+                    grid
+                    controls
+                }
+                .frame(maxWidth: 430)
+                .padding(.horizontal, 14)
+                .padding(.bottom, 20)
+                .frame(maxWidth: .infinity)
             }
-            .padding(20)
+            .scrollIndicators(.hidden)
 
             if viewModel.didFinishRound {
                 Color.black.opacity(0.34)
@@ -43,9 +50,24 @@ struct LightItUpView: View {
                 viewModel.stop()
             }
         }
-        .navigationTitle("Light It Up")
+        .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbarBackground(.hidden, for: .navigationBar)
+        .toolbarColorScheme(.dark, for: .navigationBar)
         .toolbar(.hidden, for: .tabBar)
+        .sheet(isPresented: $showCustomization) {
+            customizationSheet
+        }
+    }
+
+    private var gameBar: some View {
+        ArcadeGameBar(
+            variantLabel: options.variantLabel,
+            statusLabel: viewModel.isRunning ? "Level \(viewModel.level.label) in progress" : "Ready to play",
+            canConfigure: !viewModel.isRunning
+        ) {
+            showCustomization = true
+        }
     }
 
     private var header: some View {
@@ -62,67 +84,30 @@ struct LightItUpView: View {
         }
     }
 
-    private var customizePanel: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Label("Customize", systemImage: "slider.horizontal.3")
-                    .font(PlayHubGameFont.display(16))
-                    .foregroundStyle(PlayHubTheme.ink)
-                Spacer()
-                Text(options.variantLabel)
-                    .font(PlayHubGameFont.label(11))
-                    .foregroundStyle(PlayHubTheme.mutedInk)
-            }
-
-            Picker("Preset", selection: presetBinding) {
-                ForEach(LightItUpPreset.allCases) { preset in
-                    Text(preset.displayName).tag(preset)
-                }
-            }
-            .pickerStyle(.segmented)
-
-            Stepper("Round \(options.roundDuration)s", value: roundDurationBinding, in: 15...90, step: 15)
-
-            Picker("Starting Level", selection: startingLevelBinding) {
-                ForEach(GameLevel.allCases) { level in
-                    Text(level.displayName).tag(level)
-                }
-            }
-            .pickerStyle(.menu)
-
-            Stepper("Wrong Tap Penalty \(options.wrongTapPenalty)", value: wrongPenaltyBinding, in: 0...5)
-
-            Stepper("Missed Light Penalty \(options.missedLightPenalty)", value: missedPenaltyBinding, in: 0...5)
-
-            Stepper("Extra Lights \(options.extraLightsPerTick)", value: extraLightsBinding, in: 0...2)
-        }
-        .font(PlayHubGameFont.label(13))
-        .padding(14)
-        .background(PlayHubPanelBackground())
-        .disabled(viewModel.isRunning)
-        .opacity(viewModel.isRunning ? 0.68 : 1)
-    }
-
     private var grid: some View {
         LazyVGrid(columns: viewModel.columns, spacing: 12) {
             ForEach(viewModel.cards) { card in
-                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .fill(card.isLit ? levelTint : Color(red: 0.12, green: 0.18, blue: 0.20).opacity(0.80))
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .fill(card.isLit ? levelTint : PlayHubTheme.woodLight)
                     .frame(height: 90)
                     .overlay {
                         if card.isLit {
                             Image(systemName: "bolt.fill")
-                                .symbolRenderingMode(.hierarchical)
-                                .font(.system(size: 34, weight: .semibold))
-                                .foregroundStyle(.white)
+                                .symbolRenderingMode(.monochrome)
+                                .font(.system(size: 34, weight: .black))
+                                .foregroundStyle(PlayHubTheme.wood)
                                 .frame(width: 44, height: 44, alignment: .center)
+                        } else {
+                            Circle()
+                                .fill(PlayHubTheme.wood.opacity(0.44))
+                                .frame(width: 14, height: 14)
                         }
                     }
                     .overlay(
-                        RoundedRectangle(cornerRadius: 8, style: .continuous)
-                            .strokeBorder(Color.white.opacity(card.isLit ? 0.65 : 0.18), lineWidth: 2)
+                        RoundedRectangle(cornerRadius: 16, style: .continuous)
+                            .strokeBorder(card.isLit ? PlayHubTheme.cream.opacity(0.72) : PlayHubTheme.lime.opacity(0.26), lineWidth: 2)
                     )
-                    .shadow(color: levelTint.opacity(card.isLit ? 0.36 : 0), radius: 16, x: 0, y: 8)
+                    .shadow(color: Color.black.opacity(card.isLit ? 0.36 : 0.18), radius: 8, x: 0, y: 5)
                     .scaleEffect(card.isLit ? 1.03 : 1.0)
                     .onTapGesture { viewModel.tapCard(card) }
                     .animation(.easeInOut(duration: 0.15), value: card.isLit)
@@ -130,6 +115,50 @@ struct LightItUpView: View {
                     .accessibilityAddTraits(.isButton)
             }
         }
+        .padding(12)
+        .background(PlayHubPanelBackground(cornerRadius: 22))
+    }
+
+    private var customizationSheet: some View {
+        NavigationStack {
+            Form {
+                Section("Light It Up Setup") {
+                    Picker("Preset", selection: presetBinding) {
+                        ForEach(LightItUpPreset.allCases) { preset in
+                            Text(preset.displayName).tag(preset)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+
+                    Stepper("Round \(options.roundDuration)s", value: roundDurationBinding, in: 15...90, step: 15)
+
+                    Picker("Starting Level", selection: startingLevelBinding) {
+                        ForEach(GameLevel.allCases) { level in
+                            Text(level.displayName).tag(level)
+                        }
+                    }
+
+                    Stepper("Wrong Tap Penalty \(options.wrongTapPenalty)", value: wrongPenaltyBinding, in: 0...5)
+                    Stepper("Missed Light Penalty \(options.missedLightPenalty)", value: missedPenaltyBinding, in: 0...5)
+                    Stepper("Extra Lights \(options.extraLightsPerTick)", value: extraLightsBinding, in: 0...2)
+                }
+            }
+            .font(PlayHubGameFont.label(13))
+            .tint(PlayHubTheme.lime)
+            .scrollContentBackground(.hidden)
+            .background(PlayHubTheme.wood)
+            .navigationTitle("Light It Up Setup")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") {
+                        showCustomization = false
+                    }
+                }
+            }
+        }
+        .presentationDetents([.medium, .large])
+        .presentationDragIndicator(.visible)
     }
 
     private var controls: some View {
