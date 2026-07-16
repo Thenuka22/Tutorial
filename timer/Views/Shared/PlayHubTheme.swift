@@ -66,12 +66,16 @@ struct PlayHubPanelBackground: View {
 
     var body: some View {
         RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-            .fill(PlayHubTheme.wood.opacity(0.95))
+            .fill(PlayHubTheme.woodLight)
             .overlay {
                 RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                    .strokeBorder(PlayHubTheme.lime.opacity(0.42), lineWidth: 1.5)
+                    .strokeBorder(PlayHubTheme.wood, lineWidth: 3)
             }
-            .shadow(color: Color.black.opacity(0.32), radius: 12, x: 0, y: 7)
+            .background {
+                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                    .fill(PlayHubTheme.wood)
+                    .offset(y: 6)
+            }
     }
 }
 
@@ -132,16 +136,20 @@ struct PlayHubPrimaryButtonStyle: ButtonStyle {
             .frame(minHeight: 52)
             .padding(.horizontal, 18)
             .background(
-                tint.opacity(configuration.isPressed ? 0.78 : 1),
+                tint,
                 in: RoundedRectangle(cornerRadius: 16, style: .continuous)
             )
             .overlay {
                 RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .strokeBorder(PlayHubTheme.wood.opacity(0.28), lineWidth: 1)
+                    .strokeBorder(PlayHubTheme.wood, lineWidth: 2)
             }
-            .shadow(color: Color.black.opacity(configuration.isPressed ? 0.08 : 0.28), radius: 8, x: 0, y: 5)
-            .scaleEffect(configuration.isPressed ? 0.98 : 1)
-            .animation(.snappy(duration: 0.18), value: configuration.isPressed)
+            .background {
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .fill(PlayHubTheme.wood)
+                    .offset(y: configuration.isPressed ? 0 : 6)
+            }
+            .offset(y: configuration.isPressed ? 6 : 0)
+            .animation(.snappy(duration: 0.1), value: configuration.isPressed)
     }
 }
 
@@ -154,16 +162,20 @@ struct PlayHubSecondaryButtonStyle: ButtonStyle {
             .frame(minHeight: 52)
             .padding(.horizontal, 18)
             .background(
-                PlayHubTheme.sand.opacity(configuration.isPressed ? 0.78 : 1),
+                PlayHubTheme.sand,
                 in: RoundedRectangle(cornerRadius: 16, style: .continuous)
             )
             .overlay {
                 RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .strokeBorder(PlayHubTheme.wood.opacity(0.28), lineWidth: 1)
+                    .strokeBorder(PlayHubTheme.wood, lineWidth: 2)
             }
-            .scaleEffect(configuration.isPressed ? 0.98 : 1)
-            .opacity(configuration.isPressed ? 0.82 : 1)
-            .animation(.snappy(duration: 0.18), value: configuration.isPressed)
+            .background {
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .fill(PlayHubTheme.wood)
+                    .offset(y: configuration.isPressed ? 0 : 6)
+            }
+            .offset(y: configuration.isPressed ? 6 : 0)
+            .animation(.snappy(duration: 0.1), value: configuration.isPressed)
     }
 }
 
