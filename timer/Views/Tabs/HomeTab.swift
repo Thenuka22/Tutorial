@@ -78,7 +78,7 @@ struct HomeTab: View {
     private var quickPlay: some View {
         NavigationLink(value: GameMode.tapFrenzy) {
             HStack {
-                Label("START TAP FRENZY", systemImage: "play.fill")
+                GameActionLabel(title: "START TAP FRENZY", mode: .tapFrenzy)
                 Spacer()
                 Text("QUICK PLAY")
                     .font(PlayHubGameFont.label(10))

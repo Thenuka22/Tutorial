@@ -99,9 +99,7 @@ struct TapFrenzyView: View {
 
                 if !viewModel.isRunning && !viewModel.showResults {
                     VStack(spacing: 10) {
-                        Image(systemName: "hand.tap.fill")
-                            .font(.system(size: 54, weight: .black))
-                            .foregroundStyle(PlayHubTheme.orange)
+                        GameModeArtworkIcon(mode: .tapFrenzy, size: 76, iconSize: 44)
                         Text("Tap as fast as you can.")
                             .font(PlayHubGameFont.display(22))
                             .foregroundStyle(PlayHubTheme.lime)
@@ -120,8 +118,7 @@ struct TapFrenzyView: View {
                         viewModel.handleTap()
                     } label: {
                         VStack(spacing: 8) {
-                            Image(systemName: viewModel.targetMood.symbolName)
-                                .font(.system(size: 34, weight: .black))
+                            TapTargetGlyph(mood: viewModel.targetMood)
                             Text(viewModel.targetMood.buttonTitle)
                                 .font(PlayHubGameFont.display(15))
                                 .lineLimit(1)
@@ -248,7 +245,10 @@ struct TapFrenzyView: View {
                 viewModel.start(options: options)
             }
         } label: {
-            Label(viewModel.isRunning ? "Reset" : "Start", systemImage: viewModel.isRunning ? "arrow.counterclockwise" : "play.fill")
+            GameActionLabel(
+                title: viewModel.isRunning ? "RESET" : "START",
+                mode: .tapFrenzy
+            )
                 .font(PlayHubGameFont.display(15))
         }
         .buttonStyle(PlayHubPrimaryButtonStyle(tint: viewModel.isRunning ? PlayHubTheme.berry : PlayHubTheme.orange))
@@ -319,6 +319,27 @@ private struct TapTargetButtonStyle: ButtonStyle {
             .offset(y: usesEnhancedControls && configuration.isPressed ? 5 : 0)
             .scaleEffect(usesEnhancedControls && configuration.isPressed ? 0.98 : 1)
             .animation(.snappy(duration: 0.14), value: configuration.isPressed)
+    }
+}
+
+private struct TapTargetGlyph: View {
+    let mood: TapTargetMood
+
+    var body: some View {
+        Group {
+            switch mood {
+            case .normal:
+                GameModeGlyph(mode: .tapFrenzy, size: 34)
+            case .bonus:
+                Text("+2")
+                    .font(PlayHubGameFont.display(28).monospacedDigit())
+            case .trap:
+                Text("-2")
+                    .font(PlayHubGameFont.display(28).monospacedDigit())
+            }
+        }
+        .frame(width: 44, height: 40)
+        .accessibilityHidden(true)
     }
 }
 

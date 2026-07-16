@@ -110,9 +110,7 @@ struct LightItUpView: View {
                         .frame(height: 90)
                         .overlay {
                             if card.isLit {
-                                Image(systemName: "bolt.fill")
-                                    .symbolRenderingMode(.monochrome)
-                                    .font(.system(size: 34, weight: .black))
+                                GameModeGlyph(mode: .lightItUp, size: 36)
                                     .foregroundStyle(PlayHubTheme.wood)
                                     .frame(width: 44, height: 44, alignment: .center)
                             } else {
@@ -190,13 +188,16 @@ struct LightItUpView: View {
             Button {
                 viewModel.start(options: options)
             } label: {
-                Label(viewModel.isRunning ? "Restart" : "Start", systemImage: viewModel.isRunning ? "arrow.counterclockwise" : "play.fill")
+                GameActionLabel(
+                    title: viewModel.isRunning ? "RESTART" : "START",
+                    mode: .lightItUp
+                )
                     .font(PlayHubGameFont.display(15))
             }
             .buttonStyle(PlayHubPrimaryButtonStyle(tint: levelTint))
 
             Button(action: viewModel.stop) {
-                Label("Stop", systemImage: "stop.fill")
+                Text("STOP")
                     .font(PlayHubGameFont.display(15))
             }
             .buttonStyle(PlayHubSecondaryButtonStyle())

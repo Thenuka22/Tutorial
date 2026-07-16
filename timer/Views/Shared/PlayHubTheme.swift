@@ -110,12 +110,8 @@ struct GameModeArtworkIcon: View {
     var iconSize: CGFloat = 31
 
     var body: some View {
-        Image(mode.artworkName)
-            .renderingMode(.template)
-            .resizable()
-            .scaledToFit()
+        GameModeGlyph(mode: mode, size: iconSize)
             .foregroundStyle(PlayHubTheme.wood)
-            .frame(width: iconSize, height: iconSize)
             .frame(width: size, height: size)
             .background(
                 PlayHubTheme.tint(for: mode),
@@ -178,6 +174,87 @@ struct PlayHubPrimaryButtonStyle: ButtonStyle {
             .offset(y: usesEnhancedControls && configuration.isPressed ? 4 : 0)
             .scaleEffect(configuration.isPressed ? (usesEnhancedControls ? 0.99 : 0.98) : 1)
             .animation(.snappy(duration: 0.18), value: configuration.isPressed)
+    }
+}
+
+struct GameModeGlyph: View {
+    let mode: GameMode
+    var size: CGFloat = 24
+
+    var body: some View {
+        Group {
+            switch mode {
+            case .tapFrenzy:
+                ZStack {
+                    Circle()
+                        .stroke(lineWidth: max(2, size * 0.10))
+                        .frame(width: size * 0.92, height: size * 0.92)
+                    Circle()
+                        .stroke(lineWidth: max(2, size * 0.09))
+                        .frame(width: size * 0.54, height: size * 0.54)
+                    Circle()
+                        .frame(width: size * 0.20, height: size * 0.20)
+                }
+            case .lightItUp:
+                ZStack {
+                    ForEach(0..<8, id: \.self) { index in
+                        Capsule()
+                            .frame(width: size * 0.12, height: size * 0.28)
+                            .offset(y: -size * 0.34)
+                            .rotationEffect(.degrees(Double(index) * 45))
+                    }
+                    Circle()
+                        .frame(width: size * 0.44, height: size * 0.44)
+                }
+            case .quizRush:
+                VStack(spacing: size * 0.10) {
+                    HStack(spacing: size * 0.10) {
+                        quizTile(isHighlighted: true)
+                        quizTile(isHighlighted: false)
+                    }
+                    HStack(spacing: size * 0.10) {
+                        quizTile(isHighlighted: false)
+                        quizTile(isHighlighted: false)
+                    }
+                }
+            }
+        }
+        .frame(width: size, height: size)
+        .accessibilityHidden(true)
+    }
+
+    private func quizTile(isHighlighted: Bool) -> some View {
+        RoundedRectangle(cornerRadius: size * 0.10, style: .continuous)
+            .frame(width: size * 0.36, height: size * 0.30)
+            .opacity(isHighlighted ? 1 : 0.48)
+    }
+}
+
+struct GameActionLabel: View {
+    let title: String
+    let mode: GameMode
+    var iconSize: CGFloat = 21
+
+    var body: some View {
+        HStack(spacing: 8) {
+            GameModeGlyph(mode: mode, size: iconSize)
+            Text(title)
+        }
+    }
+}
+
+struct GameSetupLabel: View {
+    var title = "SETUP"
+
+    var body: some View {
+        HStack(spacing: 6) {
+            Image(GameArt.settings)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 21, height: 21)
+                .accessibilityHidden(true)
+            Text(title)
+        }
     }
 }
 
@@ -310,7 +387,7 @@ struct ArcadeGameBar: View {
 
             if canConfigure {
                 Button(action: onSetup) {
-                    Label("SETUP", systemImage: "slider.horizontal.3")
+                    GameSetupLabel()
                         .font(PlayHubGameFont.label(11))
                         .foregroundStyle(PlayHubTheme.wood)
                         .padding(.horizontal, 11)

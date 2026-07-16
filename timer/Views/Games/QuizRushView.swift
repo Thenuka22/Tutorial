@@ -74,7 +74,7 @@ struct QuizRushView: View {
                 Button {
                     showCustomization = true
                 } label: {
-                    Label("Setup", systemImage: "slider.horizontal.3")
+                    GameSetupLabel(title: "SETUP")
                         .font(PlayHubGameFont.label(12))
                         .padding(.horizontal, 11)
                         .frame(height: 34)
@@ -130,7 +130,7 @@ struct QuizRushView: View {
             Button {
                 Task { await viewModel.load(options: options) }
             } label: {
-                Label("START QUIZ", systemImage: "play.fill")
+                GameActionLabel(title: "START QUIZ", mode: .quizRush)
                     .font(PlayHubGameFont.display(16))
             }
             .buttonStyle(JungleQuizButtonStyle(background: QuizPalette.lime))
@@ -170,7 +170,7 @@ struct QuizRushView: View {
             Button {
                 Task { await viewModel.load(options: options) }
             } label: {
-                Label("TRY AGAIN", systemImage: "arrow.clockwise")
+                Text("TRY AGAIN")
                     .font(PlayHubGameFont.display(14))
             }
             .buttonStyle(JungleQuizButtonStyle(background: QuizPalette.lime))
@@ -269,7 +269,7 @@ struct QuizRushView: View {
             Button {
                 Task { await viewModel.load(options: options) }
             } label: {
-                Label("PLAY AGAIN", systemImage: "play.fill")
+                GameActionLabel(title: "PLAY AGAIN", mode: .quizRush)
                     .font(PlayHubGameFont.display(14))
             }
             .buttonStyle(JungleQuizButtonStyle(background: QuizPalette.lime))

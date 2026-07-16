@@ -183,14 +183,6 @@ enum TapTargetMood: CaseIterable, Equatable {
         }
     }
 
-    var symbolName: String {
-        switch self {
-        case .normal: return "hand.tap.fill"
-        case .bonus: return "plus.circle.fill"
-        case .trap: return "minus.circle.fill"
-        }
-    }
-
     var buttonTitle: String {
         switch self {
         case .normal: return "Tap"

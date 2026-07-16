@@ -39,11 +39,4 @@ enum GameMode: String, CaseIterable, Codable, Hashable, Identifiable {
         }
     }
 
-    var artworkName: String {
-        switch self {
-        case .tapFrenzy: return "GameIconTap"
-        case .lightItUp: return "GameIconLight"
-        case .quizRush: return "GameIconQuiz"
-        }
-    }
 }
