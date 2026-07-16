@@ -1,25 +1,25 @@
-import Charts
 import SwiftUI
 
 struct StatsTab: View {
     @StateObject private var viewModel = StatsVM()
 
+    private let xpPerLevel = 100
+
     var body: some View {
         ZStack {
-            scoreBackground
+            PlayHubScreenBackground()
 
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
-                    scoreboardHeader
-                    summaryGrid
-                    chartSection
-                    modeBreakdown
-                    variantLeaderboards
-                    recentGames
+                    adventureHeader
+                    playerProgress
+                    achievements
+                    gameQuests
+                    latestRuns
                 }
                 .frame(maxWidth: 430)
                 .padding(.horizontal, 18)
-                .padding(.top, 150)
+                .padding(.top, 18)
                 .padding(.bottom, 108)
                 .frame(maxWidth: .infinity)
             }
@@ -27,30 +27,25 @@ struct StatsTab: View {
         }
         .navigationTitle("")
         .toolbar(.hidden, for: .navigationBar)
+        .navigationDestination(for: GameMode.self) { mode in
+            destination(for: mode)
+        }
     }
 
-    private var scoreBackground: some View {
-        Image(GameArt.scoreBackground)
-            .resizable()
-            .aspectRatio(9.0 / 16.0, contentMode: .fill)
-            .ignoresSafeArea()
-            .accessibilityHidden(true)
-    }
-
-    private var scoreboardHeader: some View {
-        HStack(spacing: 13) {
+    private var adventureHeader: some View {
+        HStack(spacing: 14) {
             PlayHubSymbolIcon(
-                systemName: "trophy.fill",
-                tint: PlayHubTheme.gold,
+                systemName: "map.fill",
+                tint: PlayHubTheme.lime,
                 size: 54,
-                symbolSize: 24
+                symbolSize: 23
             )
 
             VStack(alignment: .leading, spacing: 3) {
-                Text("SCOREBOARD")
+                Text("ADVENTURE LOG")
                     .font(PlayHubGameFont.display(24))
-                    .foregroundStyle(.white)
-                Text("YOUR GAME ARCADE RECORDS")
+                    .foregroundStyle(PlayHubTheme.lime)
+                Text("PLAY. LEVEL UP. CONQUER.")
                     .font(PlayHubGameFont.label(10))
                     .foregroundStyle(PlayHubTheme.cream)
             }
@@ -58,241 +53,275 @@ struct StatsTab: View {
             Spacer()
         }
         .padding(16)
-        .background(PixelArtSlice(imageName: GameArt.pixelPanelBrown, capInset: 11))
+        .background(PlayHubPanelBackground(cornerRadius: 22))
     }
 
-    private var summaryGrid: some View {
-        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
-            PixelStatCard(title: "Games", value: "\(viewModel.totalGames)", symbol: "gamecontroller.fill", tint: PlayHubTheme.orange)
-            PixelStatCard(title: "Total", value: "\(viewModel.totalScore)", symbol: "sum", tint: PlayHubTheme.sky)
-            PixelStatCard(title: "Average", value: "\(viewModel.averageScore)", symbol: "divide.circle.fill", tint: PlayHubTheme.mint)
-            PixelStatCard(title: "Mapped", value: "\(viewModel.locatedSessions.count)", symbol: "mappin.circle.fill", tint: PlayHubTheme.berry)
-        }
-    }
+    private var playerProgress: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            HStack(alignment: .center, spacing: 12) {
+                ZStack {
+                    Circle()
+                        .fill(PlayHubTheme.gold)
+                    Circle()
+                        .strokeBorder(PlayHubTheme.woodLight, lineWidth: 4)
+                    Text("\(playerLevel)")
+                        .font(PlayHubGameFont.display(27).monospacedDigit())
+                        .foregroundStyle(PlayHubTheme.wood)
+                }
+                .frame(width: 68, height: 68)
 
-    private var chartSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            sectionTitle("BEST SCORES", symbol: "chart.bar.fill")
+                VStack(alignment: .leading, spacing: 3) {
+                    Text("LEVEL \(playerLevel)")
+                        .font(PlayHubGameFont.label(11))
+                        .foregroundStyle(PlayHubTheme.woodLight.opacity(0.76))
+                    Text(rankName.uppercased())
+                        .font(PlayHubGameFont.display(20))
+                        .foregroundStyle(PlayHubTheme.wood)
+                    Text("\(viewModel.totalGames) quests completed")
+                        .font(PlayHubGameFont.label(10))
+                        .foregroundStyle(PlayHubTheme.woodLight.opacity(0.74))
+                }
 
-            if viewModel.totalGames == 0 {
-                emptyState(symbol: "chart.bar", title: "No stats yet", message: "Complete any game to build your chart.")
-            } else {
-                Chart(viewModel.modeStats) { stat in
-                    BarMark(
-                        x: .value("Game", stat.mode.shortName),
-                        y: .value("Best Score", stat.bestScore)
-                    )
-                    .foregroundStyle(PlayHubTheme.tint(for: stat.mode))
-                    .annotation(position: .top) {
-                        Text("\(stat.bestScore)")
-                            .font(PlayHubGameFont.label(10))
-                            .foregroundStyle(PlayHubTheme.wood)
-                    }
+                Spacer()
+            }
+
+            VStack(alignment: .leading, spacing: 6) {
+                HStack {
+                    Text("NEXT LEVEL")
+                    Spacer()
+                    Text("\(currentLevelXP) / \(xpPerLevel) XP")
                 }
-                .chartXAxis {
-                    AxisMarks { _ in
-                        AxisGridLine().foregroundStyle(PlayHubTheme.wood.opacity(0.16))
-                        AxisValueLabel().foregroundStyle(PlayHubTheme.wood)
-                    }
-                }
-                .chartYAxis {
-                    AxisMarks { _ in
-                        AxisGridLine().foregroundStyle(PlayHubTheme.wood.opacity(0.16))
-                        AxisValueLabel().foregroundStyle(PlayHubTheme.wood)
-                    }
-                }
-                .frame(height: 220)
-                .padding(16)
-                .background(panelBackground)
+                .font(PlayHubGameFont.label(10))
+                .foregroundStyle(PlayHubTheme.woodLight)
+
+                ProgressView(value: Double(currentLevelXP), total: Double(xpPerLevel))
+                    .tint(PlayHubTheme.leaf)
+                    .scaleEffect(x: 1, y: 2.2, anchor: .center)
             }
         }
+        .padding(18)
+        .background(adventurePanel)
+        .accessibilityElement(children: .combine)
     }
 
-    private var modeBreakdown: some View {
+    private var achievements: some View {
         VStack(alignment: .leading, spacing: 12) {
-            sectionTitle("BY GAME", symbol: "gamecontroller.fill")
+            sectionTitle("ACHIEVEMENTS")
 
-            ForEach(viewModel.modeStats) { stat in
-                scoreRow(
-                    mode: stat.mode,
-                    title: stat.mode.displayName,
-                    detail: "\(stat.games) games  |  total \(stat.totalScore)",
-                    score: stat.bestScore
+            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
+                AchievementBadge(
+                    title: "First Quest",
+                    detail: "Finish one game",
+                    symbol: "flag.checkered",
+                    unlocked: viewModel.totalGames >= 1
+                )
+                AchievementBadge(
+                    title: "Triple Hero",
+                    detail: "Play every game",
+                    symbol: "crown.fill",
+                    unlocked: viewModel.modeStats.allSatisfy { $0.games > 0 }
+                )
+                AchievementBadge(
+                    title: "Score Hunter",
+                    detail: "Earn 100 points",
+                    symbol: "star.fill",
+                    unlocked: viewModel.totalScore >= 100
+                )
+                AchievementBadge(
+                    title: "Trail Finder",
+                    detail: "Save a map pin",
+                    symbol: "mappin.and.ellipse",
+                    unlocked: !viewModel.locatedSessions.isEmpty
                 )
             }
         }
     }
 
-    private var variantLeaderboards: some View {
+    private var gameQuests: some View {
         VStack(alignment: .leading, spacing: 12) {
-            sectionTitle("VARIANT LEADERS", symbol: "list.star")
+            sectionTitle("GAME QUESTS")
 
-            if viewModel.variantStats.isEmpty {
-                emptyState(symbol: "list.star", title: "No variants yet", message: "Complete a customized game to start a variant leaderboard.")
-            } else {
-                ForEach(viewModel.variantStats) { stat in
-                    scoreRow(
-                        mode: stat.mode,
-                        title: stat.mode.displayName,
-                        detail: "\(stat.variantLabel)  |  \(stat.games) games",
-                        score: stat.bestScore
-                    )
-                }
-            }
-        }
-    }
+            ForEach(viewModel.modeStats) { stat in
+                NavigationLink(value: stat.mode) {
+                    HStack(spacing: 14) {
+                        GameModeArtworkIcon(mode: stat.mode, size: 58, iconSize: 34)
 
-    private var recentGames: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            sectionTitle("RECENT GAMES", symbol: "clock.fill")
-
-            if viewModel.recentSessions.isEmpty {
-                emptyState(symbol: "clock", title: "No recent games", message: "Your completed sessions will appear here.")
-            } else {
-                ForEach(viewModel.recentSessions) { session in
-                    HStack(spacing: 12) {
-                        PlayHubSymbolIcon(
-                            systemName: session.mode.symbolName,
-                            tint: PlayHubTheme.tint(for: session.mode),
-                            size: 42,
-                            symbolSize: 18
-                        )
-
-                        VStack(alignment: .leading, spacing: 3) {
-                            Text(session.mode.displayName)
-                                .font(PlayHubGameFont.display(14))
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(stat.mode.displayName.uppercased())
+                                .font(PlayHubGameFont.display(16))
                                 .foregroundStyle(PlayHubTheme.wood)
-                            Text(session.displayVariantLabel)
+                            Text("\(stat.games) RUNS")
                                 .font(PlayHubGameFont.label(10))
-                                .foregroundStyle(PlayHubTheme.woodLight.opacity(0.78))
-                                .lineLimit(2)
-                            Text(session.timestamp, style: .relative)
-                                .font(PlayHubGameFont.label(9))
-                                .foregroundStyle(PlayHubTheme.woodLight.opacity(0.68))
+                                .foregroundStyle(PlayHubTheme.woodLight.opacity(0.72))
                         }
 
                         Spacer()
 
-                        scorePlate(session.score)
+                        VStack(spacing: 1) {
+                            Text("BEST")
+                                .font(PlayHubGameFont.label(9))
+                            Text("\(stat.bestScore)")
+                                .font(PlayHubGameFont.display(19).monospacedDigit())
+                        }
+                        .foregroundStyle(PlayHubTheme.wood)
+                        .frame(minWidth: 58, minHeight: 48)
+                        .padding(.horizontal, 4)
+                        .background(PlayHubTheme.gold, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+
+                        Image(systemName: "play.fill")
+                            .font(.system(size: 13, weight: .black))
+                            .foregroundStyle(PlayHubTheme.wood)
+                    }
+                    .padding(15)
+                    .background(adventurePanel)
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+            }
+        }
+    }
+
+    private var latestRuns: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            sectionTitle("LATEST RUNS")
+
+            if viewModel.recentSessions.isEmpty {
+                VStack(spacing: 10) {
+                    Image(systemName: "flag.checkered")
+                        .font(.system(size: 36, weight: .black))
+                        .foregroundStyle(PlayHubTheme.orange)
+                    Text("YOUR FIRST QUEST AWAITS")
+                        .font(PlayHubGameFont.display(14))
+                        .foregroundStyle(PlayHubTheme.wood)
+                    Text("Complete any game to begin your adventure log.")
+                        .font(PlayHubGameFont.label(10))
+                        .foregroundStyle(PlayHubTheme.woodLight.opacity(0.74))
+                        .multilineTextAlignment(.center)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(24)
+                .background(adventurePanel)
+            } else {
+                ForEach(Array(viewModel.recentSessions.prefix(3))) { session in
+                    HStack(spacing: 12) {
+                        GameModeArtworkIcon(mode: session.mode, size: 42, iconSize: 24)
+
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(session.mode.displayName)
+                                .font(PlayHubGameFont.display(13))
+                                .foregroundStyle(PlayHubTheme.wood)
+                            Text(session.displayVariantLabel.uppercased())
+                                .font(PlayHubGameFont.label(9))
+                                .foregroundStyle(PlayHubTheme.woodLight.opacity(0.70))
+                                .lineLimit(1)
+                        }
+
+                        Spacer()
+
+                        Text("+\(session.score) XP")
+                            .font(PlayHubGameFont.display(13).monospacedDigit())
+                            .foregroundStyle(PlayHubTheme.orange)
                     }
                     .padding(13)
-                    .background(panelBackground)
+                    .background(adventurePanel)
                 }
             }
         }
     }
 
-    private func sectionTitle(_ title: String, symbol: String) -> some View {
-        Label(title, systemImage: symbol)
-            .font(PlayHubGameFont.display(15))
-            .foregroundStyle(PlayHubTheme.wood)
-            .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
-            .padding(.horizontal, 14)
-            .background(PixelArtSlice(imageName: GameArt.pixelButtonYellow))
+    private func sectionTitle(_ title: String) -> some View {
+        Text(title)
+            .font(PlayHubGameFont.display(18))
+            .foregroundStyle(PlayHubTheme.lime)
+            .gameTextShadow()
             .accessibilityAddTraits(.isHeader)
     }
 
-    private func scoreRow(mode: GameMode, title: String, detail: String, score: Int) -> some View {
-        HStack(spacing: 12) {
-            PlayHubSymbolIcon(
-                systemName: mode.symbolName,
-                tint: PlayHubTheme.tint(for: mode),
-                size: 42,
-                symbolSize: 18
-            )
+    private var adventurePanel: some View {
+        AdventureArtSlice(imageName: GameArt.adventurePanel)
+    }
 
-            VStack(alignment: .leading, spacing: 3) {
-                Text(title)
-                    .font(PlayHubGameFont.display(14))
-                    .foregroundStyle(PlayHubTheme.wood)
-                Text(detail)
-                    .font(PlayHubGameFont.label(10))
-                    .foregroundStyle(PlayHubTheme.woodLight.opacity(0.78))
-                    .lineLimit(2)
-            }
+    private var playerLevel: Int {
+        min(max(viewModel.totalScore / xpPerLevel + 1, 1), 99)
+    }
 
-            Spacer()
-            scorePlate(score)
+    private var currentLevelXP: Int {
+        viewModel.totalScore % xpPerLevel
+    }
+
+    private var rankName: String {
+        switch playerLevel {
+        case 1...2: return "New Explorer"
+        case 3...5: return "Trailblazer"
+        case 6...10: return "Arcade Hero"
+        default: return "Jungle Legend"
         }
-        .padding(13)
-        .background(panelBackground)
     }
 
-    private func scorePlate(_ score: Int) -> some View {
-        Text("\(score)")
-            .font(PlayHubGameFont.display(16).monospacedDigit())
-            .foregroundStyle(PlayHubTheme.orange)
-            .lineLimit(1)
-            .minimumScaleFactor(0.64)
-            .frame(minWidth: 52, minHeight: 38)
-            .padding(.horizontal, 5)
-            .background(Color.white, in: RoundedRectangle(cornerRadius: 9, style: .continuous))
-            .overlay {
-                RoundedRectangle(cornerRadius: 9, style: .continuous)
-                    .strokeBorder(PlayHubTheme.woodLight, lineWidth: 3)
-            }
-    }
-
-    private func emptyState(symbol: String, title: String, message: String) -> some View {
-        VStack(spacing: 10) {
-            Image(systemName: symbol)
-                .font(.system(size: 38, weight: .black))
-                .foregroundStyle(PlayHubTheme.orange)
-            Text(title.uppercased())
-                .font(PlayHubGameFont.display(15))
-                .foregroundStyle(PlayHubTheme.wood)
-            Text(message)
-                .font(PlayHubGameFont.label(11))
-                .multilineTextAlignment(.center)
-                .foregroundStyle(PlayHubTheme.woodLight.opacity(0.78))
+    @ViewBuilder
+    private func destination(for mode: GameMode) -> some View {
+        switch mode {
+        case .tapFrenzy:
+            TapFrenzyView()
+        case .lightItUp:
+            LightItUpView()
+        case .quizRush:
+            QuizRushView()
         }
-        .frame(maxWidth: .infinity)
-        .padding(24)
-        .background(panelBackground)
-    }
-
-    private var panelBackground: some View {
-        PixelArtSlice(imageName: GameArt.pixelPanelTan, capInset: 11)
     }
 }
 
-private struct PixelStatCard: View {
+private struct AchievementBadge: View {
     let title: String
-    let value: String
+    let detail: String
     let symbol: String
-    let tint: Color
+    let unlocked: Bool
 
     var body: some View {
-        HStack(spacing: 10) {
-            PlayHubSymbolIcon(
-                systemName: symbol,
-                tint: tint,
-                size: 40,
-                symbolSize: 17
-            )
+        VStack(spacing: 8) {
+            ZStack(alignment: .bottomTrailing) {
+                Image(systemName: symbol)
+                    .font(.system(size: 24, weight: .black))
+                    .foregroundStyle(unlocked ? PlayHubTheme.wood : PlayHubTheme.woodLight.opacity(0.42))
+                    .frame(width: 48, height: 48)
+                    .background(
+                        unlocked ? PlayHubTheme.gold : PlayHubTheme.sand.opacity(0.56),
+                        in: Circle()
+                    )
 
-            VStack(alignment: .leading, spacing: 2) {
-                Text(title.uppercased())
-                    .font(PlayHubGameFont.label(9))
-                    .foregroundStyle(PlayHubTheme.woodLight.opacity(0.76))
-                    .lineLimit(1)
-
-                Text(value)
-                    .font(PlayHubGameFont.display(19).monospacedDigit())
-                    .foregroundStyle(PlayHubTheme.orange)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.62)
+                if !unlocked {
+                    Image(systemName: "lock.fill")
+                        .font(.system(size: 9, weight: .black))
+                        .foregroundStyle(.white)
+                        .frame(width: 20, height: 20)
+                        .background(PlayHubTheme.woodLight, in: Circle())
+                }
             }
 
-            Spacer(minLength: 0)
+            Text(title.uppercased())
+                .font(PlayHubGameFont.display(11))
+                .foregroundStyle(PlayHubTheme.wood)
+                .lineLimit(1)
+                .minimumScaleFactor(0.72)
+
+            Text(detail)
+                .font(PlayHubGameFont.label(9))
+                .foregroundStyle(PlayHubTheme.woodLight.opacity(0.70))
+                .multilineTextAlignment(.center)
+                .lineLimit(2)
         }
-        .padding(13)
-        .frame(maxWidth: .infinity, minHeight: 76)
-        .background(PixelArtSlice(imageName: GameArt.pixelPanelTan, capInset: 11))
+        .frame(maxWidth: .infinity, minHeight: 122)
+        .padding(12)
+        .background(AdventureArtSlice(imageName: GameArt.adventurePanel))
+        .opacity(unlocked ? 1 : 0.72)
         .accessibilityElement(children: .combine)
+        .accessibilityValue(unlocked ? "Unlocked" : "Locked")
     }
 }
 
 #Preview {
     NavigationStack { StatsTab() }
+        .environmentObject(GameSessionStore.shared)
+        .environmentObject(GameSettingsStore.shared)
+        .environmentObject(LocationService.shared)
 }
