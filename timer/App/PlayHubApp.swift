@@ -8,14 +8,16 @@ struct GameArcadeApp: App {
 
     var body: some Scene {
         WindowGroup {
-            GameArcadeShellView()
+            LaunchSequenceView {
+                GameArcadeShellView()
+                    .task {
+                        locationService.requestPermission()
+                        AudioService.shared.sync(with: settingsStore)
+                    }
+            }
                 .environmentObject(sessionStore)
                 .environmentObject(settingsStore)
                 .environmentObject(locationService)
-                .task {
-                    locationService.requestPermission()
-                    AudioService.shared.sync(with: settingsStore)
-                }
         }
     }
 }
