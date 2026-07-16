@@ -7,7 +7,8 @@ final class StatsVM: ObservableObject {
 
     private var cancellables = Set<AnyCancellable>()
 
-    init(store: GameSessionStore = .shared) {
+    init(store: GameSessionStore? = nil) {
+        let store = store ?? .shared
         sessions = store.sessions
         store.$sessions
             .sink { [weak self] sessions in
