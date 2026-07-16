@@ -41,7 +41,8 @@ final class AudioService: ObservableObject {
 
     private init() { }
 
-    func sync(with settings: GameSettingsStore = .shared) {
+    func sync(with settings: GameSettingsStore? = nil) {
+        let settings = settings ?? .shared
         if settings.musicEnabled, settings.musicVolume > 0 {
             startMusic(volume: settings.musicVolume)
         } else {
@@ -49,7 +50,8 @@ final class AudioService: ObservableObject {
         }
     }
 
-    func play(_ sound: PlayHubSound, settings: GameSettingsStore = .shared) {
+    func play(_ sound: PlayHubSound, settings: GameSettingsStore? = nil) {
+        let settings = settings ?? .shared
         guard settings.soundEffectsEnabled, settings.soundVolume > 0 else { return }
         do {
             let data = Self.toneData(frequency: sound.frequency, duration: sound.duration)
@@ -64,12 +66,14 @@ final class AudioService: ObservableObject {
         }
     }
 
-    func impact(_ style: UIImpactFeedbackGenerator.FeedbackStyle, settings: GameSettingsStore = .shared) {
+    func impact(_ style: UIImpactFeedbackGenerator.FeedbackStyle, settings: GameSettingsStore? = nil) {
+        let settings = settings ?? .shared
         guard settings.hapticsEnabled else { return }
         UIImpactFeedbackGenerator(style: style).impactOccurred()
     }
 
-    func notify(_ type: UINotificationFeedbackGenerator.FeedbackType, settings: GameSettingsStore = .shared) {
+    func notify(_ type: UINotificationFeedbackGenerator.FeedbackType, settings: GameSettingsStore? = nil) {
+        let settings = settings ?? .shared
         guard settings.hapticsEnabled else { return }
         UINotificationFeedbackGenerator().notificationOccurred(type)
     }
