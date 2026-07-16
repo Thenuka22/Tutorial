@@ -9,20 +9,29 @@ struct SettingsTab: View {
     @State private var categories: [TriviaCategory] = [.any]
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-                audioSection
-                defaultGameOptionsSection
-                notificationSection
-                locationSection
-                resetSection
+        ZStack {
+            PlayHubScreenBackground()
+
+            ScrollView {
+                VStack(alignment: .leading, spacing: 16) {
+                    settingsHeader
+                    audioSection
+                    defaultGameOptionsSection
+                    notificationSection
+                    locationSection
+                    resetSection
+                }
+                .padding(.horizontal, 20)
+                .padding(.top, 16)
+                .padding(.bottom, 108)
             }
-            .padding(.horizontal, 20)
-            .padding(.top, 20)
-            .padding(.bottom, 108)
+            .scrollIndicators(.hidden)
         }
-        .background(PlayHubScreenBackground())
-        .navigationTitle("Settings")
+        .navigationTitle("")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbarBackground(PlayHubTheme.wood, for: .navigationBar)
+        .toolbarBackground(.visible, for: .navigationBar)
+        .toolbarColorScheme(.dark, for: .navigationBar)
         .confirmationDialog("Reset all Game Arcade stats?", isPresented: $confirmReset, titleVisibility: .visible) {
             Button("Reset All Stats", role: .destructive) {
                 store.resetAll()
@@ -35,11 +44,32 @@ struct SettingsTab: View {
         }
     }
 
+    private var settingsHeader: some View {
+        HStack(spacing: 14) {
+            Image(GameArt.settings)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 58, height: 58)
+                .accessibilityHidden(true)
+
+            VStack(alignment: .leading, spacing: 3) {
+                Text("SETTINGS")
+                    .font(PlayHubGameFont.display(26))
+                    .foregroundStyle(PlayHubTheme.lime)
+                Text("Tune every game your way.")
+                    .font(PlayHubGameFont.label(12))
+                    .foregroundStyle(PlayHubTheme.mutedInk)
+            }
+
+            Spacer()
+        }
+        .padding(15)
+        .background(PlayHubPanelBackground(cornerRadius: 22))
+    }
+
     private var audioSection: some View {
         VStack(alignment: .leading, spacing: 14) {
-            Label("Audio & Feel", systemImage: "speaker.wave.2.fill")
-                .font(.title3.bold())
-                .foregroundStyle(PlayHubTheme.ink)
+            sectionTitle("AUDIO & FEEL", systemImage: "speaker.wave.2.fill")
 
             HStack(spacing: 14) {
                 artToggleButton(
@@ -65,32 +95,21 @@ struct SettingsTab: View {
             }
             .frame(maxWidth: .infinity)
 
-            Toggle("Sound Effects", isOn: $settings.soundEffectsEnabled)
-                .tint(PlayHubTheme.orange)
+            volumeControl(
+                title: "Sound Volume",
+                symbol: "speaker.wave.2.fill",
+                value: $settings.soundVolume,
+                tint: PlayHubTheme.orange,
+                isEnabled: settings.soundEffectsEnabled
+            )
 
-            VStack(alignment: .leading, spacing: 6) {
-                Text("Sound Volume")
-                    .font(.subheadline.bold())
-                    .foregroundStyle(PlayHubTheme.ink)
-                Slider(value: $settings.soundVolume, in: 0...1)
-                    .tint(PlayHubTheme.orange)
-            }
-            .disabled(!settings.soundEffectsEnabled)
-
-            Toggle("Background Music", isOn: $settings.musicEnabled)
-                .tint(PlayHubTheme.sky)
-
-            VStack(alignment: .leading, spacing: 6) {
-                Text("Music Volume")
-                    .font(.subheadline.bold())
-                    .foregroundStyle(PlayHubTheme.ink)
-                Slider(value: $settings.musicVolume, in: 0...1)
-                    .tint(PlayHubTheme.sky)
-            }
-            .disabled(!settings.musicEnabled)
-
-            Toggle("Haptics", isOn: $settings.hapticsEnabled)
-                .tint(PlayHubTheme.mint)
+            volumeControl(
+                title: "Music Volume",
+                symbol: "music.note",
+                value: $settings.musicVolume,
+                tint: PlayHubTheme.sky,
+                isEnabled: settings.musicEnabled
+            )
         }
         .padding(16)
         .background(panelBackground)
@@ -98,50 +117,45 @@ struct SettingsTab: View {
 
     private var defaultGameOptionsSection: some View {
         VStack(alignment: .leading, spacing: 14) {
-            Label("Default Game Options", systemImage: "slider.horizontal.3")
-                .font(.title3.bold())
-                .foregroundStyle(PlayHubTheme.ink)
+            sectionTitle("DEFAULT GAME SETUP", systemImage: "slider.horizontal.3")
 
-            Picker("Tap Frenzy", selection: $settings.defaultTapPreset) {
+            optionPicker("Tap Frenzy", systemImage: "hand.tap.fill", selection: $settings.defaultTapPreset) {
                 ForEach(TapFrenzyPreset.allCases) { preset in
                     Text(preset.displayName).tag(preset)
                 }
             }
 
-            Picker("Light It Up", selection: $settings.defaultLightPreset) {
+            optionPicker("Light It Up", systemImage: "bolt.fill", selection: $settings.defaultLightPreset) {
                 ForEach(LightItUpPreset.allCases) { preset in
                     Text(preset.displayName).tag(preset)
                 }
             }
 
-            Picker("Quiz Difficulty", selection: $settings.defaultQuizDifficulty) {
+            optionPicker("Quiz Difficulty", systemImage: "speedometer", selection: $settings.defaultQuizDifficulty) {
                 ForEach(QuizDifficulty.allCases) { difficulty in
                     Text(difficulty.displayName).tag(difficulty)
                 }
             }
 
-            Picker("Quiz Questions", selection: $settings.defaultQuizQuestionCount) {
+            optionPicker("Quiz Questions", systemImage: "questionmark.bubble.fill", selection: $settings.defaultQuizQuestionCount) {
                 ForEach(GameSettingsStore.allowedQuestionCounts, id: \.self) { count in
                     Text("\(count)").tag(count)
                 }
             }
 
-            Picker("Quiz Category", selection: defaultCategoryBinding) {
+            optionPicker("Quiz Category", systemImage: "square.grid.2x2.fill", selection: defaultCategoryBinding) {
                 ForEach(settingsCategories) { category in
                     Text(category.name).tag(category.id)
                 }
             }
         }
-        .pickerStyle(.menu)
         .padding(16)
         .background(panelBackground)
     }
 
     private var notificationSection: some View {
         VStack(alignment: .leading, spacing: 14) {
-            Label("Daily Challenge", systemImage: "bell.badge.fill")
-                .font(.title3.bold())
-                .foregroundStyle(PlayHubTheme.ink)
+            sectionTitle("DAILY CHALLENGE", systemImage: "bell.badge.fill")
 
             Toggle(
                 "Notifications",
@@ -150,7 +164,10 @@ struct SettingsTab: View {
                     set: { notificationService.setNotificationsEnabled($0) }
                 )
             )
-            .tint(PlayHubTheme.orange)
+            .font(PlayHubGameFont.label(14))
+            .tint(PlayHubTheme.lime)
+            .padding(12)
+            .background(settingRowBackground)
 
             DatePicker(
                 "Challenge Time",
@@ -160,6 +177,10 @@ struct SettingsTab: View {
                 ),
                 displayedComponents: .hourAndMinute
             )
+            .font(PlayHubGameFont.label(14))
+            .tint(PlayHubTheme.lime)
+            .padding(12)
+            .background(settingRowBackground)
             .disabled(!notificationService.notificationsEnabled)
 
             Text(notificationService.permissionLabel)
@@ -172,9 +193,7 @@ struct SettingsTab: View {
 
     private var locationSection: some View {
         VStack(alignment: .leading, spacing: 14) {
-            Label("Location", systemImage: "location.fill")
-                .font(.title3.bold())
-                .foregroundStyle(PlayHubTheme.ink)
+            sectionTitle("LOCATION", systemImage: "location.fill")
 
             Text(locationService.permissionLabel)
                 .font(.subheadline)
@@ -199,9 +218,7 @@ struct SettingsTab: View {
 
     private var resetSection: some View {
         VStack(alignment: .leading, spacing: 14) {
-            Label("Stats", systemImage: "trash.fill")
-                .font(.title3.bold())
-                .foregroundStyle(PlayHubTheme.ink)
+            sectionTitle("SAVED STATS", systemImage: "chart.bar.fill")
 
             Text("\(store.sessions.count) saved sessions")
                 .font(.subheadline)
@@ -222,6 +239,78 @@ struct SettingsTab: View {
         PlayHubPanelBackground()
     }
 
+    private var settingRowBackground: some View {
+        RoundedRectangle(cornerRadius: 14, style: .continuous)
+            .fill(PlayHubTheme.woodLight.opacity(0.72))
+            .overlay {
+                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    .strokeBorder(PlayHubTheme.lime.opacity(0.18), lineWidth: 1)
+            }
+    }
+
+    private func sectionTitle(_ title: String, systemImage: String) -> some View {
+        HStack(spacing: 9) {
+            PlayHubSymbolIcon(
+                systemName: systemImage,
+                tint: PlayHubTheme.lime,
+                size: 32,
+                symbolSize: 14
+            )
+
+            Text(title)
+                .font(PlayHubGameFont.display(16))
+                .foregroundStyle(PlayHubTheme.lime)
+        }
+        .accessibilityAddTraits(.isHeader)
+    }
+
+    private func volumeControl(
+        title: String,
+        symbol: String,
+        value: Binding<Double>,
+        tint: Color,
+        isEnabled: Bool
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 7) {
+            Label(title, systemImage: symbol)
+                .font(PlayHubGameFont.label(13))
+                .foregroundStyle(PlayHubTheme.ink)
+
+            Slider(value: value, in: 0...1)
+                .tint(tint)
+        }
+        .padding(12)
+        .background(settingRowBackground)
+        .disabled(!isEnabled)
+        .opacity(isEnabled ? 1 : 0.48)
+    }
+
+    private func optionPicker<SelectionValue: Hashable, Content: View>(
+        _ title: String,
+        systemImage: String,
+        selection: Binding<SelectionValue>,
+        @ViewBuilder content: () -> Content
+    ) -> some View {
+        HStack(spacing: 10) {
+            Label(title, systemImage: systemImage)
+                .font(PlayHubGameFont.label(13))
+                .foregroundStyle(PlayHubTheme.ink)
+
+            Spacer(minLength: 6)
+
+            Picker(selection: selection) {
+                content()
+            } label: {
+                EmptyView()
+            }
+            .pickerStyle(.menu)
+            .labelsHidden()
+            .tint(PlayHubTheme.lime)
+        }
+        .padding(12)
+        .background(settingRowBackground)
+    }
+
     private func artToggleButton(
         isOn: Binding<Bool>,
         onImage: String,
@@ -240,7 +329,15 @@ struct SettingsTab: View {
                 Text(label)
                     .font(.system(size: 12, weight: .black, design: .rounded))
                     .foregroundStyle(PlayHubTheme.ink)
+
+                Text(isOn.wrappedValue ? "ON" : "OFF")
+                    .font(PlayHubGameFont.label(9))
+                    .foregroundStyle(PlayHubTheme.wood)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 3)
+                    .background(isOn.wrappedValue ? PlayHubTheme.lime : PlayHubTheme.sand, in: Capsule())
             }
+            .frame(maxWidth: .infinity)
         }
         .buttonStyle(.plain)
         .accessibilityLabel(label)
