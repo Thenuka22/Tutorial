@@ -2,6 +2,9 @@ import SwiftUI
 #if canImport(ConfettiSwiftUI)
 import ConfettiSwiftUI
 #endif
+#if canImport(Lottie)
+import Lottie
+#endif
 
 struct ResultView: View {
     @Environment(\.dismiss) private var dismiss
@@ -76,6 +79,15 @@ struct ResultView: View {
             AdventureArtSlice(imageName: GameArt.adventurePanel)
 
             VStack(spacing: 12) {
+                #if canImport(Lottie)
+                if isBestScore {
+                    LottieView(animation: .named("star_celebration"))
+                        .playing(loopMode: .playOnce)
+                        .frame(width: 80, height: 80)
+                        .padding(.top, -40)
+                }
+                #endif
+
                 Text(resultTitle)
                     .font(PlayHubGameFont.display(24))
                     .foregroundStyle(PlayHubTheme.cream)
