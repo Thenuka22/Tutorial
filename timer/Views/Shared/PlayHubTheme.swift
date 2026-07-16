@@ -3,11 +3,6 @@ import SwiftUI
 enum GameArt {
     static let quizBackground = "QuizBackground"
     static let quizBoard = "QuizBoard"
-    static let scoreBackground = "ScoreBackground"
-    static let pixelPanelTan = "PixelPanelTan"
-    static let pixelPanelBrown = "PixelPanelBrown"
-    static let pixelButtonYellow = "PixelButtonYellow"
-    static let pixelButtonBlue = "PixelButtonBlue"
     static let adventurePanel = "AdventurePanel"
     static let adventureButton = "AdventureButton"
     static let musicOn = "GameButtonMusic"
@@ -259,43 +254,6 @@ struct ArcadeGameBar: View {
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
         .background(PlayHubPanelBackground(cornerRadius: 16))
-    }
-}
-
-struct PixelArtSlice: View {
-    let imageName: String
-    var capInset: CGFloat = 10
-
-    var body: some View {
-        Image(imageName)
-            .resizable(
-                capInsets: EdgeInsets(
-                    top: capInset,
-                    leading: capInset,
-                    bottom: capInset,
-                    trailing: capInset
-                ),
-                resizingMode: .stretch
-            )
-            .interpolation(.none)
-            .accessibilityHidden(true)
-    }
-}
-
-struct PixelArtButtonStyle: ButtonStyle {
-    let imageName: String
-    var foreground: Color = PlayHubTheme.wood
-
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .font(PlayHubGameFont.display(14))
-            .foregroundStyle(foreground)
-            .frame(maxWidth: .infinity, minHeight: 50)
-            .padding(.horizontal, 12)
-            .background(PixelArtSlice(imageName: imageName))
-            .scaleEffect(configuration.isPressed ? 0.96 : 1)
-            .opacity(configuration.isPressed ? 0.82 : 1)
-            .animation(.snappy(duration: 0.14), value: configuration.isPressed)
     }
 }
 
