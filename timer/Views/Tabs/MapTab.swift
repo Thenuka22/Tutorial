@@ -159,5 +159,6 @@ private struct SessionMapPin: Identifiable {
 #Preview {
     NavigationStack { MapTab() }
         .environmentObject(GameSessionStore.shared)
+        .environmentObject(GameSettingsStore.shared)
         .environmentObject(LocationService.shared)
 }

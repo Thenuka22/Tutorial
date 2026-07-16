@@ -2,6 +2,8 @@ import SwiftUI
 
 enum GameArt {
     static let quizBackground = "QuizBackground"
+    static let sunsetRuinsBackground = "BackgroundSunsetRuins"
+    static let moonlitForestBackground = "BackgroundMoonlitForest"
     static let quizBoard = "QuizBoard"
     static let adventurePanel = "AdventurePanel"
     static let adventureButton = "AdventureButton"
@@ -51,12 +53,18 @@ enum PlayHubTheme {
 }
 
 struct PlayHubScreenBackground: View {
+    @EnvironmentObject private var settings: GameSettingsStore
+
     var body: some View {
-        Image(GameArt.quizBackground)
+        Image(settings.selectedBackgroundTheme.assetName)
             .resizable()
             .scaledToFill()
             .ignoresSafeArea()
-            .overlay(Color.black.opacity(0.18).ignoresSafeArea())
+            .overlay(
+                Color.black
+                    .opacity(settings.selectedBackgroundTheme.backgroundOverlayOpacity)
+                    .ignoresSafeArea()
+            )
             .accessibilityHidden(true)
     }
 }

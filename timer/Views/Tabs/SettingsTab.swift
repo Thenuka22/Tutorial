@@ -15,6 +15,7 @@ struct SettingsTab: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
                     settingsHeader
+                    backgroundSection
                     audioSection
                     defaultGameOptionsSection
                     notificationSection
@@ -110,6 +111,58 @@ struct SettingsTab: View {
                 tint: PlayHubTheme.sky,
                 isEnabled: settings.musicEnabled
             )
+        }
+        .padding(16)
+        .background(panelBackground)
+    }
+
+    private var backgroundSection: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            sectionTitle("BACKGROUND", systemImage: "photo.fill")
+
+            HStack(spacing: 10) {
+                ForEach(GameBackgroundTheme.allCases) { theme in
+                    Button {
+                        settings.selectedBackgroundTheme = theme
+                    } label: {
+                        VStack(spacing: 7) {
+                            ZStack(alignment: .topTrailing) {
+                                Image(theme.assetName)
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(maxWidth: .infinity)
+                                    .frame(height: 104)
+                                    .clipped()
+
+                                if settings.selectedBackgroundTheme == theme {
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .font(.system(size: 20, weight: .black))
+                                        .foregroundStyle(PlayHubTheme.lime, PlayHubTheme.wood)
+                                        .padding(6)
+                                }
+                            }
+                            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                            .overlay {
+                                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                    .strokeBorder(
+                                        settings.selectedBackgroundTheme == theme ? PlayHubTheme.lime : PlayHubTheme.cream.opacity(0.34),
+                                        lineWidth: settings.selectedBackgroundTheme == theme ? 3 : 1
+                                    )
+                            }
+
+                            Text(theme.displayName)
+                                .font(PlayHubGameFont.label(11))
+                                .foregroundStyle(PlayHubTheme.ink)
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.72)
+                        }
+                        .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel(theme.displayName)
+                    .accessibilityValue(settings.selectedBackgroundTheme == theme ? "Selected" : "Not selected")
+                }
+            }
         }
         .padding(16)
         .background(panelBackground)

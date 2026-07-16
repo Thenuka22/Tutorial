@@ -42,13 +42,9 @@ struct ResultView: View {
             let boardHeight = boardWidth / 0.62
 
             ZStack {
-                Image(GameArt.quizBackground)
-                    .resizable()
-                    .aspectRatio(9.0 / 16.0, contentMode: .fill)
+                PlayHubScreenBackground()
                     .frame(width: proxy.size.width, height: proxy.size.height)
                     .clipped()
-                    .overlay(Color.black.opacity(0.08))
-                    .accessibilityHidden(true)
 
                 resultBoard
                     .frame(width: boardWidth, height: boardHeight)

@@ -53,12 +53,7 @@ struct QuizRushView: View {
     }
 
     private var quizBackground: some View {
-        Image(GameArt.quizBackground)
-            .resizable()
-            .scaledToFill()
-            .ignoresSafeArea()
-            .overlay(Color.black.opacity(0.08).ignoresSafeArea())
-            .accessibilityHidden(true)
+        PlayHubScreenBackground()
     }
 
     private var gameBar: some View {

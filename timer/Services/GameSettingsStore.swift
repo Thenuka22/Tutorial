@@ -37,6 +37,12 @@ final class GameSettingsStore: ObservableObject {
         }
     }
 
+    @Published var selectedBackgroundTheme: GameBackgroundTheme = .jungleDay {
+        didSet {
+            defaults.set(selectedBackgroundTheme.rawValue, forKey: Keys.selectedBackgroundTheme)
+        }
+    }
+
     @Published var defaultTapPreset: TapFrenzyPreset = .classic {
         didSet {
             defaults.set(defaultTapPreset.rawValue, forKey: Keys.defaultTapPreset)
@@ -76,6 +82,14 @@ final class GameSettingsStore: ObservableObject {
         hapticsEnabled = defaults.object(forKey: Keys.hapticsEnabled) as? Bool ?? true
         soundVolume = (defaults.object(forKey: Keys.soundVolume) as? Double ?? 0.85).clamped(to: 0...1)
         musicVolume = (defaults.object(forKey: Keys.musicVolume) as? Double ?? 0.35).clamped(to: 0...1)
+
+        if let rawValue = defaults.string(forKey: Keys.selectedBackgroundTheme),
+           let theme = GameBackgroundTheme(rawValue: rawValue) {
+            selectedBackgroundTheme = theme
+        } else {
+            selectedBackgroundTheme = .jungleDay
+            defaults.set(GameBackgroundTheme.jungleDay.rawValue, forKey: Keys.selectedBackgroundTheme)
+        }
 
         if let rawValue = defaults.string(forKey: Keys.defaultTapPreset) {
             if let preset = TapFrenzyPreset(rawValue: rawValue) {
@@ -144,6 +158,7 @@ final class GameSettingsStore: ObservableObject {
         static let hapticsEnabled = "playhub.hapticsEnabled"
         static let soundVolume = "playhub.soundVolume"
         static let musicVolume = "playhub.musicVolume"
+        static let selectedBackgroundTheme = "playhub.backgroundTheme"
         static let defaultTapPreset = "playhub.defaultTapPreset"
         static let defaultLightPreset = "playhub.defaultLightPreset"
         static let defaultQuizDifficulty = "playhub.defaultQuizDifficulty"
