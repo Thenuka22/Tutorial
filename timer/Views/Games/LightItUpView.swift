@@ -137,8 +137,6 @@ struct LightItUpView: View {
                         }
                     }
 
-                    Stepper("Wrong Tap Penalty \(options.wrongTapPenalty)", value: wrongPenaltyBinding, in: 0...5)
-                    Stepper("Missed Light Penalty \(options.missedLightPenalty)", value: missedPenaltyBinding, in: 0...5)
                     Stepper("Extra Lights \(options.extraLightsPerTick)", value: extraLightsBinding, in: 0...2)
                 }
             }
@@ -209,20 +207,6 @@ struct LightItUpView: View {
         Binding(
             get: { options.startingLevel },
             set: { value in updateOptions { $0.startingLevel = value } }
-        )
-    }
-
-    private var wrongPenaltyBinding: Binding<Int> {
-        Binding(
-            get: { options.wrongTapPenalty },
-            set: { value in updateOptions { $0.wrongTapPenalty = value } }
-        )
-    }
-
-    private var missedPenaltyBinding: Binding<Int> {
-        Binding(
-            get: { options.missedLightPenalty },
-            set: { value in updateOptions { $0.missedLightPenalty = value } }
         )
     }
 

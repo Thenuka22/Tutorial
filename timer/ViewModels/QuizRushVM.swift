@@ -72,7 +72,6 @@ final class QuizRushVM: ObservableObject {
             AudioService.shared.impact(.light)
         } else {
             streak = 0
-            score = max(0, score - 2)
             AudioService.shared.play(.mistake)
             AudioService.shared.impact(.rigid)
         }
@@ -172,7 +171,6 @@ final class QuizRushVM: ObservableObject {
         questionTimerCancellable?.cancel()
         selectedAnswer = "__timeout__"
         streak = 0
-        score = max(0, score - 2)
         AudioService.shared.play(.mistake)
         AudioService.shared.impact(.rigid)
 

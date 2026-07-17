@@ -87,7 +87,7 @@ enum LightItUpPreset: String, CaseIterable, Codable, Hashable, Identifiable {
         switch self {
         case .classic: return "60-second level progression"
         case .sprint: return "Shorter round with quicker lights"
-        case .expert: return "Harder penalties and denser lights"
+        case .expert: return "Faster timing with denser lights"
         }
     }
 
@@ -100,8 +100,6 @@ enum LightItUpPreset: String, CaseIterable, Codable, Hashable, Identifiable {
                 preset: self,
                 roundDuration: 30,
                 startingLevel: .l2,
-                wrongTapPenalty: 1,
-                missedLightPenalty: 1,
                 extraLightsPerTick: 1,
                 spawnSpeedMultiplier: 0.85
             )
@@ -110,8 +108,6 @@ enum LightItUpPreset: String, CaseIterable, Codable, Hashable, Identifiable {
                 preset: self,
                 roundDuration: 45,
                 startingLevel: .l3,
-                wrongTapPenalty: 2,
-                missedLightPenalty: 2,
                 extraLightsPerTick: 1,
                 spawnSpeedMultiplier: 0.72
             )
@@ -123,13 +119,11 @@ struct LightItUpOptions: Codable, Equatable {
     var preset: LightItUpPreset = .classic
     var roundDuration = 60
     var startingLevel: GameLevel = .l1
-    var wrongTapPenalty = 1
-    var missedLightPenalty = 1
     var extraLightsPerTick = 0
     var spawnSpeedMultiplier: Double = 1.0
 
     var variantID: String {
-        "light:\(preset.rawValue):\(roundDuration):\(startingLevel.rawValue):\(wrongTapPenalty):\(missedLightPenalty):\(extraLightsPerTick)"
+        "light:v2:\(preset.rawValue):\(roundDuration):\(startingLevel.rawValue):\(extraLightsPerTick)"
     }
 
     var variantLabel: String {
@@ -140,8 +134,6 @@ struct LightItUpOptions: Codable, Equatable {
         let defaultOptions = preset.options
         return roundDuration == defaultOptions.roundDuration &&
             startingLevel == defaultOptions.startingLevel &&
-            wrongTapPenalty == defaultOptions.wrongTapPenalty &&
-            missedLightPenalty == defaultOptions.missedLightPenalty &&
             extraLightsPerTick == defaultOptions.extraLightsPerTick
     }
 }
@@ -190,7 +182,7 @@ struct QuizRushOptions: Codable, Equatable {
 
     var variantID: String {
         let categoryPart = categoryID.map(String.init) ?? "any"
-        return "quiz:\(questionCount):\(difficulty.rawValue):\(categoryPart):\(timedQuestions):\(secondsPerQuestion):\(streakBonusEnabled)"
+        return "quiz:v2:\(questionCount):\(difficulty.rawValue):\(categoryPart):\(timedQuestions):\(secondsPerQuestion):\(streakBonusEnabled)"
     }
 
     var variantLabel: String {

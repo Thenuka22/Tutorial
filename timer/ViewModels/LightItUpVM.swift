@@ -146,7 +146,6 @@ final class LightItUpVM: ObservableObject {
             AudioService.shared.play(.success)
             AudioService.shared.impact(.light)
         } else {
-            score = max(0, score - options.wrongTapPenalty)
             AudioService.shared.play(.mistake)
             AudioService.shared.impact(.rigid)
         }
@@ -281,7 +280,6 @@ final class LightItUpVM: ObservableObject {
         if cards[index].isLit, cards[index].litToken == token {
             cards[index].isLit = false
             cards[index].litToken = nil
-            score = max(0, score - options.missedLightPenalty)
             AudioService.shared.play(.mistake)
         }
     }
